@@ -1,0 +1,1010 @@
+<title>Dashboard VOC · Kyoto Nissan</title>
+<style>
+  :root {
+    --bg: #f3f4f7;
+    --surface: #ffffff;
+    --surface-2: #eceef2;
+    --border: #dde1e8;
+    --ink: #191c21;
+    --ink-muted: #5b6572;
+    --ink-faint: #8b95a3;
+    --brand: #c3002f;
+    --brand-ink: #ffffff;
+    --good: #12864f;
+    --good-soft: #e4f4ec;
+    --bad: #cf2f42;
+    --bad-soft: #fbe7ea;
+    --warn: #dba400;
+    --info-soft: #eef1f5;
+    --track: #e6e9ee;
+    --shadow: 0 1px 2px rgba(20,25,35,.06), 0 6px 20px rgba(20,25,35,.05);
+    --radius: 14px;
+    --font: "Helvetica Neue", Helvetica, Arial, system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1013; --surface: #171a1e; --surface-2: #20242a; --border: #2b323a;
+      --ink: #eef1f5; --ink-muted: #9aa4b1; --ink-faint: #6b7482; --brand: #ff3355;
+      --good: #34c07f; --good-soft: #12291f; --bad: #f2596a; --bad-soft: #2c1518;
+      --warn: #f2c14e;
+      --info-soft: #1d2126; --track: #262c33;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f4f7; --surface: #ffffff; --surface-2: #eceef2; --border: #dde1e8;
+    --ink: #191c21; --ink-muted: #5b6572; --ink-faint: #8b95a3; --brand: #c3002f;
+    --good: #12864f; --good-soft: #e4f4ec; --bad: #cf2f42; --bad-soft: #fbe7ea;
+    --warn: #dba400;
+    --info-soft: #eef1f5; --track: #e6e9ee;
+    --shadow: 0 1px 2px rgba(20,25,35,.06), 0 6px 20px rgba(20,25,35,.05);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1013; --surface: #171a1e; --surface-2: #20242a; --border: #2b323a;
+    --ink: #eef1f5; --ink-muted: #9aa4b1; --ink-faint: #6b7482; --brand: #ff3355;
+    --good: #34c07f; --good-soft: #12291f; --bad: #f2596a; --bad-soft: #2c1518;
+    --warn: #f2c14e;
+    --info-soft: #1d2126; --track: #262c33;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .voc {
+    font-family: var(--font); background: var(--bg); color: var(--ink);
+    min-height: 100vh; padding: clamp(14px, 2.5vw, 32px);
+    -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  }
+  .voc-inner { max-width: 1240px; margin: 0 auto; }
+
+  /* ---- Header ---- */
+  .hd {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+    padding: 18px 22px; border-radius: var(--radius);
+    background: linear-gradient(100deg, var(--brand), color-mix(in srgb, var(--brand) 78%, #000));
+    color: var(--brand-ink); box-shadow: var(--shadow);
+  }
+  .hd-badge {
+    font-weight: 800; letter-spacing: .14em; font-size: 12px;
+    border: 1.5px solid rgba(255,255,255,.55); border-radius: 6px;
+    padding: 5px 9px; text-transform: uppercase; white-space: nowrap;
+  }
+  .hd-t { display: flex; flex-direction: column; gap: 2px; margin-right: auto; }
+  .hd-t h1 { margin: 0; font-size: clamp(17px, 2.4vw, 23px); font-weight: 800; letter-spacing: -.01em; text-wrap: balance; }
+  .hd-t span { font-size: 12.5px; opacity: .88; letter-spacing: .04em; }
+  .hd-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+  .hd-period { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: .92; }
+  .hd-period input {
+    font-family: var(--font); font-size: 14px; font-weight: 800; color: var(--brand-ink);
+    background: rgba(255,255,255,.14); border: 1.5px solid rgba(255,255,255,.35);
+    border-radius: 7px; padding: 5px 10px; width: 130px; text-align: center;
+  }
+  .hd-period input:focus-visible { outline: 2px solid rgba(255,255,255,.7); outline-offset: 1px; }
+  .hd-btns { display: flex; gap: 8px; }
+  .hd-btn {
+    background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.4); color: var(--brand-ink);
+    border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .hd-btn:hover { background: rgba(255,255,255,.25); }
+  .hd-btn.solid { background: #fff; color: #a30028; border-color: #fff; }
+  .hd-btn.solid:hover { background: #ffe9ee; }
+
+  .status { margin: 12px 2px 0; font-size: 12.5px; font-weight: 600; min-height: 18px; }
+  .status.ok { color: var(--good); }
+  .status.err { color: var(--bad); }
+
+  /* ---- Tabs ---- */
+  .tabs {
+    display: inline-flex; margin: 16px 0 4px; background: var(--surface);
+    border: 1.5px solid var(--border); border-radius: 12px; padding: 4px; gap: 4px; box-shadow: var(--shadow);
+  }
+  .tab {
+    font-family: var(--font); font-size: 14px; font-weight: 800; letter-spacing: .02em;
+    color: var(--ink-muted); background: transparent; border: 0; border-radius: 9px;
+    padding: 9px 26px; cursor: pointer; transition: all .15s ease;
+  }
+  .tab[aria-selected="true"] { background: var(--brand); color: var(--brand-ink); box-shadow: 0 3px 10px color-mix(in srgb, var(--brand) 35%, transparent); }
+  .tab:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 2px; }
+
+  /* ---- Sucursal pills ---- */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+  .pill {
+    font-family: var(--font); font-size: 13.5px; font-weight: 700;
+    color: var(--ink-muted); background: var(--surface); border: 1.5px solid var(--border);
+    padding: 9px 15px; border-radius: 999px; cursor: pointer; transition: all .15s ease;
+  }
+  .pill:hover { border-color: var(--brand); color: var(--ink); }
+  .pill[aria-pressed="true"] {
+    background: var(--brand); border-color: var(--brand); color: var(--brand-ink);
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--brand) 35%, transparent);
+  }
+  .pill:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 2px; }
+
+  /* ---- KPI strip ---- */
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 16px 0 22px; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: 1fr; } }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--brand); }
+  .kpi .lbl { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+  .kpi .val { font-size: clamp(26px, 4vw, 34px); font-weight: 800; letter-spacing: -.02em; margin-top: 6px; line-height: 1; }
+  .kpi .sub { font-size: 12.5px; color: var(--ink-muted); margin-top: 7px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .chip { font-size: 11.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
+  .chip.up { background: var(--good-soft); color: var(--good); }
+  .chip.down { background: var(--bad-soft); color: var(--bad); }
+  .chip.neutral { background: var(--info-soft); color: var(--ink-muted); }
+
+  .section-t { display: flex; align-items: baseline; gap: 12px; margin: 26px 2px 14px; flex-wrap: wrap; }
+  .section-t h2 { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: var(--ink); }
+  .section-t .hint { font-size: 12.5px; color: var(--ink-faint); }
+  .legend { display: flex; gap: 14px; margin-left: auto; font-size: 12px; color: var(--ink-muted); flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+  /* ---- Gauge grid ---- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(206px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 14px 14px; box-shadow: var(--shadow); text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(20,25,35,.12); }
+  .card .code { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--ink-faint); }
+  .card .name { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); min-height: 32px; line-height: 1.25; display: flex; align-items: center; }
+  .gauge { position: relative; width: 128px; height: 128px; margin: 4px 0 2px; }
+  .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .gauge .pct { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .gauge .pct b { font-size: 25px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+  .gauge .pct small { font-size: 10px; color: var(--ink-faint); margin-top: 3px; font-weight: 600; }
+  .card .st { font-size: 11.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px; margin-top: 4px; }
+  .st.ok { background: var(--good-soft); color: var(--good); }
+  .st.no { background: var(--bad-soft); color: var(--bad); }
+  .st.info { background: var(--info-soft); color: var(--ink-muted); }
+  .card .cnts { font-size: 10px; color: var(--ink-muted); margin-top: 6px; line-height: 1.5; }
+  .card .cnts b { color: var(--ink); }
+
+  /* ---- Comparison ---- */
+  .cmp {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 22px; box-shadow: var(--shadow);
+  }
+  .cmp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .cmp-head label { font-size: 12.5px; font-weight: 700; color: var(--ink-muted); }
+  select {
+    font-family: var(--font); font-size: 13.5px; font-weight: 700; color: var(--ink);
+    background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; cursor: pointer; max-width: 100%;
+  }
+  select:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
+  .bars { display: flex; flex-direction: column; gap: 13px; }
+  .bar-row { display: grid; grid-template-columns: 130px 1fr 58px; align-items: center; gap: 12px; }
+  @media (max-width: 560px) { .bar-row { grid-template-columns: 96px 1fr 50px; } }
+  .bar-row .who { font-size: 13px; font-weight: 700; color: var(--ink); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { position: relative; height: 26px; background: var(--track); border-radius: 7px; }
+  .bar-fill { height: 100%; border-radius: 7px; transition: width .5s cubic-bezier(.3,.9,.3,1); }
+  .bar-fill.ok { background: var(--good); }
+  .bar-fill.no { background: var(--bad); }
+  .obj-tick { position: absolute; top: -5px; bottom: -5px; width: 2.5px; background: var(--ink); border-radius: 2px; }
+  .obj-tick::after { content: attr(data-obj); position: absolute; top: -17px; left: 50%; transform: translateX(-50%); font-size: 9.5px; font-weight: 800; color: var(--ink-muted); white-space: nowrap; }
+  .bar-row .num { font-size: 14px; font-weight: 800; text-align: right; }
+  .bar-row .num.ok { color: var(--good); }
+  .bar-row .num.no { color: var(--bad); }
+  .bar-row .num.sd { color: var(--ink-faint); font-weight: 700; }
+
+  /* ---- Verbalizaciones ---- */
+  .verbas-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 860px) { .verbas-wrap { grid-template-columns: 1fr; } }
+  .vpanel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .vpanel-h {
+    padding: 12px 16px; font-size: 13px; font-weight: 800; letter-spacing: .02em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .vpanel-h.pos { background: var(--good-soft); color: var(--good); }
+  .vpanel-h.neg { background: var(--bad-soft); color: var(--bad); }
+  .vlist { list-style: none; margin: 0; padding: 6px 0; }
+  .vlist li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 16px; }
+  .vlist li + li { border-top: 1px solid var(--border); }
+  .vnum {
+    flex: 0 0 auto; width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; margin-top: 1px;
+  }
+  .pos-n { background: var(--good-soft); color: var(--good); }
+  .neg-n { background: var(--bad-soft); color: var(--bad); }
+  .vbody { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .vcat { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+  .vtxt { font-size: 13.5px; line-height: 1.45; color: var(--ink); }
+  .vempty { padding: 20px 16px; font-size: 13px; color: var(--ink-faint); font-style: italic; }
+  .verbas-suc-t {
+    grid-column: 1 / -1; margin: 6px 2px -4px; font-size: 13px; font-weight: 800;
+    letter-spacing: .03em; color: var(--ink-muted); text-transform: uppercase;
+  }
+
+  .foot { margin: 28px 2px 4px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; }
+  .foot code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; }
+  .foot button { background: none; border: none; color: var(--ink-faint); text-decoration: underline; cursor: pointer; font-size: 12px; font-family: var(--font); padding: 0; }
+
+  /* ---- Barra de fuente en vivo ---- */
+  .src {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 16px; margin-top: 14px; box-shadow: var(--shadow);
+  }
+  .src-lbl { font-size: 12.5px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+  .src-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-faint); flex: 0 0 auto; }
+  .src-dot.on { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 25%, transparent); }
+  .src-dot.err { background: var(--bad); }
+  .src input {
+    flex: 1 1 320px; min-width: 200px; font-family: var(--font); font-size: 12.5px; color: var(--ink);
+    background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 11px;
+  }
+  .src input:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
+  .src-btn {
+    font-family: var(--font); font-size: 13px; font-weight: 700; cursor: pointer;
+    border-radius: 8px; padding: 8px 15px; border: 1.5px solid var(--brand);
+    background: var(--brand); color: var(--brand-ink); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .src-btn:hover { filter: brightness(1.06); }
+  .src-btn:disabled { opacity: .55; cursor: default; }
+  .src-btn.ghost { background: transparent; color: var(--ink-muted); border-color: var(--border); }
+  .src-btn.ghost:hover { border-color: var(--brand); color: var(--ink); filter: none; }
+  .src-auto { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-muted); font-weight: 700; }
+  .src-status { font-size: 12px; color: var(--ink-muted); flex: 1 1 100%; min-height: 15px; }
+  .src-status.ok { color: var(--good); }
+  .src-status.err { color: var(--bad); }
+  .src-spin { display: inline-block; width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -1px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } .src-spin { animation: none; } }
+</style>
+
+<div class="voc">
+  <div class="voc-inner">
+    <header class="hd">
+      <span class="hd-badge">NISSAN</span>
+      <div class="hd-t">
+        <h1>Voz del Cliente · Grupo Kyoto</h1>
+        <span>Ventas y Posventa — Indicadores por sucursal</span>
+      </div>
+      <div class="hd-right">
+        <div class="hd-period">Período <input id="periodoInp" value="Junio 2026" aria-label="Período"></div>
+        <div class="hd-btns">
+          <button class="hd-btn" id="themeBtn" type="button">◐ Tema</button>
+        </div>
+      </div>
+      <input type="file" id="fileInp" accept=".xlsx,.xlsm" hidden>
+    </header>
+
+    <div class="src">
+      <span class="src-lbl"><span class="src-dot" id="srcDot"></span>Fuente en vivo</span>
+      <input id="srcUrl" type="url" spellcheck="false" placeholder="Pegá la URL del Web App de Apps Script (termina en /exec)" aria-label="URL del Web App">
+      <button class="src-btn" id="connectBtn" type="button">⟳ Actualizar</button>
+      <span class="src-auto"><label for="autoSel">Auto:</label>
+        <select id="autoSel" aria-label="Intervalo de actualización automática">
+          <option value="0">Off</option>
+          <option value="30">cada 30 s</option>
+          <option value="60">cada 1 min</option>
+          <option value="300">cada 5 min</option>
+          <option value="900">cada 15 min</option>
+          <option value="1800">cada 30 min</option>
+          <option value="3600">cada 1 h</option>
+        </select>
+      </span>
+      <button class="src-btn ghost" id="uploadBtn" type="button">o cargar .xlsx</button>
+      <span class="src-status" id="srcStatus"></span>
+    </div>
+
+    <div class="status" id="status" role="status"></div>
+
+    <div class="tabs" role="tablist" aria-label="Área">
+      <button class="tab" role="tab" data-tab="ventas" aria-selected="true">Ventas</button>
+      <button class="tab" role="tab" data-tab="posventa" aria-selected="false">Posventa</button>
+    </div>
+
+    <div class="pills" id="pills" role="group" aria-label="Seleccionar sucursal"></div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="section-t">
+      <h2>Indicadores</h2>
+      <span class="hint" id="gridHint">% favorable vs. objetivo — la línea negra marca el objetivo</span>
+      <div class="legend">
+        <span><i style="background:var(--good)"></i>5 · Sí · Definit. lo llevaría</span>
+        <span><i style="background:var(--warn)"></i>4 · Prob. lo llevaría</span>
+        <span><i style="background:var(--bad)"></i>1-3 · No · resto</span>
+        <span><i style="background:var(--ink-faint)"></i>Sin datos</span>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+
+    <div class="section-t">
+      <h2>Comparativa entre sucursales</h2>
+      <span class="hint">todas las sucursales para un indicador</span>
+    </div>
+    <div class="cmp">
+      <div class="cmp-head">
+        <label for="cmpSel">Indicador:</label>
+        <select id="cmpSel"></select>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="section-t">
+      <h2 id="verbasTitle">Verbalizaciones</h2>
+      <span class="hint">lo que dijeron los clientes — puntos fuertes y débiles</span>
+    </div>
+    <div class="verbas-wrap" id="verbas"></div>
+
+    <p class="foot">
+      <b>Conexión en vivo:</b> pegá arriba la URL del Web App de Apps Script y elegí un intervalo — el dashboard se
+      actualiza solo desde tu Google Sheet, sin descargar nada. Lee las hojas <code>Ventas - Mensual</code>,
+      <code>Posventa - Mensual</code> y <code>Verbalizaciones</code>. La conexión en vivo funciona con el archivo abierto
+      localmente o alojado en GitHub Pages (no desde el link de Claude, que bloquea sitios externos por seguridad).
+      También podés cargar un <code>.xlsx</code> a mano. La línea vertical negra en cada barra marca el objetivo Nissan.
+      <button id="resetBtn" type="button">Restablecer datos originales</button>
+    </p>
+  </div>
+</div>
+
+<script>
+"use strict";
+// ================================================================
+//  DATOS EMBEBIDOS — Junio 2026 (leídos de "Kyoto VOC - Herramienta V1.xlsx")
+//  El botón "Actualizar datos" reemplaza todo esto con el .xlsx que cargues.
+// ================================================================
+const SUC_ORDER = ["Grupo Kyoto","Kyoto Resistencia","Kyoto Corrientes","Kyoto Posadas","Kyoto Sáenz Peña"];
+
+// ── Tipos de pregunta por sigla ──
+const TIPOS = {
+  ventas:   { VOC03:"llev", P02:"sino", P08:"sino", P09:"sino" },
+  posventa: { VOC03:"llev", VOC05:"sino", VOC07:"sino", P01:"sino3", P02:"sino" },
+};
+// Datos Junio 2026 — [sigla, pregunta, obj, base, %1..%5, %DefLlev,%ProbLlev,%ProbNo,%DefNo, %Si,%No,%NoDecidido]
+const RAW = {"ventas": {"Kyoto Resistencia": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 14, 0.0, 0.0, 0.0, 0.0, 0, 92.9, 7.1, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 14, 92.9, 7.1, 13.0, 7.7, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 5, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 13, 0.0, 0.0, 0.0, 7.7, 92.3, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 13, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 13, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 13, 30.8, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 69.2, 30.8, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 9, 11.1, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 88.9, 11.1, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 8, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 13, 0.0, 0.0, 7.7, 0.0, 92.3, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 13, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Corrientes": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 9, 33.3, 0.0, 0.0, 0.0, 0, 66.7, 33.3, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 9, 0.0, 0.0, 0.0, 11.1, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 9, 100.0, 0.0, 9.0, 0.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 9, 0.0, 0.0, 0.0, 11.1, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 9, 33.3, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 66.7, 33.3, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 6, 66.7, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 33.3, 66.7, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 9, 0.0, 0.0, 11.1, 0.0, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Posadas": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 3, 100.0, 0.0, 0.0, 0.0, 0, 66.7, 33.3, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 3, 66.7, 33.3, 2.0, 50.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 1, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 2, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 2, 50.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 50.0, 50.0, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 1, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Sáenz Peña": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0]], "Grupo Kyoto": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 26, 0.0, 0.0, 0.0, 3.8, 96.2, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 26, 0.0, 0.0, 0.0, 3.8, 96.2, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 26, 19.2, 0.0, 0.0, 0.0, 0, 80.8, 19.2, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 26, 0.0, 0.0, 0.0, 7.7, 92.3, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 26, 92.3, 7.7, 24.0, 8.3, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 9, 0.0, 0.0, 0.0, 11.1, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 24, 0.0, 0.0, 0.0, 8.3, 91.7, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 24, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 24, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 24, 29.2, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 70.8, 29.2, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 17, 35.3, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 64.7, 35.3, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 11, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 24, 0.0, 0.0, 8.3, 0.0, 91.7, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 24, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 26, 0.0, 0.0, 0.0, 3.8, 96.2, 0, 0, 0, 0, 0, 0, 0]]}, "posventa": {"Kyoto Resistencia": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 61, 0.0, 1.6, 0.0, 3.3, 95.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 61, 1.6, 0.0, 0.0, 9.8, 88.5, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 61, 18.0, 0.0, 0.0, 0.0, 0, 82.0, 14.8, 0.0, 3.3, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 61, 1.6, 0.0, 0.0, 8.2, 90.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 61, 3.3, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 96.7, 3.3, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 61, 14.8, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 85.2, 14.8, 0], ["P01", "P01_Intención de Recompra", 88.0, 51, 17.6, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 82.4, 0.0, 17.6], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 51, 2.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 98.0, 2.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 51, 0.0, 0.0, 0.0, 7.8, 92.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 51, 0.0, 0.0, 0.0, 3.9, 96.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 51, 0.0, 0.0, 0.0, 2.0, 98.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 51, 0.0, 0.0, 3.9, 7.8, 88.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 51, 0.0, 0.0, 0.0, 3.9, 96.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SCL", "Satisfacción Close Loop", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 61, 0.0, 1.6, 0.0, 3.3, 95.1, 0, 0, 0, 0, 0.0, 0.0, 0]], "Kyoto Corrientes": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 49, 0.0, 0.0, 0.0, 2.0, 98.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 49, 0.0, 0.0, 2.0, 10.2, 87.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 49, 10.2, 0.0, 0.0, 0.0, 89.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 49, 0.0, 0.0, 2.0, 10.2, 87.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 49, 6.1, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 93.9, 6.1, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 49, 4.1, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 95.9, 4.1, 0], ["P01", "P01_Intención de Recompra", 88.0, 46, 10.9, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 89.1, 2.2, 8.7], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 46, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 46, 0.0, 0.0, 2.2, 10.9, 87.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 46, 0.0, 0.0, 0.0, 8.7, 91.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 46, 0.0, 0.0, 4.3, 2.2, 93.5, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 44, 0.0, 0.0, 9.1, 13.6, 77.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 44, 0.0, 0.0, 0.0, 11.4, 88.6, 0, 0, 0, 0, 0.0, 0.0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SCL", "Satisfacción Close Loop", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 49, 0.0, 0.0, 0.0, 2.0, 98.0, 0, 0, 0, 0, 0.0, 0.0, 0]], "Kyoto Posadas": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 26, 0.0, 3.8, 7.7, 3.8, 84.6, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 26, 3.8, 0.0, 11.5, 15.4, 69.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 26, 19.2, 0.0, 0.0, 0.0, 80.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 26, 0.0, 3.8, 3.8, 15.4, 76.9, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 26, 19.2, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 80.8, 19.2, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 26, 23.1, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 76.9, 23.1, 0], ["P01", "P01_Intención de Recompra", 88.0, 20, 15.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 85.0, 5.0, 10.0], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 20, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 20, 0.0, 0.0, 0.0, 20.0, 80.0, 0, 0, 0, 0, 0, 0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 20, 0.0, 0.0, 0.0, 15.0, 85.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 20, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 20, 0.0, 0.0, 0.0, 20.0, 80.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 20, 0.0, 5.0, 5.0, 15.0, 75.0, 0, 0, 0, 0, 0, 0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SCL", "Satisfacción Close Loop", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 26, 0.0, 0.0, 3.8, 3.8, 92.3, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Sáenz Peña": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 22, 0.0, 0.0, 0.0, 4.5, 95.5, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 22, 0.0, 9.1, 9.1, 9.1, 72.7, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 22, 31.8, 0.0, 0.0, 0.0, 68.2, 0, 0, 0, 0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 22, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 22, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 100.0, 0.0, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 22, 9.1, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 90.9, 9.1, 20.0], ["P01", "P01_Intención de Recompra", 88.0, 20, 35.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 65.0, 15.0, 0], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 20, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 20, 0.0, 0.0, 0.0, 5.0, 95.0, 0, 0, 0, 0, 0, 0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["SCL", "Satisfacción Close Loop", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 22, 0.0, 0.0, 0.0, 4.5, 95.5, 0, 0, 0, 0, 0, 0, 0]], "Grupo Kyoto": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 158, 0.0, 1.3, 1.3, 3.2, 94.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 158, 1.3, 1.3, 3.8, 10.8, 82.9, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 158, 17.7, 0.0, 0.0, 0.0, 82.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 158, 0.6, 0.6, 1.3, 8.9, 88.6, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 158, 6.3, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 93.7, 6.3, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 158, 12.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 88.0, 12.0, 0], ["P01", "P01_Intención de Recompra", 88.0, 137, 17.5, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 82.5, 3.6, 0], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 137, 0.7, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 99.3, 0.7, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 137, 0.0, 0.0, 0.7, 10.2, 89.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 136, 0.0, 0.0, 0.0, 6.6, 93.4, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 136, 0.0, 0.0, 1.5, 1.5, 97.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 134, 0.0, 0.0, 4.5, 10.4, 85.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 134, 0.0, 0.7, 0.7, 7.5, 91.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SCL", "Satisfacción Close Loop", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 158, 0.0, 0.6, 0.6, 3.2, 95.6, 0, 0, 0, 0, 0.0, 0.0, 0]]}};
+const VERBAS_DEFAULT = {
+  ventas: {
+    "Kyoto Corrientes": { fuertes: [
+      {cat:"Proceso en general",txt:"Satisfacción en general"},
+      {cat:"Atención",txt:"Buena atención del vendedor/Sector de ventas"},
+      {cat:"Atención",txt:"Agilidad en la atención en general"},
+      {cat:"Atención",txt:"Buena atención en general (sin especificar)"},
+      {cat:"Atención",txt:"Pasan buenas informaciones en general/Pasan las explicaciones necesarias"},
+      {cat:"Proceso en general",txt:"Cumplen lo prometido"}],
+      debiles: [
+      {cat:"Entrega",txt:"Entrega de vehículo diferente de lo especificado en la venta"},
+      {cat:"Negociación",txt:"Informaciones equivocadas sobre el vehículo"}]},
+    "Kyoto Resistencia": { fuertes: [
+      {cat:"Proceso en general",txt:"Satisfacción en general"},
+      {cat:"Atención",txt:"Buena atención en general (sin especificar)"},
+      {cat:"Atención",txt:"Pasan buenas informaciones en general/Pasan las explicaciones necesarias"},
+      {cat:"Atención",txt:"Buena atención del vendedor/Sector de ventas"},
+      {cat:"Atención",txt:"Cumple lo prometido"},
+      {cat:"Recepción",txt:"Buena atención en la recepción/cordialidad en la recepción"}],
+      debiles: []},
+    "Kyoto Posadas": { fuertes: [
+      {cat:"Atención",txt:"Buena atención en general (sin especificar)"},
+      {cat:"Proceso en general",txt:"Satisfacción en general"}],
+      debiles: [
+      {cat:"Entrega",txt:"Problemas con el manual del propietario"}]},
+    "Kyoto Sáenz Peña": { fuertes: [], debiles: [] },
+  },
+  posventa: {
+    "Kyoto Corrientes": { fuertes: [
+      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
+      {cat:"Servicios",txt:"Bien ejecutados"},
+      {cat:"Proceso en general",txt:"Satisfacción en general"},
+      {cat:"Información",txt:"Pasan todas las informaciones necesarias · Dan las explicaciones"},
+      {cat:"Servicios",txt:"Rapidez en la ejecución"},
+      {cat:"Consultor",txt:"Buena atención"}],
+      debiles: [
+      {cat:"Estructura",txt:"Insatisfacción con la estructura/Empleados"},
+      {cat:"Producto",txt:"Mala calidad del vehículo/Repuesto"},
+      {cat:"Servicios",txt:"Mal ejecutado/Dificultad en el diagnóstico"}]},
+    "Kyoto Resistencia": { fuertes: [
+      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
+      {cat:"Proceso en general",txt:"Satisfacción en general"},
+      {cat:"Servicios",txt:"Bien ejecutados"},
+      {cat:"Información",txt:"Pasan todas las informaciones necesarias · Dan las explicaciones"},
+      {cat:"Recepción",txt:"Buena atención"},
+      {cat:"Entrega",txt:"Buena atención/Cordialidad durante la entrega del vehículo"}],
+      debiles: [
+      {cat:"Servicios",txt:"Costo alto del servicio/Repuesto/M.O."},
+      {cat:"Pago/Documentación",txt:"Problemas con la forma de pago"}]},
+    "Kyoto Posadas": { fuertes: [
+      {cat:"Servicios",txt:"Bien ejecutados"},
+      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
+      {cat:"Proceso en general",txt:"Satisfacción en general"},
+      {cat:"Información",txt:"Pasan todas las informaciones necesarias · Dan las explicaciones"},
+      {cat:"Servicios",txt:"No hubo problemas después del servicio"},
+      {cat:"Recepción",txt:"Buena atención"}],
+      debiles: [
+      {cat:"Servicios",txt:"Falta de repuestos"},
+      {cat:"Servicios",txt:"Mal ejecutado/Mala calidad del servicio ejecutado/No solucionaron el problema"},
+      {cat:"Servicios",txt:"Mal ejecutado/Mecánica"}]},
+    "Kyoto Sáenz Peña": { fuertes: [
+      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
+      {cat:"Proceso en general",txt:"Satisfacción en general"},
+      {cat:"Servicios",txt:"Bien ejecutados"},
+      {cat:"Producto",txt:"Satisfacción con la marca"},
+      {cat:"Atención",txt:"Conocimiento técnico del personal"},
+      {cat:"Estructura",txt:"Satisfacción con las instalaciones del concesionario"}],
+      debiles: [
+      {cat:"Servicios",txt:"Costo alto del servicio/Repuesto/M.O."},
+      {cat:"Entrega",txt:"Falta de limpieza en el vehículo/Entregaron el vehículo sucio, con manchas/Sin lavar"},
+      {cat:"Turno",txt:"Indisponibilidad de fecha/Hora"}]},
+  }
+};
+
+// Convierte una fila cruda en métrica enriquecida: tipo de pregunta,
+// % favorable (columna correcta según el tipo) y distribución de respuestas
+// con cantidades exactas (redondeo base × %, igual que las fórmulas del sheet).
+function enrich(a, tab) {
+  const [s, name, obj, base, n1, n2, n3, n4, n5, dk, dl, dm, dn, si, no, nd] = a;
+  const type = (TIPOS[tab] && TIPOS[tab][s]) || "notas";
+  let fav, dist;
+  if (type === "llev") {
+    const hayLlev = (dk || 0) + (dl || 0) + (dm || 0) + (dn || 0) > 0;
+    if (hayLlev) {
+      fav = dk || 0;
+      dist = [["Definit. lo llevaría", dk, "g"], ["Prob. lo llevaría", dl, "y"],
+              ["Prob. no lo llevaría", dm, "r"], ["Definit. no lo llevaría", dn, "r"]];
+    } else {
+      // Algunas sucursales cargan VOC03 en la nota 5 (favorable) y el resto en 1-4.
+      fav = n5 || 0;
+      const neg = (n1 || 0) + (n2 || 0) + (n3 || 0) + (n4 || 0);
+      dist = [["Lo llevaría", n5, "g"], ["No lo llevaría", neg, "r"]];
+    }
+  } else if (type === "sino" || type === "sino3") {
+    fav = si || 0;
+    dist = [["Sí", si, "g"], ["No", no, "r"]];
+    if (type === "sino3") dist.push(["No decidido", nd, "r"]);
+  } else {
+    fav = n5 || 0;
+    dist = [["5", n5, "g"], ["4", n4, "y"], ["3", n3, "r"], ["2", n2, "r"], ["1", n1, "r"]];
+  }
+  return {
+    s, name, obj: obj || 0, base: base || 0, fav, type,
+    dist: dist.map(d => ({
+      lbl: d[0], pct: d[1] || 0, col: d[2],
+      cnt: base > 0 ? Math.round(base * (d[1] || 0) / 100) : 0,
+    })),
+  };
+}
+
+function buildDefault() {
+  const tabs = { ventas: {}, posventa: {} };
+  for (const tab of ["ventas", "posventa"])
+    for (const suc of Object.keys(RAW[tab]))
+      tabs[tab][suc] = RAW[tab][suc].map(a => enrich(a, tab));
+  return { periodo: "Junio 2026", fileName: null, tabs, verbas: JSON.parse(JSON.stringify(VERBAS_DEFAULT)) };
+}
+
+// ================================================================
+//  ESTADO
+// ================================================================
+const LS_KEY = "kyoto-voc-dash-v3";
+const LS_URL = "kyoto-voc-url";
+const LS_AUTO = "kyoto-voc-auto";
+let state = buildDefault();
+try {
+  const saved = localStorage.getItem(LS_KEY);
+  if (saved) { const p = JSON.parse(saved); if (p && p.tabs && p.tabs.ventas) state = p; }
+} catch (e) {}
+
+let activeTab = "ventas";
+let current = null;
+
+// ================================================================
+//  HELPERS
+// ================================================================
+const $ = id => document.getElementById(id);
+const fmt = v => (+v).toFixed(1).replace(".", ",");
+const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+function shortName(n) {
+  let s = String(n || "").replace(/^VOC\d+[_ ]*/i, "").replace(/^P\d+(?:\.\d+)?[ _]*/i, "").trim();
+  s = s.replace(/^¿/, "").replace(/\?$/, "").trim();
+  if (!s) s = String(n);
+  s = s.charAt(0).toUpperCase() + s.slice(1);
+  if (s.length > 48) s = s.slice(0, 46).replace(/\s+\S*$/, "") + "…";
+  return s;
+}
+
+function sucursales() {
+  const set = new Set([...Object.keys(state.tabs.ventas), ...Object.keys(state.tabs.posventa)]);
+  const known = SUC_ORDER.filter(s => set.has(s));
+  const extra = [...set].filter(s => !SUC_ORDER.includes(s));
+  return [...known, ...extra];
+}
+
+function indicadores(tab) {
+  // unión por sigla, en orden de primera aparición
+  const seen = new Map();
+  for (const suc of Object.keys(state.tabs[tab])) {
+    for (const m of state.tabs[tab][suc]) if (!seen.has(m.s)) seen.set(m.s, { s: m.s, name: m.name, obj: m.obj });
+  }
+  return [...seen.values()];
+}
+
+function metricaDe(tab, suc, sigla) {
+  const arr = state.tabs[tab][suc];
+  return arr ? arr.find(m => m.s === sigla) : null;
+}
+
+// ================================================================
+//  RENDER
+// ================================================================
+const R = 52, CIRC = 2 * Math.PI * R;
+
+// Donut multi-segmento: verde (5 / Sí / Definitivamente), amarillo (4 / Prob.
+// lo llevaría) y rojo (1-3 / No / resto). Los segmentos en 0 no se dibujan.
+function gaugeSVG(m) {
+  let tick = "";
+  if (m.obj > 0) {
+    const ang = (m.obj / 100) * 2 * Math.PI - Math.PI / 2;
+    const r1 = R - 9, r2 = R + 9;
+    tick = `<line x1="${64 + r1 * Math.cos(ang)}" y1="${64 + r1 * Math.sin(ang)}" x2="${64 + r2 * Math.cos(ang)}" y2="${64 + r2 * Math.sin(ang)}" stroke="var(--ink)" stroke-width="2.5" transform="rotate(90 64 64)"/>`;
+  }
+  let arcs = "", cum = 0;
+  if (m.base > 0) {
+    const suma = { g: 0, y: 0, r: 0 };
+    m.dist.forEach(d => { suma[d.col] += Math.max(0, d.pct); });
+    [["g", "var(--good)"], ["y", "var(--warn)"], ["r", "var(--bad)"]].forEach(([k, color]) => {
+      if (suma[k] <= 0.05) return;
+      const len = Math.min(1, suma[k] / 100) * CIRC;
+      arcs += `<circle cx="64" cy="64" r="${R}" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${len} ${CIRC - len}" stroke-dashoffset="${-cum}"/>`;
+      cum += len;
+    });
+  }
+  return `<svg viewBox="0 0 128 128" aria-hidden="true">
+    <circle cx="64" cy="64" r="${R}" fill="none" stroke="var(--track)" stroke-width="13"/>
+    ${arcs}${tick}</svg>`;
+}
+
+function renderPills() {
+  const el = $("pills");
+  el.innerHTML = "";
+  const sucs = sucursales();
+  if (!sucs.includes(current)) current = sucs[0] || null;
+  sucs.forEach(nombre => {
+    const b = document.createElement("button");
+    b.className = "pill"; b.type = "button"; b.textContent = nombre;
+    b.setAttribute("aria-pressed", nombre === current);
+    b.onclick = () => { current = nombre; render(); };
+    el.appendChild(b);
+  });
+}
+
+function render() {
+  document.querySelectorAll(".pill").forEach(p => p.setAttribute("aria-pressed", p.textContent === current));
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === activeTab));
+  $("periodoInp").value = state.periodo || "";
+
+  const mets = (state.tabs[activeTab][current] || []).filter(m => !(m.obj <= 0 && m.base <= 0));
+  const conObj = mets.filter(m => m.obj > 0 && m.base > 0);
+  const cumplidos = conObj.filter(m => m.fav >= m.obj).length;
+  const voc01 = mets.find(m => m.s === "VOC01");
+  const spcl = mets.find(m => m.s === "SPCL");
+
+  const kpiPct = (lbl, m) => {
+    if (!m || m.base <= 0) return `<div class="kpi"><div class="lbl">${lbl}</div><div class="val" style="color:var(--ink-faint)">s/d</div><div class="sub"><span class="chip neutral">sin datos</span></div></div>`;
+    const d = m.fav - m.obj, up = d >= 0;
+    return `<div class="kpi"><div class="lbl">${lbl}</div><div class="val">${fmt(m.fav)}%</div>
+      <div class="sub"><span class="chip ${up ? "up" : "down"}">${up ? "▲" : "▼"} ${fmt(Math.abs(d))} pts</span><span>vs. obj. ${fmt(m.obj)} · n=${m.base}</span></div></div>`;
+  };
+
+  $("kpis").innerHTML =
+    kpiPct("Satisfacción general (VOC01)", voc01)
+    + (conObj.length
+      ? `<div class="kpi"><div class="lbl">Indicadores en objetivo</div>
+          <div class="val">${cumplidos}<span style="font-size:18px;color:var(--ink-faint)">/${conObj.length}</span></div>
+          <div class="sub"><span class="chip ${cumplidos / conObj.length >= .5 ? "up" : "down"}">${Math.round(cumplidos / conObj.length * 100)}%</span><span>del total cumple</span></div></div>`
+      : `<div class="kpi"><div class="lbl">Indicadores en objetivo</div><div class="val" style="color:var(--ink-faint)">s/d</div><div class="sub"><span class="chip neutral">sin datos</span></div></div>`)
+    + kpiPct("Close Loop (SPCL)", spcl);
+
+  // Gauges
+  $("grid").innerHTML = mets.map(m => {
+    let cls, chip;
+    if (m.base <= 0) { cls = "info"; chip = "Sin datos"; }
+    else if (m.obj <= 0) { cls = "info"; chip = "Informativo"; }
+    else if (m.fav >= m.obj) { cls = "ok"; chip = "✓ Cumple"; }
+    else { cls = "no"; chip = "✗ Bajo obj."; }
+    const val = m.base > 0 ? fmt(m.fav) + "%" : "s/d";
+    const small = m.obj > 0 ? `obj. ${fmt(m.obj)}%` : "sin objetivo";
+    const partes = m.base > 0
+      ? m.dist.filter(d => d.cnt > 0).map(d => `${d.lbl}: <b>${d.cnt}</b>`).join(" · ")
+      : "";
+    const cnts = m.base > 0
+      ? `<div class="cnts">Respondieron <b>${m.base}</b>${partes ? " — " + partes : ""}</div>`
+      : `<div class="cnts">Sin encuestas este período</div>`;
+    return `<div class="card">
+      <div class="code">${m.s}</div>
+      <div class="name">${shortName(m.name)}</div>
+      <div class="gauge">${gaugeSVG(m)}
+        <div class="pct"><b${m.base <= 0 ? ' style="color:var(--ink-faint)"' : ""}>${val}</b><small>${small}</small></div>
+      </div>
+      <div class="st ${cls}">${chip}</div>
+      ${cnts}
+    </div>`;
+  }).join("");
+
+  renderCmpOptions();
+  renderBars();
+  renderVerbas();
+}
+
+function renderCmpOptions() {
+  const sel = $("cmpSel");
+  const prev = sel.value;
+  const inds = indicadores(activeTab).filter(d => d.obj > 0);
+  sel.innerHTML = inds.map(d => `<option value="${d.s}">${d.s} · ${shortName(d.name)}</option>`).join("");
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+function renderBars() {
+  const sigla = $("cmpSel").value;
+  if (!sigla) { $("bars").innerHTML = ""; return; }
+  $("bars").innerHTML = sucursales().map(nombre => {
+    const m = metricaDe(activeTab, nombre, sigla);
+    if (!m || m.base <= 0) {
+      return `<div class="bar-row"><div class="who">${nombre}</div>
+        <div class="bar-track">${m && m.obj > 0 ? `<div class="obj-tick" style="left:${m.obj}%" data-obj="obj ${fmt(m.obj)}"></div>` : ""}</div>
+        <div class="num sd">s/d</div></div>`;
+    }
+    const ok = m.fav >= m.obj;
+    return `<div class="bar-row"><div class="who">${nombre}</div>
+      <div class="bar-track"><div class="bar-fill ${ok ? "ok" : "no"}" style="width:${Math.min(100, m.fav)}%"></div>
+        <div class="obj-tick" style="left:${m.obj}%" data-obj="obj ${fmt(m.obj)}"></div></div>
+      <div class="num ${ok ? "ok" : "no"}">${fmt(m.fav)}</div></div>`;
+  }).join("");
+}
+
+function vPanel(tipo, items) {
+  const pos = tipo === "pos";
+  const head = pos ? "▲ Puntos fuertes" : "▼ Puntos débiles";
+  const list = (items && items.length)
+    ? `<ul class="vlist">${items.map((it, i) => `<li>
+        <span class="vnum ${pos ? "pos-n" : "neg-n"}">${i + 1}</span>
+        <span class="vbody">${it.cat ? `<span class="vcat">${it.cat}</span>` : ""}<span class="vtxt">${it.txt}</span></span>
+      </li>`).join("")}</ul>`
+    : `<div class="vempty">Sin verbalizaciones ${pos ? "positivas" : "negativas"} registradas este período.</div>`;
+  return `<div class="vpanel"><div class="vpanel-h ${pos ? "pos" : "neg"}">${head}</div>${list}</div>`;
+}
+
+function renderVerbas() {
+  const vb = (state.verbas && state.verbas[activeTab]) || {};
+  const el = $("verbas");
+  const tabName = activeTab === "ventas" ? "Ventas" : "Posventa";
+  const mine = vb[current];
+  if (mine) {
+    $("verbasTitle").textContent = `Verbalizaciones · ${tabName} — ${current}`;
+    el.innerHTML = vPanel("pos", mine.fuertes) + vPanel("neg", mine.debiles);
+    return;
+  }
+  // Grupo (o sucursal sin verbalizaciones propias): mostrar todas
+  $("verbasTitle").textContent = `Verbalizaciones · ${tabName} — todas las sucursales`;
+  const sucs = Object.keys(vb);
+  if (!sucs.length) { el.innerHTML = `<div class="vpanel" style="grid-column:1/-1"><div class="vempty">Sin verbalizaciones para este período.</div></div>`; return; }
+  el.innerHTML = sucs.map(suc =>
+    `<div class="verbas-suc-t">${suc}</div>` + vPanel("pos", vb[suc].fuertes) + vPanel("neg", vb[suc].debiles)
+  ).join("");
+}
+
+// ================================================================
+//  LECTOR .XLSX (sin librerías externas: ZIP + XML nativos)
+// ================================================================
+async function unzip(u8) {
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 22 - 65536); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error("El archivo no es un .xlsx válido");
+  const count = dv.getUint16(eocd + 10, true);
+  let off = dv.getUint32(eocd + 16, true);
+  const files = new Map();
+  const td = new TextDecoder();
+  for (let n = 0; n < count; n++) {
+    if (dv.getUint32(off, true) !== 0x02014b50) break;
+    const method = dv.getUint16(off + 10, true);
+    const csize = dv.getUint32(off + 20, true);
+    const nameLen = dv.getUint16(off + 28, true);
+    const extraLen = dv.getUint16(off + 30, true);
+    const cmtLen = dv.getUint16(off + 32, true);
+    const lho = dv.getUint32(off + 42, true);
+    const name = td.decode(u8.subarray(off + 46, off + 46 + nameLen));
+    const lnl = dv.getUint16(lho + 26, true), lel = dv.getUint16(lho + 28, true);
+    const start = lho + 30 + lnl + lel;
+    const cdata = u8.subarray(start, start + csize);
+    files.set(name, { method, cdata });
+    off += 46 + nameLen + extraLen + cmtLen;
+  }
+  return files;
+}
+async function inflate(entry) {
+  if (!entry) return null;
+  if (entry.method === 0) return entry.cdata;
+  const stream = new Blob([entry.cdata]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+function colIdx(ref) {
+  const m = ref.match(/^[A-Z]+/); if (!m) return 0;
+  let n = 0; for (const ch of m[0]) n = n * 26 + (ch.charCodeAt(0) - 64);
+  return n - 1;
+}
+async function readXlsx(file) {
+  const u8 = new Uint8Array(await file.arrayBuffer());
+  const zip = await unzip(u8);
+  const td = new TextDecoder();
+  const parser = new DOMParser();
+  const xml = async p => {
+    const raw = await inflate(zip.get(p));
+    return raw ? parser.parseFromString(td.decode(raw), "application/xml") : null;
+  };
+  let shared = [];
+  const ss = await xml("xl/sharedStrings.xml");
+  if (ss) shared = [...ss.getElementsByTagName("si")].map(si => [...si.getElementsByTagName("t")].map(t => t.textContent).join(""));
+  const wbDoc = await xml("xl/workbook.xml");
+  const relsDoc = await xml("xl/_rels/workbook.xml.rels");
+  if (!wbDoc || !relsDoc) throw new Error("Estructura de .xlsx no reconocida");
+  const relMap = {};
+  [...relsDoc.getElementsByTagName("Relationship")].forEach(r => relMap[r.getAttribute("Id")] = r.getAttribute("Target"));
+  const sheets = {};
+  [...wbDoc.getElementsByTagName("sheet")].forEach(s => {
+    const rid = s.getAttribute("r:id") || s.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id");
+    let t = relMap[rid] || ""; t = t.replace(/^\//, ""); if (!t.startsWith("xl/")) t = "xl/" + t;
+    sheets[s.getAttribute("name")] = t;
+  });
+  return {
+    sheetNames: Object.keys(sheets),
+    async rows(name) {
+      const doc = await xml(sheets[name]);
+      if (!doc) return null;
+      const out = [];
+      [...doc.getElementsByTagName("row")].forEach(rowEl => {
+        const ri = +rowEl.getAttribute("r") - 1;
+        const arr = out[ri] || (out[ri] = []);
+        [...rowEl.getElementsByTagName("c")].forEach(c => {
+          const ci = colIdx(c.getAttribute("r") || "A1");
+          const t = c.getAttribute("t");
+          let val = null;
+          if (t === "inlineStr") val = c.textContent;
+          else {
+            const v = c.getElementsByTagName("v")[0];
+            if (v) val = t === "s" ? shared[+v.textContent] : v.textContent;
+          }
+          if (val !== null && val !== "") arr[ci] = val;
+        });
+      });
+      return out;
+    }
+  };
+}
+
+// ---- parseo de hojas de indicadores ----
+// Mapea las columnas por su encabezado (1..5, Definitivamente lo llevaría,
+// Si, No, No lo tengo decidido, etc.) — robusto aunque cambien de posición.
+function parseIndicadores(rows, tab) {
+  let hi = rows.findIndex(r => r && r.some(v => norm(v) === "sigla"));
+  if (hi < 0) hi = 0;
+  const hdr = rows[hi] || [];
+  const ix = {};
+  hdr.forEach((h, i) => {
+    if (h == null) return;
+    const t = norm(h);
+    const num = parseFloat(t);
+    if (num >= 1 && num <= 5 && t.length <= 3) { ix["n" + num] = i; return; }
+    if (t === "definitivamente lo llevaria") ix.dk = i;
+    else if (t === "probablemente lo llevaria") ix.dl = i;
+    else if (t === "probablemente no lo llevaria") ix.dm = i;
+    else if (t === "definitivamente no lo llevaria") ix.dn = i;
+    else if (t === "si") ix.si = i;
+    else if (t === "no") ix.no = i;
+    else if (t === "no lo tengo decidido") ix.nd = i;
+    else if (t.startsWith("objetivo")) ix.obj = i;
+    else if (t === "base") ix.base = i;
+  });
+  const g = (r, k) => { const i = ix[k]; return i == null ? 0 : (parseFloat(String(r[i]).replace(",", ".")) || 0); };
+  const out = {};
+  for (let ri = hi + 1; ri < rows.length; ri++) {
+    const r = rows[ri]; if (!r) continue;
+    const suc = r[0] ? String(r[0]).trim() : "";
+    const sig = r[2] ? String(r[2]).trim() : "";
+    if (!suc || !sig || suc.startsWith("▶")) continue;
+    const a = [sig, String(r[1] || sig).trim(), g(r, "obj"), g(r, "base"),
+      g(r, "n1"), g(r, "n2"), g(r, "n3"), g(r, "n4"), g(r, "n5"),
+      g(r, "dk"), g(r, "dl"), g(r, "dm"), g(r, "dn"),
+      g(r, "si"), g(r, "no"), g(r, "nd")];
+    (out[suc] || (out[suc] = [])).push(enrich(a, tab));
+  }
+  return out;
+}
+
+// ---- parseo de la hoja Verbalizaciones ----
+function parseVerbas(rows) {
+  const out = { ventas: {}, posventa: {} };
+  let cur = null;
+  const clean = v => { const s = v == null ? "" : String(v).trim(); return s; };
+  rows.forEach((row, ri) => {
+    if (!row) return;
+    const blocks = [];
+    row.forEach((v, ci) => {
+      if (typeof v === "string" && v.includes("—") && /fuertes y d/.test(norm(v))) {
+        const parts = v.split("—").map(x => x.trim());
+        blocks.push({ col: ci, suc: parts[parts.length - 1] });
+      }
+    });
+    if (blocks.length) {
+      const tipo = norm(row[blocks[0].col]).startsWith("ventas") ? "ventas" : "posventa";
+      cur = { tipo, blocks };
+      blocks.forEach(b => { if (!out[tipo][b.suc]) out[tipo][b.suc] = { fuertes: [], debiles: [] }; });
+      return;
+    }
+    if (!cur) return;
+    cur.blocks.forEach(b => {
+      const n1 = parseFloat(row[b.col]), n2 = parseFloat(row[b.col + 3]);
+      const isItem = (Number.isFinite(n1) && n1 >= 1 && n1 <= 9) || (Number.isFinite(n2) && n2 >= 1 && n2 <= 9);
+      if (!isItem) return;
+      const prev = rows[ri - 1] || [];
+      const ftxt = clean(row[b.col + 1]);
+      if (ftxt) out[cur.tipo][b.suc].fuertes.push({ cat: clean(prev[b.col]), txt: ftxt });
+      const dtxt = clean(row[b.col + 4]);
+      if (dtxt) out[cur.tipo][b.suc].debiles.push({ cat: clean(prev[b.col + 3]), txt: dtxt });
+    });
+  });
+  return out;
+}
+
+function findSheet(names, ...keys) {
+  // exact normalized match first, then contains-all
+  const exact = names.find(n => norm(n) === keys.join(" - "));
+  if (exact) return exact;
+  return names.find(n => keys.every(k => norm(n).includes(k)));
+}
+
+// Toma matrices [fila][columna] de las 3 hojas y actualiza el estado.
+// Lo usan tanto la carga de .xlsx como la conexión en vivo.
+function applyData(vRows, pRows, vbRows, fuente) {
+  const next = { periodo: state.periodo, fileName: fuente, tabs: { ventas: {}, posventa: {} }, verbas: { ventas: {}, posventa: {} } };
+  if (vRows && vRows.length)  next.tabs.ventas   = parseIndicadores(vRows, "ventas");
+  if (pRows && pRows.length)  next.tabs.posventa = parseIndicadores(pRows, "posventa");
+  if (vbRows && vbRows.length) next.verbas = parseVerbas(vbRows);
+  const nV = Object.keys(next.tabs.ventas).length, nP = Object.keys(next.tabs.posventa).length;
+  if (!nV && !nP) throw new Error("No se encontraron datos en las hojas (¿el formato es el esperado?)");
+  state = next;
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+  renderPills(); render();
+  return { nV, nP, verbas: !!(vbRows && vbRows.length) };
+}
+
+async function handleFile(file) {
+  const st = $("status");
+  st.className = "status"; st.textContent = "Leyendo " + file.name + "…";
+  try {
+    if (typeof DecompressionStream === "undefined") throw new Error("Tu navegador no soporta la lectura de .xlsx (necesita Chrome/Edge/Brave actualizado)");
+    const wb = await readXlsx(file);
+    const shV = findSheet(wb.sheetNames, "ventas", "mensual");
+    const shP = findSheet(wb.sheetNames, "posventa", "mensual");
+    const shVb = wb.sheetNames.find(n => norm(n) === "verbalizaciones") || wb.sheetNames.find(n => norm(n).startsWith("verbalizaciones") && !norm(n).includes("datos"));
+    if (!shV && !shP) throw new Error('No encontré las hojas "Ventas - Mensual" ni "Posventa - Mensual" en el archivo');
+
+    const r = applyData(shV ? await wb.rows(shV) : null, shP ? await wb.rows(shP) : null, shVb ? await wb.rows(shVb) : null, file.name);
+    st.className = "status ok";
+    st.textContent = `✓ Datos actualizados desde “${file.name}” — Ventas: ${r.nV} sucursales · Posventa: ${r.nP} sucursales` + (r.verbas ? " · Verbalizaciones ✓" : " · (sin hoja Verbalizaciones)");
+  } catch (err) {
+    st.className = "status err";
+    st.textContent = "✗ No se pudo leer el archivo: " + err.message;
+  }
+}
+
+// ================================================================
+//  CONEXIÓN EN VIVO (Apps Script Web App vía JSONP)
+// ================================================================
+// JSONP evita CORS y funciona desde un archivo local o GitHub Pages,
+// pero NO desde el link de artifact de claude.ai (bloquea hosts externos).
+function jsonp(url, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const cb = "__voc_cb_" + Math.random().toString(36).slice(2);
+    const s = document.createElement("script");
+    let done = false;
+    const cleanup = () => { try { delete window[cb]; } catch (e) { window[cb] = undefined; } s.remove(); clearTimeout(tm); };
+    const tm = setTimeout(() => { if (!done) { done = true; cleanup(); reject(new Error("Tiempo de espera agotado. Revisá la URL y que el acceso sea 'Cualquier usuario'.")); } }, timeoutMs || 20000);
+    window[cb] = data => { if (done) return; done = true; cleanup(); resolve(data); };
+    s.onerror = () => { if (done) return; done = true; cleanup(); reject(new Error("No se pudo conectar. Verificá la URL del Web App.")); };
+    const sep = url.includes("?") ? "&" : "?";
+    s.src = url + sep + "callback=" + cb + "&t=" + Date.now();
+    document.body.appendChild(s);
+  });
+}
+
+let autoTimer = null;
+
+function setSrc(cls, text) {
+  const el = $("srcStatus"); el.className = "src-status" + (cls ? " " + cls : ""); el.innerHTML = text;
+  $("srcDot").className = "src-dot" + (cls === "ok" ? " on" : cls === "err" ? " err" : "");
+}
+function horaStr(d) { return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }); }
+
+async function fetchLive(manual) {
+  const url = $("srcUrl").value.trim();
+  if (!url) { setSrc("err", "Pegá la URL del Web App primero."); return; }
+  if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)) {
+    setSrc("err", "La URL debería empezar con https://script.google.com/… y terminar en /exec"); return;
+  }
+  const isFile = location.protocol === "file:";
+  const btn = $("connectBtn"); btn.disabled = true;
+  setSrc("", '<span class="src-spin"></span> Conectando con el Google Sheet…');
+  try {
+    const d = await jsonp(url);
+    if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
+    const r = applyData(d.ventas, d.posventa, d.verbas, "Google Sheet (en vivo)");
+    localStorage.setItem(LS_URL, url);
+    const now = new Date();
+    setSrc("ok", `✓ Actualizado ${horaStr(now)} — Ventas: ${r.nV} · Posventa: ${r.nP}${r.verbas ? " · Verbalizaciones ✓" : ""}`);
+    $("status").textContent = "";
+  } catch (err) {
+    let msg = "✗ " + err.message;
+    if (window.location && /claude\.ai|claudeusercontent/.test(location.hostname)) {
+      msg += " — La conexión en vivo no funciona desde el link de Claude; abrí el archivo local o subilo a GitHub Pages.";
+    }
+    setSrc("err", msg);
+  } finally { btn.disabled = false; }
+}
+
+function setAuto(sec) {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  try { localStorage.setItem(LS_AUTO, String(sec)); } catch (e) {}
+  if (sec > 0) {
+    autoTimer = setInterval(() => fetchLive(false), sec * 1000);
+    if ($("srcUrl").value.trim()) fetchLive(false);
+  }
+}
+
+// ================================================================
+//  EVENTOS
+// ================================================================
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => { activeTab = t.dataset.tab; render(); });
+$("cmpSel").onchange = renderBars;
+$("uploadBtn").onclick = () => $("fileInp").click();
+$("fileInp").onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; };
+$("periodoInp").onchange = e => { state.periodo = e.target.value.trim(); try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (x) {} };
+$("resetBtn").onclick = () => {
+  try { localStorage.removeItem(LS_KEY); } catch (e) {}
+  state = buildDefault(); current = null;
+  renderPills(); render();
+  const st = $("status"); st.className = "status ok"; st.textContent = "✓ Datos restablecidos a Junio 2026 (embebidos).";
+};
+$("themeBtn").onclick = () => {
+  const root = document.documentElement;
+  const cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+};
+
+// ---- Conexión en vivo ----
+$("connectBtn").onclick = () => fetchLive(true);
+$("srcUrl").onkeydown = e => { if (e.key === "Enter") fetchLive(true); };
+$("srcUrl").onchange = e => { try { localStorage.setItem(LS_URL, e.target.value.trim()); } catch (x) {} };
+$("autoSel").onchange = e => setAuto(parseInt(e.target.value, 10) || 0);
+
+// Restaurar URL e intervalo guardados
+try {
+  const savedUrl = localStorage.getItem(LS_URL);
+  if (savedUrl) $("srcUrl").value = savedUrl;
+  const savedAuto = localStorage.getItem(LS_AUTO);
+  if (savedAuto && +savedAuto > 0) {
+    $("autoSel").value = savedAuto;
+    setAuto(+savedAuto);            // arranca el intervalo y trae datos ya
+  } else if (savedUrl) {
+    setSrc("", "Listo para conectar. Tocá “⟳ Actualizar” o elegí un intervalo.");
+  }
+} catch (e) {}
+
+renderPills();
+render();
+</script>

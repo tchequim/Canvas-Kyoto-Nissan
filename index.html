@@ -225,6 +225,25 @@
     letter-spacing: .03em; color: var(--ink-muted); text-transform: uppercase;
   }
 
+  /* ---- Planes de acción ---- */
+  .planes { display: flex; flex-direction: column; gap: 12px; }
+  .plan-suc-t { font-size: 13px; font-weight: 800; letter-spacing: .03em; color: var(--ink-muted); text-transform: uppercase; margin: 8px 2px 0; }
+  .plan-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 14px 16px;
+    display: grid; grid-template-columns: 1.1fr 1.4fr 1.4fr; gap: 16px;
+  }
+  @media (max-width: 820px) { .plan-card { grid-template-columns: 1fr; gap: 10px; } }
+  .plan-col .plan-k { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 3px; }
+  .plan-col .plan-v { font-size: 13px; line-height: 1.45; color: var(--ink); }
+  .plan-cli { font-size: 12px; color: var(--ink-muted); margin-top: 5px; }
+  .plan-cli b { color: var(--ink); font-weight: 700; }
+  .plan-plan { border-left: 3px solid var(--good); padding-left: 11px; }
+  .plan-plan .plan-v { color: var(--good); font-weight: 600; }
+  .plan-plan.nocorr { border-left-color: var(--ink-faint); }
+  .plan-plan.nocorr .plan-v { color: var(--ink-faint); font-style: italic; font-weight: 400; }
+  .plan-empty { padding: 18px 16px; font-size: 13px; color: var(--ink-faint); font-style: italic; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+
   .foot { margin: 28px 2px 4px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; }
   .foot code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; }
   .foot button { background: none; border: none; color: var(--ink-faint); text-decoration: underline; cursor: pointer; font-size: 12px; font-family: var(--font); padding: 0; }
@@ -296,6 +315,11 @@
           <option value="3600">cada 1 h</option>
         </select>
       </span>
+      <span class="src-auto"><label for="mesSel">Mes:</label>
+        <select id="mesSel" aria-label="Mes a mostrar">
+          <option value="__live__">● En vivo (actual)</option>
+        </select>
+      </span>
       <button class="src-btn ghost" id="uploadBtn" type="button">o cargar .xlsx</button>
       <span class="src-status" id="srcStatus"></span>
     </div>
@@ -341,10 +365,17 @@
     </div>
     <div class="verbas-wrap" id="verbas"></div>
 
+    <div class="section-t">
+      <h2 id="planesTitle">Planes de acción</h2>
+      <span class="hint">origen · cliente · desvío · acción correctiva (SERNISSAN)</span>
+    </div>
+    <div class="planes" id="planes"></div>
+
     <p class="foot">
       <b>Conexión en vivo:</b> pegá arriba la URL del Web App de Apps Script y elegí un intervalo — el dashboard se
       actualiza solo desde tu Google Sheet, sin descargar nada. Lee las hojas <code>Ventas - Mensual</code>,
-      <code>Posventa - Mensual</code> y <code>Verbalizaciones</code>. La conexión en vivo funciona con el archivo abierto
+      <code>Posventa - Mensual</code>, <code>Verbalizaciones</code> y las hojas <code>Plan de Accion</code> de cada sucursal.
+      La conexión en vivo funciona con el archivo abierto
       localmente o alojado en GitHub Pages (no desde el link de Claude, que bloquea sitios externos por seguridad).
       También podés cargar un <code>.xlsx</code> a mano. La línea vertical negra en cada barra marca el objetivo Nissan.
       <button id="resetBtn" type="button">Restablecer datos originales</button>
@@ -637,6 +668,7 @@ function render() {
   renderCmpOptions();
   renderBars();
   renderVerbas();
+  renderPlanes();
 }
 
 function renderCmpOptions() {
@@ -868,6 +900,84 @@ function findSheet(names, ...keys) {
   return names.find(n => keys.every(k => norm(n).includes(k)));
 }
 
+// ---- Planes de acción ----
+// planesObj = { "Plan de Accion Resistencia": [[fila]], ... }
+// Devuelve { "Kyoto Resistencia": {ventas:[{origen,cliente,desvio,plan}], posventa:[...]} }
+let PLANES = {};
+const PLAN_SUC = [
+  ["resistencia", "Kyoto Resistencia"], ["corrientes", "Kyoto Corrientes"],
+  ["posadas", "Kyoto Posadas"], ["saenz", "Kyoto Sáenz Peña"], ["s. pena", "Kyoto Sáenz Peña"],
+];
+function parsePlanes(planesObj) {
+  const out = {};
+  const limpio = v => { const s = v == null ? "" : String(v).trim(); return (s === "-" || s === "–") ? "" : s; };
+  for (const hoja in (planesObj || {})) {
+    const nn = norm(hoja);
+    let suc = null;
+    for (const [k, v] of PLAN_SUC) if (nn.includes(k)) { suc = v; break; }
+    if (!suc) continue;
+    const res = { ventas: [], posventa: [] };
+    let sec = null;
+    (planesObj[hoja] || []).forEach(r => {
+      if (!r) return;
+      const a = norm(r[0]);
+      if (a.startsWith("ventas")) { sec = "ventas"; return; }
+      if (a.includes("posventa") || a.includes("servicio")) { sec = "posventa"; return; }
+      if (a === "n°" || a === "no" || a.includes("sernissan")) return;
+      if (!sec) return;
+      const origen = limpio(r[1]), cliente = limpio(r[2]), desvio = limpio(r[3]), plan = limpio(r[5]);
+      if (!desvio && !plan) return;   // solo entradas con contenido real
+      res[sec].push({ origen, cliente, desvio, plan });
+    });
+    out[suc] = res;
+  }
+  return out;
+}
+
+function planCard(e) {
+  const noCorr = e.plan && /^no corresponde/i.test(e.plan);
+  return `<div class="plan-card">
+    <div class="plan-col">
+      <div class="plan-k">Origen</div>
+      <div class="plan-v">${e.origen || "—"}</div>
+      ${e.cliente ? `<div class="plan-cli">Cliente: <b>${e.cliente}</b></div>` : ""}
+    </div>
+    <div class="plan-col">
+      <div class="plan-k">Desvío</div>
+      <div class="plan-v">${e.desvio || "—"}</div>
+    </div>
+    <div class="plan-col plan-plan ${noCorr ? "nocorr" : ""}">
+      <div class="plan-k">Plan de acción</div>
+      <div class="plan-v">${e.plan || "—"}</div>
+    </div>
+  </div>`;
+}
+
+function renderPlanes() {
+  const el = $("planes");
+  const tabName = activeTab === "ventas" ? "Ventas" : "Posventa";
+  if (!PLANES || !Object.keys(PLANES).length) {
+    $("planesTitle").textContent = "Planes de acción";
+    el.innerHTML = `<div class="plan-empty">Conectá el dashboard a tu Google Sheet para ver los planes de acción de cada sucursal.</div>`;
+    return;
+  }
+  const mine = PLANES[current];
+  if (mine) {
+    $("planesTitle").textContent = `Planes de acción · ${tabName} — ${current}`;
+    const items = mine[activeTab] || [];
+    el.innerHTML = items.length ? items.map(planCard).join("")
+      : `<div class="plan-empty">Sin planes de acción de ${tabName} cargados para ${current}.</div>`;
+    return;
+  }
+  // Grupo (o sucursal sin hoja de plan): mostrar todas
+  $("planesTitle").textContent = `Planes de acción · ${tabName} — todas las sucursales`;
+  const sucs = Object.keys(PLANES).filter(s => (PLANES[s][activeTab] || []).length);
+  if (!sucs.length) { el.innerHTML = `<div class="plan-empty">Sin planes de acción de ${tabName} cargados.</div>`; return; }
+  el.innerHTML = sucs.map(suc =>
+    `<div class="plan-suc-t">${suc}</div>` + PLANES[suc][activeTab].map(planCard).join("")
+  ).join("");
+}
+
 // Toma matrices [fila][columna] de las 3 hojas y actualiza el estado.
 // Lo usan tanto la carga de .xlsx como la conexión en vivo.
 function applyData(vRows, pRows, vbRows, fuente) {
@@ -893,6 +1003,14 @@ async function handleFile(file) {
     const shP = findSheet(wb.sheetNames, "posventa", "mensual");
     const shVb = wb.sheetNames.find(n => norm(n) === "verbalizaciones") || wb.sheetNames.find(n => norm(n).startsWith("verbalizaciones") && !norm(n).includes("datos"));
     if (!shV && !shP) throw new Error('No encontré las hojas "Ventas - Mensual" ni "Posventa - Mensual" en el archivo');
+
+    // Planes de acción (opcional): todas las hojas "Plan de Accion ..."
+    const planSheets = wb.sheetNames.filter(n => /^plan de acc/i.test(norm(n)));
+    if (planSheets.length) {
+      const planesObj = {};
+      for (const ps of planSheets) planesObj[ps] = await wb.rows(ps);
+      PLANES = parsePlanes(planesObj);
+    }
 
     const r = applyData(shV ? await wb.rows(shV) : null, shP ? await wb.rows(shP) : null, shVb ? await wb.rows(shVb) : null, file.name);
     st.className = "status ok";
@@ -931,6 +1049,34 @@ function setSrc(cls, text) {
 }
 function horaStr(d) { return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }); }
 
+// Fuentes disponibles: "__live__" (mes en vivo) + cada mes del histórico.
+let SOURCES = {};
+const MESES_ORD = { enero:1, febrero:2, marzo:3, abril:4, mayo:5, junio:6, julio:7, agosto:8, septiembre:9, octubre:10, noviembre:11, diciembre:12 };
+function mesClave(p) {
+  const m = String(p).toLowerCase().match(/([a-záéíóú]+)\s+(\d{4})/);
+  if (!m) return 0;
+  return (+m[2]) * 100 + (MESES_ORD[m[1].normalize("NFD").replace(/[̀-ͯ]/g, "")] || 0);
+}
+
+function poblarMeses(historico) {
+  const sel = $("mesSel");
+  const prev = sel.value;
+  const periodos = historico.map(h => h.periodo).filter(Boolean)
+    .sort((a, b) => mesClave(b) - mesClave(a));   // más nuevo primero
+  sel.innerHTML = '<option value="__live__">● En vivo (actual)</option>'
+    + periodos.map(p => `<option value="${p}">${p}</option>`).join("");
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+function aplicarMes(key) {
+  const s = SOURCES[key];
+  if (!s) return { nV: 0, nP: 0, verbas: false };
+  const label = key === "__live__" ? "En vivo" : key;
+  const r = applyData(s.ventas, s.posventa, s.verbas, label);
+  if (key !== "__live__") { state.periodo = key; $("periodoInp").value = key; }
+  return r;
+}
+
 async function fetchLive(manual) {
   const url = $("srcUrl").value.trim();
   if (!url) { setSrc("err", "Pegá la URL del Web App primero."); return; }
@@ -943,10 +1089,16 @@ async function fetchLive(manual) {
   try {
     const d = await jsonp(url);
     if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
-    const r = applyData(d.ventas, d.posventa, d.verbas, "Google Sheet (en vivo)");
+    // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
+    SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas } };
+    (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa, verbas: h.verbas }; });
+    PLANES = parsePlanes(d.planes || {});   // los planes son "vigentes" (no por mes)
+    poblarMeses(d.historico || []);
+    const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);
     const now = new Date();
-    setSrc("ok", `✓ Actualizado ${horaStr(now)} — Ventas: ${r.nV} · Posventa: ${r.nP}${r.verbas ? " · Verbalizaciones ✓" : ""}`);
+    const nMeses = (d.historico || []).length;
+    setSrc("ok", `✓ Actualizado ${horaStr(now)} — Ventas: ${r.nV} · Posventa: ${r.nP}${r.verbas ? " · Verbalizaciones ✓" : ""}${nMeses ? " · " + nMeses + " mes(es) en histórico" : ""}`);
     $("status").textContent = "";
   } catch (err) {
     let msg = "✗ " + err.message;
@@ -991,6 +1143,7 @@ $("connectBtn").onclick = () => fetchLive(true);
 $("srcUrl").onkeydown = e => { if (e.key === "Enter") fetchLive(true); };
 $("srcUrl").onchange = e => { try { localStorage.setItem(LS_URL, e.target.value.trim()); } catch (x) {} };
 $("autoSel").onchange = e => setAuto(parseInt(e.target.value, 10) || 0);
+$("mesSel").onchange = e => aplicarMes(e.target.value);
 
 // Restaurar URL e intervalo guardados
 try {

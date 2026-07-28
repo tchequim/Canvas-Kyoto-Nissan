@@ -1094,7 +1094,7 @@ function mapSucTrain(v) {
   if (s.includes("corrient") || s.includes("oarg047")) return "Kyoto Corrientes";
   if (s.includes("posad") || s.includes("oarg079")) return "Kyoto Posadas";
   if (s.includes("pena") || s.includes("saenz") || s.includes("oarg093")) return "Kyoto Sáenz Peña";
-  return v ? String(v).trim() : "—";
+  return "";   // sucursal no reconocida → se descarta (evita notas/filas basura)
 }
 
 function parseTraining(hojasObj) {
@@ -1114,8 +1114,11 @@ function parseTraining(hojasObj) {
       const row = rows[r]; if (!row) continue;
       const nombre = row[1] == null ? "" : String(row[1]).trim();
       if (!nombre) continue;
+      const pctRaw = row[pctI];
+      if (pctRaw === "" || pctRaw == null) continue;      // fila sin % = nota/basura
       const suc = mapSucTrain(sucI >= 0 ? row[sucI] : "");
-      let pct = parseFloat(row[pctI]); if (!isFinite(pct)) pct = 0;
+      if (!suc) continue;                                 // sucursal no reconocida = descartar
+      let pct = parseFloat(pctRaw); if (!isFinite(pct)) pct = 0;
       pct = pct <= 1 ? pct * 100 : pct;              // viene 0-1
       const pend = [];
       for (const c of cursoCols) if (parseFloat(row[c]) !== 1) pend.push(String(hdr[c]).trim());

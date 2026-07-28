@@ -608,6 +608,14 @@ const LS_KEY = "kyoto-voc-dash-v3";
 const LS_URL = "kyoto-voc-url";
 const LS_AUTO = "kyoto-voc-auto";
 const LS_TRAIN = "kyoto-voc-trainurl";
+
+// ════════════════════════════════════════════════════════════════
+//  URLs POR DEFECTO — pegá acá tus dos URLs /exec (entre las comillas)
+//  y subí el index.html a GitHub. Así CUALQUIERA que abra el link ve
+//  tus datos en vivo, sin tener que configurar nada.
+// ════════════════════════════════════════════════════════════════
+const DEFAULT_VOC_URL   = "https://script.google.com/macros/s/AKfycbz2cH6-_GycT7JJ0kkreElbMYvC4GTYjpx6UpO8vUmh8GlNJlVroXHK47rI3XM65lvh/exec";   // Sheet VOC
+const DEFAULT_TRAIN_URL = "https://script.google.com/macros/s/AKfycbw9TNjw73dGvXwympV5gMtkZUNDxuGHm6mMeJU0h2q5OhZg4ZWm_vYc9WfgbRACn-Lwvw/exec";   // Sheet Academia
 let state = buildDefault();
 try {
   const saved = localStorage.getItem(LS_KEY);
@@ -1425,18 +1433,23 @@ $("cargoSel").onchange = () => renderTraining();
 $("trainUrl").onchange = e => { try { localStorage.setItem(LS_TRAIN, e.target.value.trim()); } catch (x) {} };
 $("trainUrl").onkeydown = e => { if (e.key === "Enter") fetchTraining(false); };
 
-// Restaurar URLs e intervalo guardados
+// Restaurar URLs y conectar automáticamente al abrir.
+// Prioridad: lo guardado en este navegador → si no, la URL horneada por defecto.
 try {
-  const savedUrl = localStorage.getItem(LS_URL);
-  if (savedUrl) $("srcUrl").value = savedUrl;
-  const savedTrain = localStorage.getItem(LS_TRAIN);
-  if (savedTrain) { $("trainUrl").value = savedTrain; fetchTraining(true); }
+  const vocUrl   = localStorage.getItem(LS_URL)   || DEFAULT_VOC_URL;
+  const trainUrl = localStorage.getItem(LS_TRAIN) || DEFAULT_TRAIN_URL;
+  if (vocUrl)   $("srcUrl").value = vocUrl;
+  if (trainUrl) $("trainUrl").value = trainUrl;
+
   const savedAuto = localStorage.getItem(LS_AUTO);
-  if (savedAuto && +savedAuto > 0) {
-    $("autoSel").value = savedAuto;
-    setAuto(+savedAuto);            // arranca el intervalo y trae datos ya
-  } else if (savedUrl) {
-    setSrc("", "Listo para conectar. Tocá “⟳ Actualizar” o elegí un intervalo.");
+  if (savedAuto && +savedAuto > 0) $("autoSel").value = savedAuto;
+
+  if (vocUrl) {
+    // conexión automática: cualquiera que abra el link ve los datos en vivo
+    if (savedAuto && +savedAuto > 0) setAuto(+savedAuto);   // setAuto ya trae los datos
+    else fetchLive(false);
+  } else if (trainUrl) {
+    fetchTraining(true);
   }
 } catch (e) {}
 

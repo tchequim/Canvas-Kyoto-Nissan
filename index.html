@@ -49,6 +49,7 @@
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }   /* gana sobre display:flex/grid */
   body { margin: 0; }
   .voc {
     font-family: var(--font); background: var(--bg); color: var(--ink);
@@ -283,17 +284,33 @@
   .foot button { background: none; border: none; color: var(--ink-faint); text-decoration: underline; cursor: pointer; font-size: 12px; font-family: var(--font); padding: 0; }
 
   /* ---- Barra de fuente en vivo ---- */
-  .src {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 12px 16px; margin-top: 14px; box-shadow: var(--shadow);
+  /* ---- Fuente colapsable ---- */
+  .srchead { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+  .src-toggle {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    font-family: var(--font); font-size: 13px; font-weight: 800; color: var(--ink);
+    background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 9px 15px; box-shadow: var(--shadow);
   }
+  .src-toggle:hover { border-color: var(--brand); }
+  .src-toggle .arr { font-size: 10px; color: var(--ink-muted); transition: transform .15s ease; }
+  .src-toggle[aria-expanded="true"] .arr { transform: rotate(180deg); }
+
+  .src {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px; margin-top: 10px; box-shadow: var(--shadow);
+  }
+  .src-field { display: flex; flex-direction: column; gap: 5px; flex: 1 1 320px; }
+  .src-field label { font-size: 12px; font-weight: 800; color: var(--ink); }
+  .src-field label span { font-weight: 500; color: var(--ink-faint); }
+  .src-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; flex: 1 1 100%; }
   .src-lbl { font-size: 12.5px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 7px; }
   .src-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-faint); flex: 0 0 auto; }
   .src-dot.on { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 25%, transparent); }
   .src-dot.err { background: var(--bad); }
   .src input {
-    flex: 1 1 320px; min-width: 200px; font-family: var(--font); font-size: 12.5px; color: var(--ink);
+    width: 100%; font-family: var(--font); font-size: 12.5px; color: var(--ink);
     background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 11px;
   }
   .src input:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
@@ -334,29 +351,42 @@
       <input type="file" id="fileInp" accept=".xlsx,.xlsm" hidden>
     </header>
 
-    <div class="src">
-      <span class="src-lbl"><span class="src-dot" id="srcDot"></span>Fuente en vivo</span>
-      <input id="srcUrl" type="url" spellcheck="false" placeholder="Pegá la URL del Web App de Apps Script (termina en /exec)" aria-label="URL del Web App">
-      <button class="src-btn" id="connectBtn" type="button">⟳ Actualizar</button>
-      <span class="src-auto"><label for="autoSel">Auto:</label>
-        <select id="autoSel" aria-label="Intervalo de actualización automática">
-          <option value="0">Off</option>
-          <option value="30">cada 30 s</option>
-          <option value="60">cada 1 min</option>
-          <option value="300">cada 5 min</option>
-          <option value="900">cada 15 min</option>
-          <option value="1800">cada 30 min</option>
-          <option value="3600">cada 1 h</option>
-        </select>
-      </span>
+    <div class="srchead">
+      <button class="src-toggle" id="fuenteToggle" type="button" aria-expanded="false">
+        <span class="src-dot" id="srcDot"></span>Fuente <span class="arr">▾</span>
+      </button>
       <span class="src-auto"><label for="mesSel">Mes:</label>
         <select id="mesSel" aria-label="Mes a mostrar">
           <option value="__live__">● En vivo (actual)</option>
         </select>
       </span>
-      <button class="src-btn ghost" id="uploadBtn" type="button">o cargar .xlsx</button>
-      <input id="trainUrl" type="url" spellcheck="false" placeholder="URL Training (opcional, otro Web App /exec)" aria-label="URL del Web App de Training" style="flex:1 1 260px">
       <span class="src-status" id="srcStatus"></span>
+    </div>
+
+    <div class="src" id="fuentePanel" hidden>
+      <div class="src-field">
+        <label for="srcUrl">URL VOC <span>(Sheet de indicadores · /exec)</span></label>
+        <input id="srcUrl" type="url" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" aria-label="URL del Web App de VOC">
+      </div>
+      <div class="src-field">
+        <label for="trainUrl">URL Training <span>(Sheet de Academia · /exec · opcional)</span></label>
+        <input id="trainUrl" type="url" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" aria-label="URL del Web App de Training">
+      </div>
+      <div class="src-actions">
+        <button class="src-btn" id="connectBtn" type="button">⟳ Actualizar</button>
+        <span class="src-auto"><label for="autoSel">Auto:</label>
+          <select id="autoSel" aria-label="Intervalo de actualización automática">
+            <option value="0">Off</option>
+            <option value="30">cada 30 s</option>
+            <option value="60">cada 1 min</option>
+            <option value="300">cada 5 min</option>
+            <option value="900">cada 15 min</option>
+            <option value="1800">cada 30 min</option>
+            <option value="3600">cada 1 h</option>
+          </select>
+        </span>
+        <button class="src-btn ghost" id="uploadBtn" type="button">o cargar .xlsx</button>
+      </div>
     </div>
 
     <div class="status" id="status" role="status"></div>
@@ -1131,7 +1161,7 @@ function renderTraining() {
   const el = $("training");
   if (!TRAINING || !TRAINING.personas.length) {
     $("trainTitle").textContent = "Training — Avance de cursos";
-    el.innerHTML = `<div class="train-empty">Pegá arriba la <b>URL Training</b> (el Web App del Sheet de Academia) y tocá “⟳ Actualizar” para ver el avance de cursos.</div>`;
+    el.innerHTML = `<div class="train-empty">Abrí <b>⚙ Fuente</b> y pegá la <b>URL Training</b> — la del Web App del Sheet de Academia (Implementar → App web, termina en <code>/exec</code>), no la de biblioteca. Después tocá “⟳ Actualizar”.</div>`;
     return;
   }
   const cargo = $("cargoSel").value;
@@ -1173,6 +1203,13 @@ function renderTraining() {
 async function fetchTraining(silencioso) {
   const url = $("trainUrl").value.trim();
   if (!url) return;
+  // Detectar la URL equivocada (la de "biblioteca" en vez del Web App)
+  if (/\/macros\/library\//.test(url) || !/\/exec\/?$/.test(url)) {
+    const msg = "✗ URL Training inválida: esa es la de biblioteca. Necesitás la del Web App (Implementar → App web) que termina en /exec.";
+    if (!silencioso) setSrc("err", msg);
+    if (activeTab === "training") { TRAINING = null; renderTraining(); $("training").innerHTML = `<div class="train-empty">${msg.slice(2)}</div>`; }
+    return;
+  }
   try {
     const d = await jsonp(url);
     if (d && d.ok && d.hojas) {
@@ -1180,6 +1217,8 @@ async function fetchTraining(silencioso) {
       poblarCargos();
       try { localStorage.setItem(LS_TRAIN, url); } catch (e) {}
       if (activeTab === "training") renderTraining();
+    } else if (!silencioso) {
+      setSrc("err", "✗ Training: la respuesta no tiene el formato esperado.");
     }
   } catch (e) {
     if (!silencioso) setSrc("err", "✗ Training: " + e.message);
@@ -1364,6 +1403,13 @@ $("themeBtn").onclick = () => {
   const root = document.documentElement;
   const cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+};
+
+// ---- Panel de Fuente colapsable ----
+$("fuenteToggle").onclick = () => {
+  const abierto = $("fuentePanel").hidden;
+  $("fuentePanel").hidden = !abierto;
+  $("fuenteToggle").setAttribute("aria-expanded", String(abierto));
 };
 
 // ---- Conexión en vivo ----

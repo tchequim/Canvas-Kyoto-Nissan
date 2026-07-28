@@ -231,9 +231,13 @@
   .plan-card {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     box-shadow: var(--shadow); padding: 14px 16px;
-    display: grid; grid-template-columns: 1.1fr 1.4fr 1.4fr; gap: 16px;
+    display: grid; grid-template-columns: 1fr 1.3fr 1.3fr 0.95fr; gap: 16px;
   }
-  @media (max-width: 820px) { .plan-card { grid-template-columns: 1fr; gap: 10px; } }
+  @media (max-width: 900px) { .plan-card { grid-template-columns: 1fr 1fr; gap: 12px; } }
+  @media (max-width: 560px) { .plan-card { grid-template-columns: 1fr; gap: 10px; } }
+  .plan-seg { border-left: 1px solid var(--border); padding-left: 14px; }
+  .plan-seg-i { font-size: 12px; color: var(--ink); margin-top: 5px; line-height: 1.35; }
+  .plan-seg-i span { display: block; font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); }
   .plan-col .plan-k { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 3px; }
   .plan-col .plan-v { font-size: 13px; line-height: 1.45; color: var(--ink); }
   .plan-cli { font-size: 12px; color: var(--ink-muted); margin-top: 5px; }
@@ -243,6 +247,36 @@
   .plan-plan.nocorr { border-left-color: var(--ink-faint); }
   .plan-plan.nocorr .plan-v { color: var(--ink-faint); font-style: italic; font-weight: 400; }
   .plan-empty { padding: 18px 16px; font-size: 13px; color: var(--ink-faint); font-style: italic; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+
+  /* ---- Subbarra (pills + cargo) ---- */
+  .subbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .cargo-wrap { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; color: var(--ink-muted); }
+  .cargo-wrap select { font-family: var(--font); font-size: 13px; font-weight: 700; color: var(--ink); background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 11px; cursor: pointer; }
+
+  /* ---- Training ---- */
+  .train-chart { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px; display: flex; flex-direction: column; gap: 15px; }
+  .train-bar-row { display: grid; grid-template-columns: 150px 1fr 56px; align-items: center; gap: 12px; }
+  @media (max-width: 560px) { .train-bar-row { grid-template-columns: 110px 1fr 46px; } }
+  .train-bar-row .who { font-size: 13px; font-weight: 700; color: var(--ink); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .train-track { height: 24px; background: var(--track); border-radius: 7px; overflow: hidden; }
+  .train-fill { height: 100%; border-radius: 7px; transition: width .5s cubic-bezier(.3,.9,.3,1); }
+  .train-fill.g { background: var(--good); } .train-fill.y { background: var(--warn); } .train-fill.r { background: var(--bad); }
+  .train-bar-row .num { font-size: 13.5px; font-weight: 800; text-align: right; }
+  .num.g { color: var(--good); } .num.y { color: var(--warn); } .num.r { color: var(--bad); }
+
+  .train-person { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 13px 16px; display: grid; grid-template-columns: 1.3fr 1.1fr 1.6fr; gap: 16px; align-items: center; }
+  @media (max-width: 820px) { .train-person { grid-template-columns: 1fr; gap: 10px; } }
+  .train-person + .train-person { margin-top: 10px; }
+  .tp-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .tp-cargo { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint); margin-top: 2px; }
+  .tp-prog { display: flex; align-items: center; gap: 10px; }
+  .tp-prog .train-track { flex: 1; }
+  .tp-pend .plan-k { font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+  .tp-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tp-chip { font-size: 10.5px; background: var(--bad-soft); color: var(--bad); border-radius: 5px; padding: 2px 7px; line-height: 1.35; }
+  .tp-ok { font-size: 12px; color: var(--good); font-weight: 700; }
+  .train-suc-t { font-size: 13px; font-weight: 800; letter-spacing: .03em; color: var(--ink-muted); text-transform: uppercase; margin: 14px 2px 8px; }
+  .train-empty { padding: 20px 16px; font-size: 13px; color: var(--ink-faint); font-style: italic; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 
   .foot { margin: 28px 2px 4px; font-size: 12px; color: var(--ink-faint); line-height: 1.6; }
   .foot code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; }
@@ -321,6 +355,7 @@
         </select>
       </span>
       <button class="src-btn ghost" id="uploadBtn" type="button">o cargar .xlsx</button>
+      <input id="trainUrl" type="url" spellcheck="false" placeholder="URL Training (opcional, otro Web App /exec)" aria-label="URL del Web App de Training" style="flex:1 1 260px">
       <span class="src-status" id="srcStatus"></span>
     </div>
 
@@ -329,47 +364,65 @@
     <div class="tabs" role="tablist" aria-label="Área">
       <button class="tab" role="tab" data-tab="ventas" aria-selected="true">Ventas</button>
       <button class="tab" role="tab" data-tab="posventa" aria-selected="false">Posventa</button>
+      <button class="tab" role="tab" data-tab="training" aria-selected="false">Training</button>
     </div>
 
-    <div class="pills" id="pills" role="group" aria-label="Seleccionar sucursal"></div>
+    <div class="subbar">
+      <div class="pills" id="pills" role="group" aria-label="Seleccionar sucursal"></div>
+      <span class="cargo-wrap" id="cargoWrap" hidden><label for="cargoSel">Cargo:</label>
+        <select id="cargoSel" aria-label="Cargo a mostrar">
+          <option value="__todos__">Todos los cargos</option>
+        </select>
+      </span>
+    </div>
 
-    <div class="kpis" id="kpis"></div>
+    <div id="vocView">
+      <div class="kpis" id="kpis"></div>
 
-    <div class="section-t">
-      <h2>Indicadores</h2>
-      <span class="hint" id="gridHint">% favorable vs. objetivo — la línea negra marca el objetivo</span>
-      <div class="legend">
-        <span><i style="background:var(--good)"></i>5 · Sí · Definit. lo llevaría</span>
-        <span><i style="background:var(--warn)"></i>4 · Prob. lo llevaría</span>
-        <span><i style="background:var(--bad)"></i>1-3 · No · resto</span>
-        <span><i style="background:var(--ink-faint)"></i>Sin datos</span>
+      <div class="section-t">
+        <h2>Indicadores</h2>
+        <span class="hint" id="gridHint">% favorable vs. objetivo — la línea negra marca el objetivo</span>
+        <div class="legend">
+          <span><i style="background:var(--good)"></i>5 · Sí · Definit. lo llevaría</span>
+          <span><i style="background:var(--warn)"></i>4 · Prob. lo llevaría</span>
+          <span><i style="background:var(--bad)"></i>1-3 · No · resto</span>
+          <span><i style="background:var(--ink-faint)"></i>Sin datos</span>
+        </div>
       </div>
-    </div>
-    <div class="grid" id="grid"></div>
+      <div class="grid" id="grid"></div>
 
-    <div class="section-t">
-      <h2>Comparativa entre sucursales</h2>
-      <span class="hint">todas las sucursales para un indicador</span>
-    </div>
-    <div class="cmp">
-      <div class="cmp-head">
-        <label for="cmpSel">Indicador:</label>
-        <select id="cmpSel"></select>
+      <div class="section-t">
+        <h2>Comparativa entre sucursales</h2>
+        <span class="hint">todas las sucursales para un indicador</span>
       </div>
-      <div class="bars" id="bars"></div>
+      <div class="cmp">
+        <div class="cmp-head">
+          <label for="cmpSel">Indicador:</label>
+          <select id="cmpSel"></select>
+        </div>
+        <div class="bars" id="bars"></div>
+      </div>
+
+      <div class="section-t">
+        <h2 id="verbasTitle">Verbalizaciones</h2>
+        <span class="hint">lo que dijeron los clientes — puntos fuertes y débiles</span>
+      </div>
+      <div class="verbas-wrap" id="verbas"></div>
+
+      <div class="section-t">
+        <h2 id="planesTitle">Planes de acción</h2>
+        <span class="hint">origen · cliente · desvío · acción correctiva (SERNISSAN)</span>
+      </div>
+      <div class="planes" id="planes"></div>
     </div>
 
-    <div class="section-t">
-      <h2 id="verbasTitle">Verbalizaciones</h2>
-      <span class="hint">lo que dijeron los clientes — puntos fuertes y débiles</span>
+    <div id="trainingView" hidden>
+      <div class="section-t">
+        <h2 id="trainTitle">Training — Avance de cursos</h2>
+        <span class="hint">verde 100% · amarillo 75-99% · rojo 0-74%</span>
+      </div>
+      <div id="training"></div>
     </div>
-    <div class="verbas-wrap" id="verbas"></div>
-
-    <div class="section-t">
-      <h2 id="planesTitle">Planes de acción</h2>
-      <span class="hint">origen · cliente · desvío · acción correctiva (SERNISSAN)</span>
-    </div>
-    <div class="planes" id="planes"></div>
 
     <p class="foot">
       <b>Conexión en vivo:</b> pegá arriba la URL del Web App de Apps Script y elegí un intervalo — el dashboard se
@@ -377,7 +430,9 @@
       <code>Posventa - Mensual</code>, <code>Verbalizaciones</code> y las hojas <code>Plan de Accion</code> de cada sucursal.
       La conexión en vivo funciona con el archivo abierto
       localmente o alojado en GitHub Pages (no desde el link de Claude, que bloquea sitios externos por seguridad).
-      También podés cargar un <code>.xlsx</code> a mano. La línea vertical negra en cada barra marca el objetivo Nissan.
+      También podés cargar un <code>.xlsx</code> a mano.
+      <b>Training</b> se alimenta de un <b>segundo</b> Google Sheet (el de Academia): pegá su URL en “URL Training”.
+      La línea vertical negra en cada barra marca el objetivo Nissan.
       <button id="resetBtn" type="button">Restablecer datos originales</button>
     </p>
   </div>
@@ -522,6 +577,7 @@ function buildDefault() {
 const LS_KEY = "kyoto-voc-dash-v3";
 const LS_URL = "kyoto-voc-url";
 const LS_AUTO = "kyoto-voc-auto";
+const LS_TRAIN = "kyoto-voc-trainurl";
 let state = buildDefault();
 try {
   const saved = localStorage.getItem(LS_KEY);
@@ -616,6 +672,13 @@ function render() {
   document.querySelectorAll(".pill").forEach(p => p.setAttribute("aria-pressed", p.textContent === current));
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === activeTab));
   $("periodoInp").value = state.periodo || "";
+
+  // alternar vista VOC / Training
+  const esTraining = activeTab === "training";
+  $("vocView").hidden = esTraining;
+  $("trainingView").hidden = !esTraining;
+  $("cargoWrap").hidden = !esTraining;
+  if (esTraining) { renderTraining(); return; }
 
   const mets = (state.tabs[activeTab][current] || []).filter(m => !(m.obj <= 0 && m.base <= 0));
   const conObj = mets.filter(m => m.obj > 0 && m.base > 0);
@@ -926,8 +989,9 @@ function parsePlanes(planesObj) {
       if (a === "n°" || a === "no" || a.includes("sernissan")) return;
       if (!sec) return;
       const origen = limpio(r[1]), cliente = limpio(r[2]), desvio = limpio(r[3]), plan = limpio(r[5]);
+      const resp = limpio(r[6]), fecha = limpio(r[7]), herr = limpio(r[8]);
       if (!desvio && !plan) return;   // solo entradas con contenido real
-      res[sec].push({ origen, cliente, desvio, plan });
+      res[sec].push({ origen, cliente, desvio, plan, resp, fecha, herr });
     });
     out[suc] = res;
   }
@@ -936,6 +1000,10 @@ function parsePlanes(planesObj) {
 
 function planCard(e) {
   const noCorr = e.plan && /^no corresponde/i.test(e.plan);
+  const seg = [];
+  if (e.resp)  seg.push(`<div class="plan-seg-i"><span>Responsable</span>${e.resp}</div>`);
+  if (e.fecha) seg.push(`<div class="plan-seg-i"><span>Fecha</span>${e.fecha}</div>`);
+  if (e.herr)  seg.push(`<div class="plan-seg-i"><span>Herramienta SERNISSAN</span>${e.herr}</div>`);
   return `<div class="plan-card">
     <div class="plan-col">
       <div class="plan-k">Origen</div>
@@ -950,6 +1018,10 @@ function planCard(e) {
       <div class="plan-k">Plan de acción</div>
       <div class="plan-v">${e.plan || "—"}</div>
     </div>
+    <div class="plan-col plan-seg">
+      <div class="plan-k">Seguimiento</div>
+      ${seg.length ? seg.join("") : '<div class="plan-v" style="color:var(--ink-faint)">—</div>'}
+    </div>
   </div>`;
 }
 
@@ -958,7 +1030,9 @@ function renderPlanes() {
   const tabName = activeTab === "ventas" ? "Ventas" : "Posventa";
   if (!PLANES || !Object.keys(PLANES).length) {
     $("planesTitle").textContent = "Planes de acción";
-    el.innerHTML = `<div class="plan-empty">Conectá el dashboard a tu Google Sheet para ver los planes de acción de cada sucursal.</div>`;
+    el.innerHTML = conectado
+      ? `<div class="plan-empty">No llegaron los planes de acción. Volvé a <b>implementar el Web App</b> (Apps Script → Implementar → Gestionar implementaciones → ✏️ → Versión: Nueva) para que incluya las hojas “Plan de Accion”.</div>`
+      : `<div class="plan-empty">Conectá el dashboard a tu Google Sheet para ver los planes de acción de cada sucursal.</div>`;
     return;
   }
   const mine = PLANES[current];
@@ -976,6 +1050,140 @@ function renderPlanes() {
   el.innerHTML = sucs.map(suc =>
     `<div class="plan-suc-t">${suc}</div>` + PLANES[suc][activeTab].map(planCard).join("")
   ).join("");
+}
+
+// ================================================================
+//  TRAINING (segundo Google Sheet — Academia)
+// ================================================================
+let TRAINING = null;   // { cargos:[...], personas:[{nombre,cargo,sucursal,pct,pend[],totalPend}] }
+const CARGOS_ORDEN = ["Técnicos", "Jefes de Taller", "APS", "APV", "PA"];
+
+function mapSucTrain(v) {
+  const s = norm(v);
+  if (s.includes("resist") || s.includes("oarg062")) return "Kyoto Resistencia";
+  if (s.includes("corrient") || s.includes("oarg047")) return "Kyoto Corrientes";
+  if (s.includes("posad") || s.includes("oarg079")) return "Kyoto Posadas";
+  if (s.includes("pena") || s.includes("saenz") || s.includes("oarg093")) return "Kyoto Sáenz Peña";
+  return v ? String(v).trim() : "—";
+}
+
+function parseTraining(hojasObj) {
+  const CARGO_NOM = { "tecnicos": "Técnicos", "jefes de taller": "Jefes de Taller", "aps": "APS", "apv": "APV", "pa": "PA" };
+  const personas = [];
+  for (const hoja in (hojasObj || {})) {
+    const rows = hojasObj[hoja] || [];
+    if (!rows.length) continue;
+    const cargo = CARGO_NOM[norm(hoja)] || hoja;
+    const hdr = rows[0].map(h => h == null ? "" : String(h));
+    const pctI = hdr.findIndex(h => norm(h).includes("porcentaje"));
+    if (pctI < 0) continue;
+    const sucI = hdr.findIndex(h => { const n = norm(h); return n.includes("cod. sucursal") || n === "sucursal"; });
+    const cursoCols = [];
+    for (let c = pctI + 1; c < hdr.length; c++) if (hdr[c] && String(hdr[c]).trim()) cursoCols.push(c);
+    for (let r = 1; r < rows.length; r++) {
+      const row = rows[r]; if (!row) continue;
+      const nombre = row[1] == null ? "" : String(row[1]).trim();
+      if (!nombre) continue;
+      const suc = mapSucTrain(sucI >= 0 ? row[sucI] : "");
+      let pct = parseFloat(row[pctI]); if (!isFinite(pct)) pct = 0;
+      pct = pct <= 1 ? pct * 100 : pct;              // viene 0-1
+      const pend = [];
+      for (const c of cursoCols) if (parseFloat(row[c]) !== 1) pend.push(String(hdr[c]).trim());
+      personas.push({ nombre, cargo, sucursal: suc, pct: Math.round(pct * 10) / 10, pend: pend.slice(0, 10), totalPend: pend.length });
+    }
+  }
+  return { cargos: CARGOS_ORDEN.filter(c => personas.some(p => p.cargo === c)), personas };
+}
+
+function claseAvance(p) { return p >= 100 ? "g" : p >= 75 ? "y" : "r"; }
+
+function barra(nombre, pct) {
+  const c = claseAvance(pct);
+  return `<div class="train-bar-row">
+    <div class="who" title="${nombre}">${nombre}</div>
+    <div class="train-track"><div class="train-fill ${c}" style="width:${Math.max(2, Math.min(100, pct))}%"></div></div>
+    <div class="num ${c}">${fmt(pct)}</div>
+  </div>`;
+}
+
+function personaRow(p) {
+  const c = claseAvance(p.pct);
+  const chips = p.pct >= 100
+    ? `<span class="tp-ok">✓ Completó todos los cursos</span>`
+    : `<div class="tp-chips">${p.pend.map(x => `<span class="tp-chip">${x}</span>`).join("")}${p.totalPend > p.pend.length ? `<span class="tp-chip" style="background:var(--surface-2);color:var(--ink-muted)">+${p.totalPend - p.pend.length} más</span>` : ""}</div>`;
+  return `<div class="train-person">
+    <div><div class="tp-name">${p.nombre}</div><div class="tp-cargo">${p.cargo}</div></div>
+    <div class="tp-prog"><div class="train-track"><div class="train-fill ${c}" style="width:${Math.max(2, Math.min(100, p.pct))}%"></div></div><span class="num ${c}">${fmt(p.pct)}%</span></div>
+    <div class="tp-pend"><div class="plan-k">Cursos pendientes${p.pct < 100 ? " (" + p.totalPend + ")" : ""}</div>${chips}</div>
+  </div>`;
+}
+
+function poblarCargos() {
+  const sel = $("cargoSel");
+  const prev = sel.value;
+  const cargos = TRAINING ? TRAINING.cargos : CARGOS_ORDEN;
+  sel.innerHTML = '<option value="__todos__">Todos los cargos</option>'
+    + cargos.map(c => `<option value="${c}">${c}</option>`).join("");
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+function renderTraining() {
+  const el = $("training");
+  if (!TRAINING || !TRAINING.personas.length) {
+    $("trainTitle").textContent = "Training — Avance de cursos";
+    el.innerHTML = `<div class="train-empty">Pegá arriba la <b>URL Training</b> (el Web App del Sheet de Academia) y tocá “⟳ Actualizar” para ver el avance de cursos.</div>`;
+    return;
+  }
+  const cargo = $("cargoSel").value;
+  const pers = TRAINING.personas.filter(p => cargo === "__todos__" || p.cargo === cargo);
+
+  if (current === "Grupo Kyoto") {
+    // gráfico de barras horizontales (promedio de avance)
+    const prom = arr => arr.length ? arr.reduce((a, b) => a + b.pct, 0) / arr.length : 0;
+    let filas;
+    if (cargo === "__todos__") {
+      $("trainTitle").textContent = "Training — Avance por cargo (Grupo)";
+      filas = TRAINING.cargos.map(c => ({ n: c, p: prom(pers.filter(x => x.cargo === c)) }));
+    } else {
+      $("trainTitle").textContent = `Training — ${cargo} · avance por sucursal`;
+      filas = SUC_ORDER.filter(s => s !== "Grupo Kyoto")
+        .map(s => ({ n: s, p: prom(pers.filter(x => x.sucursal === s)) }))
+        .filter(f => pers.some(x => x.sucursal === f.n));
+    }
+    el.innerHTML = `<div class="train-chart">${filas.map(f => barra(f.n, Math.round(f.p * 10) / 10)).join("")}</div>`;
+    return;
+  }
+
+  // sucursal puntual: lista de personas (peor avance primero)
+  $("trainTitle").textContent = `Training — ${current}${cargo === "__todos__" ? "" : " · " + cargo}`;
+  const mine = pers.filter(p => p.sucursal === current).sort((a, b) => a.pct - b.pct);
+  if (!mine.length) { el.innerHTML = `<div class="train-empty">Sin personas de ${current}${cargo === "__todos__" ? "" : " en el cargo " + cargo}.</div>`; return; }
+  if (cargo === "__todos__") {
+    // agrupar por cargo
+    const html = TRAINING.cargos.filter(c => mine.some(p => p.cargo === c)).map(c =>
+      `<div class="train-suc-t">${c}</div>` + mine.filter(p => p.cargo === c).map(personaRow).join("")
+    ).join("");
+    el.innerHTML = html;
+  } else {
+    el.innerHTML = mine.map(personaRow).join("");
+  }
+}
+
+// Trae los datos de Training (segundo Web App) por JSONP.
+async function fetchTraining(silencioso) {
+  const url = $("trainUrl").value.trim();
+  if (!url) return;
+  try {
+    const d = await jsonp(url);
+    if (d && d.ok && d.hojas) {
+      TRAINING = parseTraining(d.hojas);
+      poblarCargos();
+      try { localStorage.setItem(LS_TRAIN, url); } catch (e) {}
+      if (activeTab === "training") renderTraining();
+    }
+  } catch (e) {
+    if (!silencioso) setSrc("err", "✗ Training: " + e.message);
+  }
 }
 
 // Toma matrices [fila][columna] de las 3 hojas y actualiza el estado.
@@ -1051,11 +1259,29 @@ function horaStr(d) { return d.toLocaleTimeString("es-AR", { hour: "2-digit", mi
 
 // Fuentes disponibles: "__live__" (mes en vivo) + cada mes del histórico.
 let SOURCES = {};
+let conectado = false;
 const MESES_ORD = { enero:1, febrero:2, marzo:3, abril:4, mayo:5, junio:6, julio:7, agosto:8, septiembre:9, octubre:10, noviembre:11, diciembre:12 };
+const MESES_ABR = { jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
+const MESES_NOM = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+// Muestra el período lindo aunque venga como fecha ("Mon Jun 01 2026…") o ISO.
+function mesBonito(p) {
+  const s = String(p || "").trim();
+  // ya viene "Junio 2026"
+  let m = s.toLowerCase().match(/([a-záéíóú]{4,})\s+(\d{4})/);
+  if (m && MESES_ORD[m[1].normalize("NFD").replace(/[̀-ͯ]/g, "")]) return s;
+  // formato Date de JS: "Mon Jun 01 2026 ..." (Día Mes DD Año)
+  m = s.match(/^[A-Za-z]{3}\s+([A-Za-z]{3})\s+\d{1,2}\s+(\d{4})/);
+  if (m && MESES_ABR[m[1].toLowerCase()]) return MESES_NOM[MESES_ABR[m[1].toLowerCase()] - 1] + " " + m[2];
+  // ISO "2026-06-01"
+  m = s.match(/(\d{4})-(\d{1,2})/);
+  if (m) return MESES_NOM[(+m[2]) - 1] + " " + m[1];
+  return s;
+}
 function mesClave(p) {
-  const m = String(p).toLowerCase().match(/([a-záéíóú]+)\s+(\d{4})/);
-  if (!m) return 0;
-  return (+m[2]) * 100 + (MESES_ORD[m[1].normalize("NFD").replace(/[̀-ͯ]/g, "")] || 0);
+  const b = mesBonito(p).toLowerCase().match(/([a-záéíóú]+)\s+(\d{4})/);
+  if (!b) return 0;
+  return (+b[2]) * 100 + (MESES_ORD[b[1].normalize("NFD").replace(/[̀-ͯ]/g, "")] || 0);
 }
 
 function poblarMeses(historico) {
@@ -1064,16 +1290,17 @@ function poblarMeses(historico) {
   const periodos = historico.map(h => h.periodo).filter(Boolean)
     .sort((a, b) => mesClave(b) - mesClave(a));   // más nuevo primero
   sel.innerHTML = '<option value="__live__">● En vivo (actual)</option>'
-    + periodos.map(p => `<option value="${p}">${p}</option>`).join("");
+    + periodos.map(p => `<option value="${p}">${mesBonito(p)}</option>`).join("");
   if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
 }
 
 function aplicarMes(key) {
   const s = SOURCES[key];
   if (!s) return { nV: 0, nP: 0, verbas: false };
-  const label = key === "__live__" ? "En vivo" : key;
+  const label = key === "__live__" ? "En vivo" : mesBonito(key);
+  PLANES = parsePlanes(s.planes || {});   // planes del mes elegido (antes de renderizar)
   const r = applyData(s.ventas, s.posventa, s.verbas, label);
-  if (key !== "__live__") { state.periodo = key; $("periodoInp").value = key; }
+  if (key !== "__live__") { state.periodo = mesBonito(key); $("periodoInp").value = mesBonito(key); }
   return r;
 }
 
@@ -1090,9 +1317,9 @@ async function fetchLive(manual) {
     const d = await jsonp(url);
     if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
     // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
-    SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas } };
-    (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa, verbas: h.verbas }; });
-    PLANES = parsePlanes(d.planes || {});   // los planes son "vigentes" (no por mes)
+    SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas, planes: d.planes || {} } };
+    (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa, verbas: h.verbas, planes: h.planes || {} }; });
+    conectado = true;
     poblarMeses(d.historico || []);
     const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);
@@ -1100,6 +1327,7 @@ async function fetchLive(manual) {
     const nMeses = (d.historico || []).length;
     setSrc("ok", `✓ Actualizado ${horaStr(now)} — Ventas: ${r.nV} · Posventa: ${r.nP}${r.verbas ? " · Verbalizaciones ✓" : ""}${nMeses ? " · " + nMeses + " mes(es) en histórico" : ""}`);
     $("status").textContent = "";
+    fetchTraining(true);   // trae Training en paralelo (si hay URL cargada)
   } catch (err) {
     let msg = "✗ " + err.message;
     if (window.location && /claude\.ai|claudeusercontent/.test(location.hostname)) {
@@ -1144,11 +1372,16 @@ $("srcUrl").onkeydown = e => { if (e.key === "Enter") fetchLive(true); };
 $("srcUrl").onchange = e => { try { localStorage.setItem(LS_URL, e.target.value.trim()); } catch (x) {} };
 $("autoSel").onchange = e => setAuto(parseInt(e.target.value, 10) || 0);
 $("mesSel").onchange = e => aplicarMes(e.target.value);
+$("cargoSel").onchange = () => renderTraining();
+$("trainUrl").onchange = e => { try { localStorage.setItem(LS_TRAIN, e.target.value.trim()); } catch (x) {} };
+$("trainUrl").onkeydown = e => { if (e.key === "Enter") fetchTraining(false); };
 
-// Restaurar URL e intervalo guardados
+// Restaurar URLs e intervalo guardados
 try {
   const savedUrl = localStorage.getItem(LS_URL);
   if (savedUrl) $("srcUrl").value = savedUrl;
+  const savedTrain = localStorage.getItem(LS_TRAIN);
+  if (savedTrain) { $("trainUrl").value = savedTrain; fetchTraining(true); }
   const savedAuto = localStorage.getItem(LS_AUTO);
   if (savedAuto && +savedAuto > 0) {
     $("autoSel").value = savedAuto;

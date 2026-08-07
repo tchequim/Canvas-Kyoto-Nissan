@@ -219,7 +219,7 @@
   .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 
   /* ---- Gauge grid ---- */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(206px, 1fr)); gap: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(222px, 1fr)); gap: 14px; align-items: stretch; }
   .card {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 16px 14px 14px; box-shadow: var(--shadow); text-align: center;
@@ -235,7 +235,12 @@
     transition: color var(--dur) var(--ease);
   }
   .card:hover .code { color: var(--brand); }
-  .card .name { font-size: 12.5px; font-weight: 600; color: var(--ink-muted); min-height: 32px; line-height: 1.25; display: flex; align-items: center; }
+  .card .name {
+    font-size: 12.5px; font-weight: 600; color: var(--ink-muted);
+    min-height: 46px; line-height: 1.3; display: flex; align-items: center;
+    justify-content: center; text-align: center; text-wrap: balance;
+    hyphens: auto; word-break: normal; overflow-wrap: anywhere;
+  }
   .gauge { position: relative; width: 128px; height: 128px; margin: 4px 0 2px; }
   .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
   /* los arcos se dibujan solos al aparecer (sin tocar el SVG generado) */
@@ -327,6 +332,32 @@
     grid-column: 1 / -1; margin: 6px 2px -4px; font-size: 13px; font-weight: 800;
     letter-spacing: .03em; color: var(--ink-muted); text-transform: uppercase;
   }
+
+  /* ---- Puntos en común (solo Grupo) ---- */
+  .pc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 800px) { .pc-wrap { grid-template-columns: 1fr; } }
+  .pc-panel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+    transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .pc-panel:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+  .pc-h { padding: 13px 16px; font-size: 13px; font-weight: 800; letter-spacing: .03em; }
+  .pc-h.pos { background: var(--good-soft); color: var(--good); }
+  .pc-h.neg { background: var(--bad-soft); color: var(--bad); }
+  .pc-list { padding: 15px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .pc-row { display: grid; grid-template-columns: 152px 1fr 30px; gap: 11px; align-items: center; font-size: 12.5px; }
+  @media (max-width: 560px) { .pc-row { grid-template-columns: 104px 1fr 26px; } }
+  .pc-cat { font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pc-bar { height: 20px; background: var(--track); border-radius: 6px; overflow: hidden; }
+  .pc-bar span { display: block; height: 100%; border-radius: 6px; animation: growIn .62s var(--ease) both; }
+  .pc-bar span.p { background: linear-gradient(180deg, color-mix(in srgb, var(--good) 88%, #fff), var(--good)); }
+  .pc-bar span.n { background: linear-gradient(180deg, color-mix(in srgb, var(--bad) 88%, #fff), var(--bad)); }
+  .pc-n { font-weight: 800; text-align: right; }
+  .pc-n.p { color: var(--good); } .pc-n.n { color: var(--bad); }
+  .pc-note { font-size: 11.5px; color: var(--ink-faint); padding: 0 16px 15px; line-height: 1.5; margin: 0; }
+  .pc-note b { color: var(--ink); }
+  .pc-empty { padding: 20px 16px; font-size: 13px; color: var(--ink-faint); font-style: italic; }
 
   /* ---- Planes de acción ---- */
   .planes { display: flex; flex-direction: column; gap: 12px; }
@@ -599,6 +630,14 @@
         <div class="bars" id="bars"></div>
       </div>
 
+      <div id="comunesSec" hidden>
+        <div class="section-t">
+          <h2>Puntos en común</h2>
+          <span class="hint">los temas que más se repiten entre las sucursales</span>
+        </div>
+        <div class="pc-wrap" id="comunes"></div>
+      </div>
+
       <div class="section-t">
         <h2 id="verbasTitle">Verbalizaciones</h2>
         <span class="hint">lo que dijeron los clientes — puntos fuertes y débiles</span>
@@ -803,12 +842,20 @@ function shortName(n) {
   s = s.replace(/^¿/, "").replace(/\?$/, "").trim();
   if (!s) s = String(n);
   s = s.charAt(0).toUpperCase() + s.slice(1);
-  if (s.length > 48) s = s.slice(0, 46).replace(/\s+\S*$/, "") + "…";
-  return s;
+  return s;   // título completo: la tarjeta se adapta (nunca se corta)
 }
 
 function sucursales() {
-  const set = new Set([...Object.keys(state.tabs.ventas), ...Object.keys(state.tabs.posventa)]);
+  let set;
+  if (activeTab === "ventas" || activeTab === "posventa") {
+    // Solo las sucursales que tienen encuestas en esta área.
+    // Así Sáenz Peña (que no registra ventas) no aparece en Ventas, pero sí en Posventa.
+    // Es dinámico: si algún mes llega a tener encuestas, vuelve a aparecer sola.
+    set = new Set(Object.keys(state.tabs[activeTab]).filter(suc =>
+      (state.tabs[activeTab][suc] || []).some(m => m.base > 0)));
+  } else {
+    set = new Set([...Object.keys(state.tabs.ventas), ...Object.keys(state.tabs.posventa)]);
+  }
   const known = SUC_ORDER.filter(s => set.has(s));
   const extra = [...set].filter(s => !SUC_ORDER.includes(s));
   return [...known, ...extra];
@@ -934,6 +981,7 @@ function render() {
 
   renderCmpOptions();
   renderBars();
+  renderComunes();
   renderVerbas();
   renderPlanes();
   countUp();
@@ -1006,6 +1054,48 @@ function vPanel(tipo, items) {
       </li>`).join("")}</ul>`
     : `<div class="vempty">Sin verbalizaciones ${pos ? "positivas" : "negativas"} registradas este período.</div>`;
   return `<div class="vpanel"><div class="vpanel-h ${pos ? "pos" : "neg"}">${head}</div>${list}</div>`;
+}
+
+// "Puntos en común": cuenta las categorías de las verbalizaciones de todas las
+// sucursales y las ordena por frecuencia. Solo se muestra en Grupo Kyoto.
+function renderComunes() {
+  const sec = $("comunesSec");
+  const esGrupo = current === "Grupo Kyoto";
+  sec.hidden = !esGrupo;
+  if (!esGrupo) return;
+
+  const vb = (state.verbas && state.verbas[activeTab]) || {};
+  const cuenta = { pos: {}, neg: {} };
+  for (const suc in vb) {
+    (vb[suc].fuertes || []).forEach(x => { const c = (x.cat || "").trim(); if (c) cuenta.pos[c] = (cuenta.pos[c] || 0) + 1; });
+    (vb[suc].debiles || []).forEach(x => { const c = (x.cat || "").trim(); if (c) cuenta.neg[c] = (cuenta.neg[c] || 0) + 1; });
+  }
+
+  const panel = (esPos, obj) => {
+    const head = esPos ? "▲ Qué nos están reconociendo" : "▼ Qué nos están reclamando";
+    const cls = esPos ? "pos" : "neg";
+    const items = Object.entries(obj).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    if (!items.length) {
+      return `<div class="pc-panel"><div class="pc-h ${cls}">${head}</div>
+        <div class="pc-empty">Sin verbalizaciones ${esPos ? "positivas" : "negativas"} este período.</div></div>`;
+    }
+    const total = items.reduce((a, [, n]) => a + n, 0);
+    const max = items[0][1];
+    const filas = items.map(([cat, n]) => `<div class="pc-row">
+        <span class="pc-cat" title="${cat}">${cat}</span>
+        <span class="pc-bar"><span class="${esPos ? "p" : "n"}" style="width:${Math.max(6, Math.round(n / max * 100))}%"></span></span>
+        <span class="pc-n ${esPos ? "p" : "n"}">${n}</span>
+      </div>`).join("");
+    const [topCat, topN] = items[0];
+    const palabra = esPos ? (total === 1 ? "mención positiva" : "menciones positivas")
+                          : (total === 1 ? "reclamo" : "reclamos");
+    const verbo = topN === 1 ? "corresponde" : "corresponden";
+    const nota = `De ${total} ${palabra}, <b>${topN}</b> ${verbo} a <b>${topCat}</b>.`;
+    return `<div class="pc-panel"><div class="pc-h ${cls}">${head}</div>
+      <div class="pc-list">${filas}</div><p class="pc-note">${nota}</p></div>`;
+  };
+
+  $("comunes").innerHTML = panel(true, cuenta.pos) + panel(false, cuenta.neg);
 }
 
 function renderVerbas() {
@@ -1597,7 +1687,11 @@ function setAuto(sec) {
 // ================================================================
 //  EVENTOS
 // ================================================================
-document.querySelectorAll(".tab").forEach(t => t.onclick = () => { activeTab = t.dataset.tab; render(); });
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  activeTab = t.dataset.tab;
+  renderPills();   // la lista de sucursales cambia según el área
+  render();
+});
 $("cmpSel").onchange = renderBars;
 $("uploadBtn").onclick = () => $("fileInp").click();
 $("fileInp").onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; };

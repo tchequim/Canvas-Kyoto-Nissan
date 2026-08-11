@@ -357,25 +357,74 @@
   .al-filtro button { background: none; border: 0; color: inherit; cursor: pointer; font-size: 13px;
     width: 20px; height: 20px; border-radius: 50%; }
   .al-filtro button:hover { background: rgba(0,0,0,.12); }
-  .al-list { display: flex; flex-direction: column; gap: 11px; }
-  .al-card {
-    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--bad);
-    border-radius: 12px; box-shadow: var(--shadow); padding: 14px 17px;
-    transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+  /* tabla de alertas: Origen | Cliente | Fecha | Verbalización | Plan de acción */
+  .al-tabla {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; margin-bottom: 16px;
   }
-  .al-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
-  .al-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
-  .al-cli { font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
-  .al-meta { font-size: 11.5px; color: var(--ink-muted); }
-  .al-meta span + span::before { content: " · "; opacity: .5; }
-  .al-r { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
-  .al-chip {
-    display: inline-flex; align-items: baseline; gap: 6px; font-size: 11.5px;
-    background: var(--bad-soft); color: var(--bad); border-radius: 7px; padding: 5px 10px; max-width: 100%;
+  .al-org {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+    padding: 12px 16px; background: var(--bad-soft); color: var(--bad);
+    font-size: 13.5px; font-weight: 800; border-bottom: 1px solid var(--border);
   }
-  .al-chip.warn { background: var(--warn-soft, #fff6dd); color: var(--warn); }
-  .al-chip b { font-weight: 800; }
-  .al-chip span { color: var(--ink-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 340px; }
+  .al-org .q { font-weight: 500; font-size: 12px; color: var(--ink-muted); }
+  .al-org .n { margin-left: auto; font-size: 11.5px; font-weight: 700; }
+  /* indicadores que sí llegaron al objetivo pero igual tienen casos sueltos */
+  .al-org.info { background: var(--surface-2); color: var(--ink-muted); }
+  .al-th, .al-tr {
+    display: grid; grid-template-columns: 1.15fr 92px 2fr 1.6fr; gap: 14px;
+    padding: 10px 16px; align-items: start;
+  }
+  .al-th {
+    font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--ink-faint); background: var(--surface-2); border-bottom: 1px solid var(--border);
+  }
+  .al-tr { border-bottom: 1px solid var(--border); font-size: 12.5px; transition: background var(--dur) var(--ease); }
+  .al-tr:last-child { border-bottom: 0; }
+  .al-tr:hover { background: var(--surface-2); }
+  @media (max-width: 900px) {
+    .al-th { display: none; }
+    .al-tr { grid-template-columns: 1fr; gap: 6px; }
+    .al-tr > div::before { content: attr(data-k); display: block; font-size: 9.5px; font-weight: 800;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 2px; }
+  }
+  .al-cli2 { font-weight: 700; color: var(--ink); }
+  .al-nota { font-size: 11px; font-weight: 800; color: var(--bad); margin-top: 2px; }
+  .al-nota.warn { color: var(--warn); }
+  .al-fec { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+  .al-verb { color: var(--ink-muted); line-height: 1.5; }
+  .al-verb .cita { color: var(--ink); font-style: italic; }
+  .al-verb .por { display: block; margin-top: 4px; font-size: 11.5px; }
+  .al-verb .vacio { color: var(--ink-faint); font-style: italic; }
+  .al-plan { display: flex; align-items: flex-start; gap: 8px; }
+  .al-plan .txt { flex: 1; color: var(--good); line-height: 1.5; }
+  .al-plan .txt.vacio { color: var(--ink-faint); font-style: italic; }
+  .al-add {
+    flex: 0 0 auto; width: 26px; height: 26px; border-radius: 7px; cursor: pointer;
+    border: 1.5px solid var(--border); background: var(--surface); color: var(--ink-muted);
+    font-size: 15px; line-height: 1; display: grid; place-items: center;
+    transition: all var(--dur) var(--ease);
+  }
+  .al-add:hover { border-color: var(--brand); color: var(--brand); }
+
+  /* modal para escribir el plan */
+  .modal-bg { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.5); display: grid; place-items: center; padding: 20px; }
+  .modal {
+    background: var(--surface); border-radius: var(--radius); box-shadow: 0 24px 60px rgba(0,0,0,.4);
+    width: min(560px, 100%); padding: 22px 24px; border: 1px solid var(--border);
+  }
+  .modal h3 { margin: 0 0 4px; font-size: 16px; letter-spacing: -.01em; }
+  .modal .caso { font-size: 12px; color: var(--ink-muted); line-height: 1.5; margin-bottom: 14px; }
+  .modal .caso b { color: var(--ink); }
+  .modal textarea {
+    width: 100%; min-height: 120px; resize: vertical; font-family: var(--font); font-size: 13.5px;
+    color: var(--ink); background: var(--surface-2); border: 1.5px solid var(--border);
+    border-radius: 9px; padding: 11px 13px; line-height: 1.5;
+  }
+  .modal textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
+  .modal-btns { display: flex; gap: 9px; justify-content: flex-end; margin-top: 14px; align-items: center; }
+  .modal-msg { margin-right: auto; font-size: 12px; color: var(--ink-muted); }
+  .modal-msg.err { color: var(--bad); }
   .al-empty { padding: 22px 18px; font-size: 13px; color: var(--ink-faint); font-style: italic;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
   .al-suc-t { font-size: 13px; font-weight: 800; letter-spacing: .03em; color: var(--ink-muted);
@@ -727,6 +776,19 @@
     </div>
 
     <div class="tip" id="tip" hidden></div>
+
+    <div class="modal-bg" id="planModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+        <h3 id="pmTitle">Plan de acción</h3>
+        <p class="caso" id="pmCaso"></p>
+        <textarea id="pmTexto" placeholder="Escribí qué se va a hacer con este caso…"></textarea>
+        <div class="modal-btns">
+          <span class="modal-msg" id="pmMsg"></span>
+          <button class="src-btn ghost" id="pmCancel" type="button">Cancelar</button>
+          <button class="src-btn" id="pmSave" type="button">Guardar</button>
+        </div>
+      </div>
+    </div>
 
     <p class="foot">
       <b>Conexión en vivo:</b> pegá arriba la URL del Web App de Apps Script y elegí un intervalo — el dashboard se
@@ -1468,6 +1530,7 @@ function renderPlanes() {
 // ALERTAS = { ventas: [...], posventa: [...] } — solo clientes con
 // alguna respuesta mala (nota ≤4 / No / Probablemente / No decidido).
 let ALERTAS = { ventas: [], posventa: [] };
+let PLANES_AL = {};        // planes escritos a mano: "area|periodo|cliente|sigla" -> texto
 let filtroAlerta = null;   // {sig, key, lbl} cuando se llega por click desde un gauge
 let ultimaArea = "ventas"; // recuerda Ventas/Posventa al pasar a Training o Alertas
 
@@ -1519,12 +1582,14 @@ function alertasActuales() {
   return out.sort((a, b) => (b.r || []).length - (a.r || []).length);
 }
 
+// Agrupa las alertas por INDICADOR que no llegó al objetivo (Origen).
+// Solo muestra los indicadores en rojo/amarillo de la sucursal elegida.
 function renderAlertas() {
   const el = $("alertas");
-  const area = areaActual() === "posventa" ? "Posventa" : "Ventas";
+  const areaKey = areaActual();
+  const area = areaKey === "posventa" ? "Posventa" : "Ventas";
   const hayDatos = (ALERTAS.ventas || []).length || (ALERTAS.posventa || []).length;
 
-  // chip del filtro activo
   const fw = $("alFiltro");
   if (filtroAlerta) {
     fw.hidden = false;
@@ -1532,7 +1597,7 @@ function renderAlertas() {
   } else fw.hidden = true;
 
   $("alertasTitle").textContent = `Alertas de clientes · ${area} — ${current}`;
-  $("alAreaSel").value = areaActual();
+  $("alAreaSel").value = areaKey;
 
   if (!hayDatos) {
     el.innerHTML = `<div class="al-empty">${ALERTAS.falta || ALERTAS.error
@@ -1542,38 +1607,118 @@ function renderAlertas() {
     return;
   }
 
-  const lista = alertasActuales();
-  if (!lista.length) {
+  // 1) indicadores que NO llegaron al objetivo en la sucursal elegida
+  const mets = (state.tabs[areaKey][current] || []).filter(m => m.obj > 0 && m.base > 0 && m.fav < m.obj);
+  // 2) clientes con alerta, de esa sucursal
+  const clientes = alertasActuales();
+
+  if (!clientes.length) {
     el.innerHTML = `<div class="al-empty">Sin clientes con alertas de ${area} en ${current}${filtroAlerta ? " para ese filtro" : ""}. 🎉</div>`;
     return;
   }
 
-  const card = c => {
-    const meta = [c.dealer, c.mod, c.fec, c.ases ? "Asesor: " + c.ases : "", c.per]
-      .filter(Boolean).map(x => `<span>${x}</span>`).join("");
-    const chips = (c.r || []).map(x => {
+  // 3) agrupar los clientes bajo cada indicador en rojo
+  const siglas = mets.map(m => m.s);
+  const extra = [];   // indicadores con alertas que igual cumplieron el objetivo
+  clientes.forEach(c => (c.r || []).forEach(x => {
+    if (!siglas.includes(x.s) && !extra.includes(x.s)) extra.push(x.s);
+  }));
+
+  const bloque = (sig, bajoObj) => {
+    const m = (state.tabs[areaKey][current] || []).find(x => x.s === sig);
+    const filas = [];
+    clientes.forEach(c => (c.r || []).forEach(x => {
+      if (x.s !== sig) return;
+      if (filtroAlerta && filtroAlerta.sig !== sig) return;
+      filas.push({ c, x });
+    }));
+    if (!filas.length) return "";
+
+    const preg = m ? shortName(m.name) : (filas[0].x.p || sig);
+    const cab = bajoObj && m
+      ? `<span class="n">${fmt(m.fav)}% · objetivo ${fmt(m.obj)}%</span>`
+      : `<span class="n">${filas.length} caso${filas.length > 1 ? "s" : ""}</span>`;
+
+    const tr = filas.map(({ c, x }) => {
       const k = keyResp(x.v);
-      const leve = k === "4" || k === "dl";   // 4 y "Probablemente lo llevaría" = amarillo
-      return `<span class="al-chip ${leve ? "warn" : ""}"><b>${x.s}: ${x.v}</b><span>${x.p}</span></span>`;
+      const leve = k === "4" || k === "dl";
+      // verbalización: comentario libre + el "¿por qué?" de esta pregunta
+      const partes = [];
+      if (c.com) partes.push(`<span class="cita">“${c.com}”</span>`);
+      if (x.w)   partes.push(`<span class="por">${x.w}</span>`);
+      const verb = partes.length ? partes.join("") : `<span class="vacio">Sin comentarios</span>`;
+      const plan = PLANES_AL[clavePlanAlerta(areaKey, c.per, c.cli, sig)] || "";
+      const meta = [c.mod, c.ases].filter(Boolean).join(" · ");
+      return `<div class="al-tr">
+        <div data-k="Cliente">
+          <div class="al-cli2">${c.cli}</div>
+          <div class="al-nota ${leve ? "warn" : ""}">${x.v}</div>
+          ${meta ? `<div class="al-fec" style="font-size:11px">${meta}</div>` : ""}
+        </div>
+        <div data-k="Fecha" class="al-fec">${c.fec || "—"}</div>
+        <div data-k="Verbalización" class="al-verb">${verb}</div>
+        <div data-k="Plan de acción" class="al-plan">
+          <span class="txt ${plan ? "" : "vacio"}">${plan || "Sin plan cargado"}</span>
+          <button class="al-add" type="button" title="${plan ? "Editar" : "Agregar"} plan de acción"
+            data-sig="${sig}" data-cli="${esc(c.cli)}" data-per="${c.per}" data-suc="${esc(sucDeDealer(c.dealer))}"
+            data-fec="${c.fec || ""}" data-preg="${esc(preg)}">${plan ? "✎" : "+"}</button>
+        </div>
+      </div>`;
     }).join("");
-    return `<div class="al-card">
-      <div class="al-top"><span class="al-cli">${c.cli}</span><span class="al-meta">${meta}</span></div>
-      <div class="al-r">${chips}</div>
+
+    return `<div class="al-tabla">
+      <div class="al-org ${bajoObj ? "" : "info"}"><span>${sig}</span><span class="q">${preg}</span>${cab}</div>
+      <div class="al-th"><div>Cliente</div><div>Fecha</div><div>Verbalización</div><div>Plan de acción</div></div>
+      ${tr}
     </div>`;
   };
 
-  if (current === "Grupo Kyoto") {
-    // agrupar por sucursal
-    const porSuc = {};
-    lista.forEach(c => { const s = sucDeDealer(c.dealer); (porSuc[s] = porSuc[s] || []).push(c); });
-    const orden = SUC_ORDER.filter(s => porSuc[s]).concat(Object.keys(porSuc).filter(s => !SUC_ORDER.includes(s)));
-    el.innerHTML = `<div class="al-list">` + orden.map(s =>
-      `<div class="al-suc-t">${s} — ${porSuc[s].length} cliente${porSuc[s].length > 1 ? "s" : ""}</div>`
-      + porSuc[s].map(card).join("")
-    ).join("") + `</div>`;
-  } else {
-    el.innerHTML = `<div class="al-list">${lista.map(card).join("")}</div>`;
-  }
+  const html = siglas.map(s => bloque(s, true)).join("") + extra.map(s => bloque(s, false)).join("");
+  el.innerHTML = html || `<div class="al-empty">Sin casos para mostrar con este filtro.</div>`;
+}
+
+function esc(s) { return String(s || "").replace(/"/g, "&quot;"); }
+function clavePlanAlerta(area, per, cli, sig) {
+  return [area, per, cli, sig].map(x => String(x || "").trim().toLowerCase()).join("|");
+}
+
+// ---- Modal para escribir el plan de acción ----
+let planCtx = null;
+function abrirModalPlan(d) {
+  planCtx = d;
+  const clave = clavePlanAlerta(areaActual(), d.per, d.cli, d.sig);
+  $("pmCaso").innerHTML = `<b>${d.cli}</b> — ${d.suc}<br>${d.sig} · ${d.preg}${d.fec ? " · " + d.fec : ""}`;
+  $("pmTexto").value = PLANES_AL[clave] || "";
+  $("pmMsg").textContent = ""; $("pmMsg").className = "modal-msg";
+  $("planModal").hidden = false;
+  setTimeout(() => $("pmTexto").focus(), 30);
+}
+function cerrarModalPlan() { $("planModal").hidden = true; planCtx = null; }
+
+async function guardarPlan() {
+  if (!planCtx) return;
+  const url = $("srcUrl").value.trim();
+  const texto = $("pmTexto").value.trim();
+  const area = areaActual();
+  const clave = clavePlanAlerta(area, planCtx.per, planCtx.cli, planCtx.sig);
+  const msg = $("pmMsg"), btn = $("pmSave");
+
+  if (!url) { msg.textContent = "Falta la URL del Web App (⚙ Fuente)."; msg.className = "modal-msg err"; return; }
+  btn.disabled = true; msg.textContent = "Guardando…"; msg.className = "modal-msg";
+  try {
+    const q = new URLSearchParams({
+      accion: "guardarPlan", area, per: planCtx.per || "", cli: planCtx.cli,
+      sig: planCtx.sig, suc: planCtx.suc || "", preg: planCtx.preg || "",
+      fec: planCtx.fec || "", plan: texto,
+    }).toString();
+    const r = await jsonp(url + (url.includes("?") ? "&" : "?") + q);
+    if (!r || !r.ok) throw new Error((r && r.error) || "No se pudo guardar");
+    if (texto) PLANES_AL[clave] = texto; else delete PLANES_AL[clave];
+    cerrarModalPlan();
+    render();
+  } catch (e) {
+    msg.textContent = "✗ " + e.message; msg.className = "modal-msg err";
+  } finally { btn.disabled = false; }
 }
 
 // ---- Tooltip con los nombres de los clientes ----
@@ -1898,6 +2043,7 @@ async function fetchLive(manual) {
     conectado = true;
     if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
                                falta: d.alertas.falta || null, error: d.alertas.error || null };
+    if (d.planesAlerta) PLANES_AL = d.planesAlerta;
     poblarMeses(d.historico || []);
     const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);
@@ -1952,6 +2098,20 @@ document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
 })();
 
 $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
+
+// ---- Plan de acción: botón + / ✎ y modal ----
+$("alertas").addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest(".al-add");
+  if (b) abrirModalPlan({ sig: b.dataset.sig, cli: b.dataset.cli, per: b.dataset.per,
+                          suc: b.dataset.suc, fec: b.dataset.fec, preg: b.dataset.preg });
+});
+$("pmCancel").onclick = cerrarModalPlan;
+$("pmSave").onclick = guardarPlan;
+$("planModal").addEventListener("click", e => { if (e.target.id === "planModal") cerrarModalPlan(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("planModal").hidden) cerrarModalPlan();
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("planModal").hidden) guardarPlan();
+});
 $("alAreaSel").onchange = e => {
   ultimaArea = e.target.value;   // cambia el área sin salir de la solapa
   filtroAlerta = null;

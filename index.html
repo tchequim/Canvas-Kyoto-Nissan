@@ -1535,9 +1535,10 @@ function renderAlertas() {
   $("alAreaSel").value = areaActual();
 
   if (!hayDatos) {
-    el.innerHTML = `<div class="al-empty">Todavía no llegan los datos de clientes.
-      Creá las hojas <b>RawData Ventas</b> y <b>RawData Servicios</b> en el Sheet, pegá el RawData de Nissan
-      y volvé a implementar el Web App.</div>`;
+    el.innerHTML = `<div class="al-empty">${ALERTAS.falta || ALERTAS.error
+      ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
+      : `Todavía no llegan los datos de clientes. Creá las hojas <b>RawData Ventas</b> y
+         <b>RawData Servicios</b> en el Sheet, pegá el RawData de Nissan y volvé a implementar el Web App.`}</div>`;
     return;
   }
 
@@ -1895,7 +1896,8 @@ async function fetchLive(manual) {
     SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas, planes: d.planes || {} } };
     (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa, verbas: h.verbas, planes: h.planes || {} }; });
     conectado = true;
-    if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [] };
+    if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
+                               falta: d.alertas.falta || null, error: d.alertas.error || null };
     poblarMeses(d.historico || []);
     const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);

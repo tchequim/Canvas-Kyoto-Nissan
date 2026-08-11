@@ -15,6 +15,7 @@
     --bad: #cf2f42;
     --bad-soft: #fbe7ea;
     --warn: #dba400;
+    --warn-soft: #fff6dd;
     --info-soft: #eef1f5;
     --track: #e6e9ee;
     --shadow: 0 1px 2px rgba(20,25,35,.06), 0 6px 20px rgba(20,25,35,.05);
@@ -34,6 +35,7 @@
       --ink: #eef1f5; --ink-muted: #9aa4b1; --ink-faint: #6b7482; --brand: #ff3355;
       --good: #34c07f; --good-soft: #12291f; --bad: #f2596a; --bad-soft: #2c1518;
       --warn: #f2c14e;
+      --warn-soft: #2a2313;
       --info-soft: #1d2126; --track: #262c33;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
       --shadow-lift: 0 2px 6px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
@@ -46,6 +48,7 @@
     --ink: #191c21; --ink-muted: #5b6572; --ink-faint: #8b95a3; --brand: #c3002f;
     --good: #12864f; --good-soft: #e4f4ec; --bad: #cf2f42; --bad-soft: #fbe7ea;
     --warn: #dba400;
+    --warn-soft: #fff6dd;
     --info-soft: #eef1f5; --track: #e6e9ee;
     --shadow: 0 1px 2px rgba(20,25,35,.06), 0 6px 20px rgba(20,25,35,.05);
     --shadow-lift: 0 2px 4px rgba(20,25,35,.07), 0 12px 32px rgba(20,25,35,.10);
@@ -56,7 +59,7 @@
     --bg: #0e1013; --surface: #171a1e; --surface-2: #20242a; --border: #2b323a;
     --ink: #eef1f5; --ink-muted: #9aa4b1; --ink-faint: #6b7482; --brand: #ff3355;
     --good: #34c07f; --good-soft: #12291f; --bad: #f2596a; --bad-soft: #2c1518;
-    --warn: #f2c14e;
+    --warn: #f2c14e; --warn-soft: #2a2313;
     --info-soft: #1d2126; --track: #262c33;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
     --shadow-lift: 0 2px 6px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
@@ -333,6 +336,51 @@
     letter-spacing: .03em; color: var(--ink-muted); text-transform: uppercase;
   }
 
+  /* ---- Tooltip de clientes ---- */
+  .tip {
+    position: fixed; z-index: 60; pointer-events: none; max-width: 300px;
+    background: var(--ink); color: var(--bg); border-radius: 10px;
+    padding: 10px 13px; font-size: 12px; line-height: 1.5;
+    box-shadow: 0 8px 28px rgba(0,0,0,.35);
+  }
+  .tip b { display: block; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; opacity: .75; margin-bottom: 5px; }
+  .tip u { display: block; text-decoration: none; }
+  .tip i { display: block; margin-top: 6px; font-size: 10.5px; opacity: .7; font-style: normal; }
+  /* elementos que abren detalle */
+  .cnt-hit { cursor: pointer; border-radius: 4px; padding: 0 3px; transition: background var(--dur) var(--ease); }
+  .cnt-hit:hover { background: var(--surface-2); }
+  .gauge svg circle[data-key] { cursor: pointer; }
+
+  /* ---- Alertas ---- */
+  .al-filtro { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700;
+    background: var(--bad-soft); color: var(--bad); border-radius: 999px; padding: 4px 6px 4px 12px; }
+  .al-filtro button { background: none; border: 0; color: inherit; cursor: pointer; font-size: 13px;
+    width: 20px; height: 20px; border-radius: 50%; }
+  .al-filtro button:hover { background: rgba(0,0,0,.12); }
+  .al-list { display: flex; flex-direction: column; gap: 11px; }
+  .al-card {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--bad);
+    border-radius: 12px; box-shadow: var(--shadow); padding: 14px 17px;
+    transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .al-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+  .al-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+  .al-cli { font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+  .al-meta { font-size: 11.5px; color: var(--ink-muted); }
+  .al-meta span + span::before { content: " · "; opacity: .5; }
+  .al-r { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+  .al-chip {
+    display: inline-flex; align-items: baseline; gap: 6px; font-size: 11.5px;
+    background: var(--bad-soft); color: var(--bad); border-radius: 7px; padding: 5px 10px; max-width: 100%;
+  }
+  .al-chip.warn { background: var(--warn-soft, #fff6dd); color: var(--warn); }
+  .al-chip b { font-weight: 800; }
+  .al-chip span { color: var(--ink-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 340px; }
+  .al-empty { padding: 22px 18px; font-size: 13px; color: var(--ink-faint); font-style: italic;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .al-suc-t { font-size: 13px; font-weight: 800; letter-spacing: .03em; color: var(--ink-muted);
+    text-transform: uppercase; margin: 14px 2px 2px; }
+
   /* ---- Puntos en común (solo Grupo) ---- */
   .pc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   @media (max-width: 800px) { .pc-wrap { grid-template-columns: 1fr; } }
@@ -592,6 +640,7 @@
       <button class="tab" role="tab" data-tab="ventas" aria-selected="true">Ventas</button>
       <button class="tab" role="tab" data-tab="posventa" aria-selected="false">Posventa</button>
       <button class="tab" role="tab" data-tab="training" aria-selected="false">Training</button>
+      <button class="tab" role="tab" data-tab="alertas" aria-selected="false">Alertas</button>
     </div>
 
     <div class="subbar">
@@ -658,6 +707,26 @@
       </div>
       <div id="training"></div>
     </div>
+
+    <div id="alertasView" hidden>
+      <div class="section-t">
+        <h2 id="alertasTitle">Alertas de clientes</h2>
+        <span class="hint">clientes que respondieron 4 o menos, No, o Probablemente</span>
+        <span class="al-filtro" id="alFiltro" hidden>
+          <span id="alFiltroTxt"></span>
+          <button type="button" id="alFiltroX" title="Quitar filtro">✕</button>
+        </span>
+        <span class="cargo-wrap" style="margin-left:auto"><label for="alAreaSel">Área:</label>
+          <select id="alAreaSel" aria-label="Área de las alertas">
+            <option value="ventas">Ventas</option>
+            <option value="posventa">Posventa</option>
+          </select>
+        </span>
+      </div>
+      <div id="alertas"></div>
+    </div>
+
+    <div class="tip" id="tip" hidden></div>
 
     <p class="foot">
       <b>Conexión en vivo:</b> pegá arriba la URL del Web App de Apps Script y elegí un intervalo — el dashboard se
@@ -773,26 +842,27 @@ function enrich(a, tab) {
     const hayLlev = (dk || 0) + (dl || 0) + (dm || 0) + (dn || 0) > 0;
     if (hayLlev) {
       fav = dk || 0;
-      dist = [["Definit. lo llevaría", dk, "g"], ["Prob. lo llevaría", dl, "y"],
-              ["Prob. no lo llevaría", dm, "r"], ["Definit. no lo llevaría", dn, "r"]];
+      dist = [["Definit. lo llevaría", dk, "g", "dk"], ["Prob. lo llevaría", dl, "y", "dl"],
+              ["Prob. no lo llevaría", dm, "r", "dm"], ["Definit. no lo llevaría", dn, "r", "dn"]];
     } else {
       // Algunas sucursales cargan VOC03 en la nota 5 (favorable) y el resto en 1-4.
       fav = n5 || 0;
       const neg = (n1 || 0) + (n2 || 0) + (n3 || 0) + (n4 || 0);
-      dist = [["Lo llevaría", n5, "g"], ["No lo llevaría", neg, "r"]];
+      dist = [["Lo llevaría", n5, "g", "dk"], ["No lo llevaría", neg, "r", "dl|dm|dn"]];
     }
   } else if (type === "sino" || type === "sino3") {
     fav = si || 0;
-    dist = [["Sí", si, "g"], ["No", no, "r"]];
-    if (type === "sino3") dist.push(["No decidido", nd, "r"]);
+    dist = [["Sí", si, "g", "si"], ["No", no, "r", "no"]];
+    if (type === "sino3") dist.push(["No decidido", nd, "r", "nd"]);
   } else {
     fav = n5 || 0;
-    dist = [["5", n5, "g"], ["4", n4, "y"], ["3", n3, "r"], ["2", n2, "r"], ["1", n1, "r"]];
+    dist = [["5", n5, "g", "5"], ["4", n4, "y", "4"], ["3", n3, "r", "3"],
+            ["2", n2, "r", "2"], ["1", n1, "r", "1"]];
   }
   return {
     s, name, obj: obj || 0, base: base || 0, fav, type,
     dist: dist.map(d => ({
-      lbl: d[0], pct: d[1] || 0, col: d[2],
+      lbl: d[0], pct: d[1] || 0, col: d[2], key: d[3],
       cnt: base > 0 ? Math.round(base * (d[1] || 0) / 100) : 0,
     })),
   };
@@ -847,12 +917,13 @@ function shortName(n) {
 
 function sucursales() {
   let set;
-  if (activeTab === "ventas" || activeTab === "posventa") {
+  if (activeTab === "ventas" || activeTab === "posventa" || activeTab === "alertas") {
     // Solo las sucursales que tienen encuestas en esta área.
     // Así Sáenz Peña (que no registra ventas) no aparece en Ventas, pero sí en Posventa.
     // Es dinámico: si algún mes llega a tener encuestas, vuelve a aparecer sola.
-    set = new Set(Object.keys(state.tabs[activeTab]).filter(suc =>
-      (state.tabs[activeTab][suc] || []).some(m => m.base > 0)));
+    const a = areaActual();
+    set = new Set(Object.keys(state.tabs[a]).filter(suc =>
+      (state.tabs[a][suc] || []).some(m => m.base > 0)));
   } else {
     set = new Set([...Object.keys(state.tabs.ventas), ...Object.keys(state.tabs.posventa)]);
   }
@@ -891,12 +962,18 @@ function gaugeSVG(m) {
   }
   let arcs = "", cum = 0;
   if (m.base > 0) {
-    const suma = { g: 0, y: 0, r: 0 };
-    m.dist.forEach(d => { suma[d.col] += Math.max(0, d.pct); });
+    const suma = { g: 0, y: 0, r: 0 }, keys = { g: [], y: [], r: [] };
+    m.dist.forEach(d => {
+      suma[d.col] += Math.max(0, d.pct);
+      if (d.pct > 0 && d.key) keys[d.col].push(d.key);
+    });
     [["g", "var(--good)"], ["y", "var(--warn)"], ["r", "var(--bad)"]].forEach(([k, color]) => {
       if (suma[k] <= 0.05) return;
       const len = Math.min(1, suma[k] / 100) * CIRC;
-      arcs += `<circle cx="64" cy="64" r="${R}" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${len} ${CIRC - len}" stroke-dashoffset="${-cum}"/>`;
+      // los arcos rojo y amarillo son clickeables: llevan a las alertas
+      const hit = (k !== "g" && keys[k].length)
+        ? ` data-sig="${m.s}" data-key="${keys[k].join("|")}" data-col="${k}"` : "";
+      arcs += `<circle cx="64" cy="64" r="${R}" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${len} ${CIRC - len}" stroke-dashoffset="${-cum}"${hit}/>`;
       cum += len;
     });
   }
@@ -924,12 +1001,15 @@ function render() {
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === activeTab));
   $("periodoInp").value = state.periodo || "";
 
-  // alternar vista VOC / Training
+  // alternar vistas: VOC / Training / Alertas
   const esTraining = activeTab === "training";
-  $("vocView").hidden = esTraining;
+  const esAlertas  = activeTab === "alertas";
+  $("vocView").hidden      = esTraining || esAlertas;
   $("trainingView").hidden = !esTraining;
-  $("cargoWrap").hidden = !esTraining;
+  $("alertasView").hidden  = !esAlertas;
+  $("cargoWrap").hidden    = !esTraining;
   if (esTraining) { renderTraining(); countUp(); return; }
+  if (esAlertas)  { renderAlertas(); return; }
 
   const mets = (state.tabs[activeTab][current] || []).filter(m => !(m.obj <= 0 && m.base <= 0));
   const conObj = mets.filter(m => m.obj > 0 && m.base > 0);
@@ -962,8 +1042,12 @@ function render() {
     else { cls = "no"; chip = "✗ Bajo obj."; }
     const val = m.base > 0 ? fmt(m.fav) + "%" : "s/d";
     const small = m.obj > 0 ? `obj. ${fmt(m.obj)}%` : "sin objetivo";
+    // las cantidades "malas" (todo lo que no es verde) abren el detalle de clientes
     const partes = m.base > 0
-      ? m.dist.filter(d => d.cnt > 0).map(d => `${d.lbl}: <b>${d.cnt}</b>`).join(" · ")
+      ? m.dist.filter(d => d.cnt > 0).map(d => d.col === "g"
+          ? `${d.lbl}: <b>${d.cnt}</b>`
+          : `<span class="cnt-hit" data-sig="${m.s}" data-key="${d.key}" data-lbl="${d.lbl}">${d.lbl}: <b>${d.cnt}</b></span>`
+        ).join(" · ")
       : "";
     const cnts = m.base > 0
       ? `<div class="cnts">Respondieron <b>${m.base}</b>${partes ? " — " + partes : ""}</div>`
@@ -1379,6 +1463,159 @@ function renderPlanes() {
 }
 
 // ================================================================
+//  ALERTAS DE CLIENTES (hojas RawData)
+// ================================================================
+// ALERTAS = { ventas: [...], posventa: [...] } — solo clientes con
+// alguna respuesta mala (nota ≤4 / No / Probablemente / No decidido).
+let ALERTAS = { ventas: [], posventa: [] };
+let filtroAlerta = null;   // {sig, key, lbl} cuando se llega por click desde un gauge
+let ultimaArea = "ventas"; // recuerda Ventas/Posventa al pasar a Training o Alertas
+
+// Área de datos vigente (Training y Alertas no son áreas, heredan la última)
+function areaActual() {
+  return (activeTab === "ventas" || activeTab === "posventa") ? activeTab : ultimaArea;
+}
+
+// Clasifica una respuesta en la misma clave que usa dist[].key
+function keyResp(v) {
+  const s = norm(v);
+  if (/^[1-5]$/.test(s)) return s;
+  if (s === "no") return "no";
+  if (s.indexOf("no lo tengo decidido") >= 0) return "nd";
+  if (s.indexOf("definitivamente") === 0) return /\bno\b/.test(s) ? "dn" : "dk";
+  if (s.indexOf("probablemente") === 0) return /\bno\b/.test(s) ? "dm" : "dl";
+  if (s === "si") return "si";
+  return s;
+}
+
+function sucDeDealer(d) {
+  const s = norm(d);
+  if (s.includes("resist") || s.includes("oarg062")) return "Kyoto Resistencia";
+  if (s.includes("corrient") || s.includes("oarg047")) return "Kyoto Corrientes";
+  if (s.includes("posad") || s.includes("oarg079")) return "Kyoto Posadas";
+  if (s.includes("pena") || s.includes("saenz") || s.includes("oarg093")) return "Kyoto Sáenz Peña";
+  return d ? String(d).trim() : "—";
+}
+
+// Clientes del área/sucursal actual que respondieron `key` en el indicador `sig`.
+function clientesDe(sig, key) {
+  const lista = ALERTAS[areaActual()] || [];
+  const keys = String(key || "").split("|");
+  return lista.filter(c => {
+    if (current !== "Grupo Kyoto" && sucDeDealer(c.dealer) !== current) return false;
+    return (c.r || []).some(x => x.s === sig && keys.includes(keyResp(x.v)));
+  });
+}
+
+// Todos los clientes con alertas del área/sucursal actual (para la solapa).
+function alertasActuales() {
+  const lista = ALERTAS[areaActual()] || [];
+  let out = current === "Grupo Kyoto" ? lista.slice()
+                                      : lista.filter(c => sucDeDealer(c.dealer) === current);
+  if (filtroAlerta) {
+    const keys = String(filtroAlerta.key || "").split("|");
+    out = out.filter(c => (c.r || []).some(x => x.s === filtroAlerta.sig && keys.includes(keyResp(x.v))));
+  }
+  return out.sort((a, b) => (b.r || []).length - (a.r || []).length);
+}
+
+function renderAlertas() {
+  const el = $("alertas");
+  const area = areaActual() === "posventa" ? "Posventa" : "Ventas";
+  const hayDatos = (ALERTAS.ventas || []).length || (ALERTAS.posventa || []).length;
+
+  // chip del filtro activo
+  const fw = $("alFiltro");
+  if (filtroAlerta) {
+    fw.hidden = false;
+    $("alFiltroTxt").textContent = `${filtroAlerta.sig} · ${filtroAlerta.lbl}`;
+  } else fw.hidden = true;
+
+  $("alertasTitle").textContent = `Alertas de clientes · ${area} — ${current}`;
+  $("alAreaSel").value = areaActual();
+
+  if (!hayDatos) {
+    el.innerHTML = `<div class="al-empty">Todavía no llegan los datos de clientes.
+      Creá las hojas <b>RawData Ventas</b> y <b>RawData Servicios</b> en el Sheet, pegá el RawData de Nissan
+      y volvé a implementar el Web App.</div>`;
+    return;
+  }
+
+  const lista = alertasActuales();
+  if (!lista.length) {
+    el.innerHTML = `<div class="al-empty">Sin clientes con alertas de ${area} en ${current}${filtroAlerta ? " para ese filtro" : ""}. 🎉</div>`;
+    return;
+  }
+
+  const card = c => {
+    const meta = [c.dealer, c.mod, c.fec, c.ases ? "Asesor: " + c.ases : "", c.per]
+      .filter(Boolean).map(x => `<span>${x}</span>`).join("");
+    const chips = (c.r || []).map(x => {
+      const k = keyResp(x.v);
+      const leve = k === "4" || k === "dl";   // 4 y "Probablemente lo llevaría" = amarillo
+      return `<span class="al-chip ${leve ? "warn" : ""}"><b>${x.s}: ${x.v}</b><span>${x.p}</span></span>`;
+    }).join("");
+    return `<div class="al-card">
+      <div class="al-top"><span class="al-cli">${c.cli}</span><span class="al-meta">${meta}</span></div>
+      <div class="al-r">${chips}</div>
+    </div>`;
+  };
+
+  if (current === "Grupo Kyoto") {
+    // agrupar por sucursal
+    const porSuc = {};
+    lista.forEach(c => { const s = sucDeDealer(c.dealer); (porSuc[s] = porSuc[s] || []).push(c); });
+    const orden = SUC_ORDER.filter(s => porSuc[s]).concat(Object.keys(porSuc).filter(s => !SUC_ORDER.includes(s)));
+    el.innerHTML = `<div class="al-list">` + orden.map(s =>
+      `<div class="al-suc-t">${s} — ${porSuc[s].length} cliente${porSuc[s].length > 1 ? "s" : ""}</div>`
+      + porSuc[s].map(card).join("")
+    ).join("") + `</div>`;
+  } else {
+    el.innerHTML = `<div class="al-list">${lista.map(card).join("")}</div>`;
+  }
+}
+
+// ---- Tooltip con los nombres de los clientes ----
+function mostrarTip(e, sig, key, lbl) {
+  const cli = clientesDe(sig, key);
+  const tip = $("tip");
+  if (!cli.length) {
+    if (!(ALERTAS.ventas || []).length && !(ALERTAS.posventa || []).length) {
+      tip.innerHTML = `<b>${sig} · ${lbl}</b><i>Cargá las hojas RawData para ver los nombres</i>`;
+    } else {
+      tip.innerHTML = `<b>${sig} · ${lbl}</b><i>Sin clientes identificados</i>`;
+    }
+  } else {
+    const muestra = cli.slice(0, 8).map(c => `<u>${c.cli}</u>`).join("");
+    const resto = cli.length > 8 ? `<i>y ${cli.length - 8} más…</i>` : "";
+    tip.innerHTML = `<b>${sig} · ${lbl} — ${cli.length} cliente${cli.length > 1 ? "s" : ""}</b>${muestra}${resto}<i>Clic para ver el detalle</i>`;
+  }
+  tip.hidden = false;
+  moverTip(e);
+}
+function moverTip(e) {
+  const tip = $("tip");
+  if (tip.hidden) return;
+  const m = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + m, y = e.clientY + m;
+  if (x + w > innerWidth - 8) x = e.clientX - w - m;
+  if (y + h > innerHeight - 8) y = e.clientY - h - m;
+  tip.style.left = Math.max(8, x) + "px";
+  tip.style.top = Math.max(8, y) + "px";
+}
+function ocultarTip() { $("tip").hidden = true; }
+
+// Click en un segmento/cantidad → abre la solapa Alertas filtrada
+function irAAlertas(sig, key, lbl) {
+  filtroAlerta = { sig, key, lbl };
+  ocultarTip();
+  activeTab = "alertas";
+  renderPills();
+  render();
+  $("alertasView").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ================================================================
 //  TRAINING (segundo Google Sheet — Academia)
 // ================================================================
 let TRAINING = null;   // { cargos:[...], personas:[{nombre,cargo,sucursal,pct,pend[],totalPend}] }
@@ -1658,6 +1895,7 @@ async function fetchLive(manual) {
     SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas, planes: d.planes || {} } };
     (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa, verbas: h.verbas, planes: h.planes || {} }; });
     conectado = true;
+    if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [] };
     poblarMeses(d.historico || []);
     const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);
@@ -1689,9 +1927,35 @@ function setAuto(sec) {
 // ================================================================
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
   activeTab = t.dataset.tab;
+  if (activeTab === "ventas" || activeTab === "posventa") ultimaArea = activeTab;
+  if (activeTab !== "alertas") filtroAlerta = null;   // al salir se limpia el filtro
   renderPills();   // la lista de sucursales cambia según el área
   render();
 });
+
+// ---- Tooltip de clientes + click al detalle (gauges y cantidades) ----
+(function () {
+  const grid = $("grid");
+  const dato = el => {
+    if (!el) return null;
+    const n = el.closest ? el.closest("[data-sig][data-key]") : null;
+    if (!n) return null;
+    const lbl = n.dataset.lbl || (n.dataset.col === "y" ? "parcialmente favorable" : "no favorable");
+    return { sig: n.dataset.sig, key: n.dataset.key, lbl };
+  };
+  grid.addEventListener("mouseover", e => { const d = dato(e.target); if (d) mostrarTip(e, d.sig, d.key, d.lbl); });
+  grid.addEventListener("mousemove", e => { if (dato(e.target)) moverTip(e); else ocultarTip(); });
+  grid.addEventListener("mouseleave", ocultarTip);
+  grid.addEventListener("click", e => { const d = dato(e.target); if (d) irAAlertas(d.sig, d.key, d.lbl); });
+})();
+
+$("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
+$("alAreaSel").onchange = e => {
+  ultimaArea = e.target.value;   // cambia el área sin salir de la solapa
+  filtroAlerta = null;
+  renderPills();
+  render();
+};
 $("cmpSel").onchange = renderBars;
 $("uploadBtn").onclick = () => $("fileInp").click();
 $("fileInp").onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; };

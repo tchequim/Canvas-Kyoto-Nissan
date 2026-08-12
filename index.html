@@ -357,6 +357,46 @@
   .al-filtro button { background: none; border: 0; color: inherit; cursor: pointer; font-size: 13px;
     width: 20px; height: 20px; border-radius: 50%; }
   .al-filtro button:hover { background: rgba(0,0,0,.12); }
+  /* ---- Tabla de planes de acción (espejo de las hojas del Sheet) ---- */
+  .al-info { font-size: 12.5px; color: var(--ink-muted); margin: 0 2px 10px; }
+  .al-info b { color: var(--ink); }
+  .al-scroll {
+    overflow-x: auto; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  table.al-tab { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 1500px; }
+  .al-tab th {
+    position: sticky; top: 0; z-index: 2; text-align: left; white-space: nowrap;
+    background: var(--surface-2); color: var(--ink-faint);
+    font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+  }
+  .al-tab td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
+  .al-tab tbody tr:hover td { background: var(--surface-2); }
+  .al-tab tbody tr.interna td.org { color: var(--warn); font-weight: 800; }
+  .al-tab td.org { font-weight: 700; color: var(--bad); min-width: 230px; max-width: 300px; }
+  .al-tab td.cli { font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .al-tab td.fec { color: var(--ink-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .al-tab td.verb { color: var(--ink-muted); min-width: 260px; max-width: 340px; }
+  .al-tab td.ed {
+    cursor: pointer; min-width: 150px; max-width: 260px;
+    transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .al-tab td.ed:hover { background: color-mix(in srgb, var(--brand) 8%, transparent); box-shadow: inset 0 0 0 1.5px var(--brand); }
+  .al-tab td.ed.novacio { text-align: center; }
+  .al-tab td.ed .mas { color: var(--ink-faint); font-size: 15px; font-weight: 700; }
+  .al-tab td.ed:hover .mas { color: var(--brand); }
+  .al-tab td.acc { text-align: center; }
+  .pm-fila3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 640px) { .pm-fila3 { grid-template-columns: 1fr; } }
+  .pm-fila3 label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; font-weight: 800; color: var(--ink); }
+  .pm-fila3 textarea {
+    font-family: var(--font); font-size: 12.5px; font-weight: 400; color: var(--ink); resize: vertical;
+    background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; min-height: 54px;
+  }
+  .pm-lbl { display: block; font-size: 12px; font-weight: 800; color: var(--ink); margin-bottom: 5px; }
+  .modal { width: min(820px, 100%); max-height: 90vh; overflow-y: auto; }
+
   /* tabla de alertas: Origen | Cliente | Fecha | Verbalización | Plan de acción */
   .al-tabla {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -372,7 +412,7 @@
   /* indicadores que sí llegaron al objetivo pero igual tienen casos sueltos */
   .al-org.info { background: var(--surface-2); color: var(--ink-muted); }
   .al-th, .al-tr {
-    display: grid; grid-template-columns: 1.15fr 92px 2fr 1.6fr; gap: 14px;
+    display: grid; grid-template-columns: 1fr 88px 1.7fr 1.5fr 1fr; gap: 13px;
     padding: 10px 16px; align-items: start;
   }
   .al-th {
@@ -399,6 +439,13 @@
   .al-plan { display: flex; align-items: flex-start; gap: 8px; }
   .al-plan .txt { flex: 1; color: var(--good); line-height: 1.5; }
   .al-plan .txt.vacio { color: var(--ink-faint); font-style: italic; }
+  /* responsable + fecha de cierre */
+  .al-seg { line-height: 1.5; }
+  .al-seg .k { font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); }
+  .al-seg .v { color: var(--ink); }
+  .al-seg .v.vacio { color: var(--ink-faint); font-style: italic; }
+  .al-seg .cierre { margin-top: 5px; }
+  .al-seg .cierre .v { font-variant-numeric: tabular-nums; }
   .al-add {
     flex: 0 0 auto; width: 26px; height: 26px; border-radius: 7px; cursor: pointer;
     border: 1.5px solid var(--border); background: var(--surface); color: var(--ink-muted);
@@ -422,6 +469,14 @@
     border-radius: 9px; padding: 11px 13px; line-height: 1.5;
   }
   .modal textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
+  .pm-fila { display: grid; grid-template-columns: 1fr 150px; gap: 12px; margin-top: 12px; }
+  @media (max-width: 500px) { .pm-fila { grid-template-columns: 1fr; } }
+  .pm-fila label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 800; color: var(--ink); }
+  .pm-fila input {
+    font-family: var(--font); font-size: 13px; font-weight: 400; color: var(--ink);
+    background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 12px;
+  }
+  .pm-fila input:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
   .modal-btns { display: flex; gap: 9px; justify-content: flex-end; margin-top: 14px; align-items: center; }
   .modal-msg { margin-right: auto; font-size: 12px; color: var(--ink-muted); }
   .modal-msg.err { color: var(--bad); }
@@ -741,12 +796,6 @@
         <span class="hint">lo que dijeron los clientes — puntos fuertes y débiles</span>
       </div>
       <div class="verbas-wrap" id="verbas"></div>
-
-      <div class="section-t">
-        <h2 id="planesTitle">Planes de acción</h2>
-        <span class="hint">origen · cliente · desvío · acción correctiva (SERNISSAN)</span>
-      </div>
-      <div class="planes" id="planes"></div>
     </div>
 
     <div id="trainingView" hidden>
@@ -781,7 +830,21 @@
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
         <h3 id="pmTitle">Plan de acción</h3>
         <p class="caso" id="pmCaso"></p>
+        <div class="pm-fila3">
+          <label>Interacción con el Cliente<textarea id="pmInter" rows="2" placeholder="Qué se habló con el cliente"></textarea></label>
+          <label>Acción Preventiva<textarea id="pmPrev" rows="2" placeholder="Para que no vuelva a pasar"></textarea></label>
+          <label>Acción Correctiva<textarea id="pmCorr" rows="2" placeholder="Qué se corrigió"></textarea></label>
+        </div>
+        <label class="pm-lbl">Plan de acción</label>
         <textarea id="pmTexto" placeholder="Escribí qué se va a hacer con este caso…"></textarea>
+        <div class="pm-fila">
+          <label>Responsable
+            <input id="pmResp" type="text" placeholder="Nombre y apellido">
+          </label>
+          <label>Fecha de cierre
+            <input id="pmCierre" type="text" placeholder="dd/mm/aaaa" inputmode="numeric">
+          </label>
+        </div>
         <div class="modal-btns">
           <span class="modal-msg" id="pmMsg"></span>
           <button class="src-btn ghost" id="pmCancel" type="button">Cancelar</button>
@@ -1129,7 +1192,6 @@ function render() {
   renderBars();
   renderComunes();
   renderVerbas();
-  renderPlanes();
   countUp();
 }
 
@@ -1497,40 +1559,13 @@ function planCard(e) {
   </div>`;
 }
 
-function renderPlanes() {
-  const el = $("planes");
-  const tabName = activeTab === "ventas" ? "Ventas" : "Posventa";
-  if (!PLANES || !Object.keys(PLANES).length) {
-    $("planesTitle").textContent = "Planes de acción";
-    el.innerHTML = conectado
-      ? `<div class="plan-empty">No llegaron los planes de acción. Volvé a <b>implementar el Web App</b> (Apps Script → Implementar → Gestionar implementaciones → ✏️ → Versión: Nueva) para que incluya las hojas “Plan de Accion”.</div>`
-      : `<div class="plan-empty">Conectá el dashboard a tu Google Sheet para ver los planes de acción de cada sucursal.</div>`;
-    return;
-  }
-  const mine = PLANES[current];
-  if (mine) {
-    $("planesTitle").textContent = `Planes de acción · ${tabName} — ${current}`;
-    const items = mine[activeTab] || [];
-    el.innerHTML = items.length ? items.map(planCard).join("")
-      : `<div class="plan-empty">Sin planes de acción de ${tabName} cargados para ${current}.</div>`;
-    return;
-  }
-  // Grupo (o sucursal sin hoja de plan): mostrar todas
-  $("planesTitle").textContent = `Planes de acción · ${tabName} — todas las sucursales`;
-  const sucs = Object.keys(PLANES).filter(s => (PLANES[s][activeTab] || []).length);
-  if (!sucs.length) { el.innerHTML = `<div class="plan-empty">Sin planes de acción de ${tabName} cargados.</div>`; return; }
-  el.innerHTML = sucs.map(suc =>
-    `<div class="plan-suc-t">${suc}</div>` + PLANES[suc][activeTab].map(planCard).join("")
-  ).join("");
-}
-
 // ================================================================
 //  ALERTAS DE CLIENTES (hojas RawData)
 // ================================================================
 // ALERTAS = { ventas: [...], posventa: [...] } — solo clientes con
 // alguna respuesta mala (nota ≤4 / No / Probablemente / No decidido).
 let ALERTAS = { ventas: [], posventa: [] };
-let PLANES_AL = {};        // planes escritos a mano: "area|periodo|cliente|sigla" -> texto
+let PLANES_FILAS = { ventas: [], posventa: [] };   // filas tal cual de las hojas "Planes de Accion VOC - …"
 let filtroAlerta = null;   // {sig, key, lbl} cuando se llega por click desde un gauge
 let ultimaArea = "ventas"; // recuerda Ventas/Posventa al pasar a Training o Alertas
 
@@ -1582,13 +1617,13 @@ function alertasActuales() {
   return out.sort((a, b) => (b.r || []).length - (a.r || []).length);
 }
 
-// Agrupa las alertas por INDICADOR que no llegó al objetivo (Origen).
-// Solo muestra los indicadores en rojo/amarillo de la sucursal elegida.
+// La solapa Alertas muestra EXACTAMENTE las filas de las hojas
+// "Planes de Accion VOC - Ventas" / "- Posventa". Todo lo editable
+// se puede tocar acá y se guarda en el Sheet.
 function renderAlertas() {
   const el = $("alertas");
   const areaKey = areaActual();
   const area = areaKey === "posventa" ? "Posventa" : "Ventas";
-  const hayDatos = (ALERTAS.ventas || []).length || (ALERTAS.posventa || []).length;
 
   const fw = $("alFiltro");
   if (filtroAlerta) {
@@ -1596,124 +1631,109 @@ function renderAlertas() {
     $("alFiltroTxt").textContent = `${filtroAlerta.sig} · ${filtroAlerta.lbl}`;
   } else fw.hidden = true;
 
-  $("alertasTitle").textContent = `Alertas de clientes · ${area} — ${current}`;
+  $("alertasTitle").textContent = `Planes de acción · ${area} — ${current}`;
   $("alAreaSel").value = areaKey;
 
-  if (!hayDatos) {
+  let filas = (PLANES_FILAS[areaKey] || []).slice();
+  if (!filas.length) {
     el.innerHTML = `<div class="al-empty">${ALERTAS.falta || ALERTAS.error
       ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
-      : `Todavía no llegan los datos de clientes. Creá las hojas <b>RawData Ventas</b> y
-         <b>RawData Servicios</b> en el Sheet, pegá el RawData de Nissan y volvé a implementar el Web App.`}</div>`;
+      : `Todavía no llegan los casos. En el Sheet, ejecutá <b>sincronizarPlanesAccion</b>
+         y volvé a implementar el Web App.`}</div>`;
     return;
   }
 
-  // 1) indicadores que NO llegaron al objetivo en la sucursal elegida
-  const mets = (state.tabs[areaKey][current] || []).filter(m => m.obj > 0 && m.base > 0 && m.fav < m.obj);
-  // 2) clientes con alerta, de esa sucursal
-  const clientes = alertasActuales();
+  if (current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
+  if (filtroAlerta) filas = filas.filter(f => String(f.org).split(" ·")[0] === filtroAlerta.sig);
 
-  if (!clientes.length) {
-    el.innerHTML = `<div class="al-empty">Sin clientes con alertas de ${area} en ${current}${filtroAlerta ? " para ese filtro" : ""}. 🎉</div>`;
+  if (!filas.length) {
+    el.innerHTML = `<div class="al-empty">Sin casos de ${area} en ${current}${filtroAlerta ? " para ese filtro" : ""}. 🎉</div>`;
     return;
   }
 
-  // 3) agrupar los clientes bajo cada indicador en rojo
-  const siglas = mets.map(m => m.s);
-  const extra = [];   // indicadores con alertas que igual cumplieron el objetivo
-  clientes.forEach(c => (c.r || []).forEach(x => {
-    if (!siglas.includes(x.s) && !extra.includes(x.s)) extra.push(x.s);
-  }));
-
-  const bloque = (sig, bajoObj) => {
-    const m = (state.tabs[areaKey][current] || []).find(x => x.s === sig);
-    const filas = [];
-    clientes.forEach(c => (c.r || []).forEach(x => {
-      if (x.s !== sig) return;
-      if (filtroAlerta && filtroAlerta.sig !== sig) return;
-      filas.push({ c, x });
-    }));
-    if (!filas.length) return "";
-
-    const preg = m ? shortName(m.name) : (filas[0].x.p || sig);
-    const cab = bajoObj && m
-      ? `<span class="n">${fmt(m.fav)}% · objetivo ${fmt(m.obj)}%</span>`
-      : `<span class="n">${filas.length} caso${filas.length > 1 ? "s" : ""}</span>`;
-
-    const tr = filas.map(({ c, x }) => {
-      const k = keyResp(x.v);
-      const leve = k === "4" || k === "dl";
-      // verbalización: comentario libre + el "¿por qué?" de esta pregunta
-      const partes = [];
-      if (c.com) partes.push(`<span class="cita">“${c.com}”</span>`);
-      if (x.w)   partes.push(`<span class="por">${x.w}</span>`);
-      const verb = partes.length ? partes.join("") : `<span class="vacio">Sin comentarios</span>`;
-      const plan = PLANES_AL[clavePlanAlerta(areaKey, c.per, c.cli, sig)] || "";
-      const meta = [c.mod, c.ases].filter(Boolean).join(" · ");
-      return `<div class="al-tr">
-        <div data-k="Cliente">
-          <div class="al-cli2">${c.cli}</div>
-          <div class="al-nota ${leve ? "warn" : ""}">${x.v}</div>
-          ${meta ? `<div class="al-fec" style="font-size:11px">${meta}</div>` : ""}
-        </div>
-        <div data-k="Fecha" class="al-fec">${c.fec || "—"}</div>
-        <div data-k="Verbalización" class="al-verb">${verb}</div>
-        <div data-k="Plan de acción" class="al-plan">
-          <span class="txt ${plan ? "" : "vacio"}">${plan || "Sin plan cargado"}</span>
-          <button class="al-add" type="button" title="${plan ? "Editar" : "Agregar"} plan de acción"
-            data-sig="${sig}" data-cli="${esc(c.cli)}" data-per="${c.per}" data-suc="${esc(sucDeDealer(c.dealer))}"
-            data-fec="${c.fec || ""}" data-preg="${esc(preg)}">${plan ? "✎" : "+"}</button>
-        </div>
-      </div>`;
-    }).join("");
-
-    return `<div class="al-tabla">
-      <div class="al-org ${bajoObj ? "" : "info"}"><span>${sig}</span><span class="q">${preg}</span>${cab}</div>
-      <div class="al-th"><div>Cliente</div><div>Fecha</div><div>Verbalización</div><div>Plan de acción</div></div>
-      ${tr}
-    </div>`;
+  // celda editable: muestra el contenido, o un "+" si está vacía
+  const ed = (f, campo, i) => {
+    const v = f[campo] || "";
+    return `<td class="ed ${v ? "" : "novacio"}" data-i="${i}" data-campo="${campo}"
+      title="${v ? "Editar" : "Agregar"}">${v ? esc2(v) : '<span class="mas">+</span>'}</td>`;
   };
 
-  const html = siglas.map(s => bloque(s, true)).join("") + extra.map(s => bloque(s, false)).join("");
-  el.innerHTML = html || `<div class="al-empty">Sin casos para mostrar con este filtro.</div>`;
+  const tr = filas.map((f, i) => {
+    const interna = f.org === "Alerta interna";
+    const cargado = f.plan || f.resp || f.cierre || f.inter || f.prev || f.corr;
+    return `<tr class="${interna ? "interna" : ""}">
+      <td class="org">${esc2(f.org)}</td>
+      <td>${esc2(f.suc)}</td>
+      <td class="cli">${esc2(f.cli)}</td>
+      <td class="fec">${esc2(f.fec) || "—"}</td>
+      <td class="verb">${esc2(f.verb) || '<span class="mas">—</span>'}</td>
+      ${ed(f, "inter", i)}${ed(f, "prev", i)}${ed(f, "corr", i)}
+      ${ed(f, "plan", i)}${ed(f, "resp", i)}${ed(f, "cierre", i)}
+      <td class="acc"><button class="al-add" type="button" data-i="${i}"
+        title="${cargado ? "Editar" : "Completar"} este caso">${cargado ? "✎" : "+"}</button></td>
+    </tr>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="al-info">${filas.length} caso${filas.length > 1 ? "s" : ""} ·
+      tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet</div>
+    <div class="al-scroll"><table class="al-tab"><thead><tr>
+      <th>Origen</th><th>Sucursal</th><th>Cliente</th><th>Fecha</th><th>Verbalización</th>
+      <th>Interacción con el Cliente</th><th>Acción Preventiva</th><th>Acción Correctiva</th>
+      <th>Plan de acción</th><th>Responsable</th><th>Fecha de cierre</th><th></th>
+    </tr></thead><tbody>${tr}</tbody></table></div>`;
+
+  FILAS_VISIBLES = filas;
 }
 
+let FILAS_VISIBLES = [];
+function esc2(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function esc(s) { return String(s || "").replace(/"/g, "&quot;"); }
-function clavePlanAlerta(area, per, cli, sig) {
-  return [area, per, cli, sig].map(x => String(x || "").trim().toLowerCase()).join("|");
-}
 
-// ---- Modal para escribir el plan de acción ----
+// ---- Modal: edita los 6 campos del caso ----
 let planCtx = null;
-function abrirModalPlan(d) {
-  planCtx = d;
-  const clave = clavePlanAlerta(areaActual(), d.per, d.cli, d.sig);
-  $("pmCaso").innerHTML = `<b>${d.cli}</b> — ${d.suc}<br>${d.sig} · ${d.preg}${d.fec ? " · " + d.fec : ""}`;
-  $("pmTexto").value = PLANES_AL[clave] || "";
+const CAMPO_LBL = { inter: "Interacción con el Cliente", prev: "Acción Preventiva",
+  corr: "Acción Correctiva", plan: "Plan de acción", resp: "Responsable", cierre: "Fecha de cierre" };
+
+function abrirModalPlan(i, foco) {
+  const f = FILAS_VISIBLES[i];
+  if (!f) return;
+  planCtx = f;
+  $("pmCaso").innerHTML = `<b>${esc2(f.cli)}</b> — ${esc2(f.suc)}<br>${esc2(f.org)}${f.fec ? " · " + esc2(f.fec) : ""}`;
+  $("pmInter").value  = f.inter  || "";
+  $("pmPrev").value   = f.prev   || "";
+  $("pmCorr").value   = f.corr   || "";
+  $("pmTexto").value  = f.plan   || "";
+  $("pmResp").value   = f.resp   || "";
+  $("pmCierre").value = f.cierre || "";
   $("pmMsg").textContent = ""; $("pmMsg").className = "modal-msg";
   $("planModal").hidden = false;
-  setTimeout(() => $("pmTexto").focus(), 30);
+  const id = { inter:"pmInter", prev:"pmPrev", corr:"pmCorr", plan:"pmTexto", resp:"pmResp", cierre:"pmCierre" }[foco] || "pmTexto";
+  setTimeout(() => $(id).focus(), 30);
 }
 function cerrarModalPlan() { $("planModal").hidden = true; planCtx = null; }
 
 async function guardarPlan() {
   if (!planCtx) return;
   const url = $("srcUrl").value.trim();
-  const texto = $("pmTexto").value.trim();
+  const d = {
+    inter:  $("pmInter").value.trim(),  prev:   $("pmPrev").value.trim(),
+    corr:   $("pmCorr").value.trim(),   plan:   $("pmTexto").value.trim(),
+    resp:   $("pmResp").value.trim(),   cierre: $("pmCierre").value.trim(),
+  };
   const area = areaActual();
-  const clave = clavePlanAlerta(area, planCtx.per, planCtx.cli, planCtx.sig);
   const msg = $("pmMsg"), btn = $("pmSave");
-
   if (!url) { msg.textContent = "Falta la URL del Web App (⚙ Fuente)."; msg.className = "modal-msg err"; return; }
+
   btn.disabled = true; msg.textContent = "Guardando…"; msg.className = "modal-msg";
   try {
-    const q = new URLSearchParams({
-      accion: "guardarPlan", area, per: planCtx.per || "", cli: planCtx.cli,
-      sig: planCtx.sig, suc: planCtx.suc || "", preg: planCtx.preg || "",
-      fec: planCtx.fec || "", plan: texto,
-    }).toString();
+    const sig = String(planCtx.org).split(" ·")[0];
+    const q = new URLSearchParams(Object.assign({
+      accion: "guardarPlan", area, clave: planCtx.clave, cli: planCtx.cli, sig,
+    }, d)).toString();
     const r = await jsonp(url + (url.includes("?") ? "&" : "?") + q);
     if (!r || !r.ok) throw new Error((r && r.error) || "No se pudo guardar");
-    if (texto) PLANES_AL[clave] = texto; else delete PLANES_AL[clave];
+    Object.assign(planCtx, d);          // reflejarlo sin volver a pedir todo
     cerrarModalPlan();
     render();
   } catch (e) {
@@ -2043,7 +2063,7 @@ async function fetchLive(manual) {
     conectado = true;
     if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
                                falta: d.alertas.falta || null, error: d.alertas.error || null };
-    if (d.planesAlerta) PLANES_AL = d.planesAlerta;
+    if (d.planesFilas) PLANES_FILAS = { ventas: d.planesFilas.ventas || [], posventa: d.planesFilas.posventa || [] };
     poblarMeses(d.historico || []);
     const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);
@@ -2101,9 +2121,10 @@ $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
 
 // ---- Plan de acción: botón + / ✎ y modal ----
 $("alertas").addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest(".al-add");
-  if (b) abrirModalPlan({ sig: b.dataset.sig, cli: b.dataset.cli, per: b.dataset.per,
-                          suc: b.dataset.suc, fec: b.dataset.fec, preg: b.dataset.preg });
+  const btn = e.target.closest && e.target.closest(".al-add");
+  if (btn) { abrirModalPlan(+btn.dataset.i); return; }
+  const celda = e.target.closest && e.target.closest("td.ed");
+  if (celda) abrirModalPlan(+celda.dataset.i, celda.dataset.campo);
 });
 $("pmCancel").onclick = cerrarModalPlan;
 $("pmSave").onclick = guardarPlan;

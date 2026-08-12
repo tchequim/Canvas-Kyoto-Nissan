@@ -8,6 +8,9 @@
     --ink: #191c21;
     --ink-muted: #5b6572;
     --ink-faint: #8b95a3;
+    /* texto de la tabla de Alertas (en oscuro va todo blanco) */
+    --al-ink: #191c21;
+    --al-ink-soft: #5b6572;
     --brand: #c3002f;
     --brand-ink: #ffffff;
     --good: #12864f;
@@ -41,6 +44,7 @@
       --shadow-lift: 0 2px 6px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
       --shadow-head: 0 4px 16px rgba(255,51,85,.22), 0 18px 44px rgba(0,0,0,.45);
       --glass: rgba(23,26,30,.72);
+      --al-ink: #ffffff; --al-ink-soft: #ffffff;
     }
   }
   :root[data-theme="light"] {
@@ -54,6 +58,7 @@
     --shadow-lift: 0 2px 4px rgba(20,25,35,.07), 0 12px 32px rgba(20,25,35,.10);
     --shadow-head: 0 4px 12px rgba(195,0,47,.18), 0 16px 40px rgba(195,0,47,.14);
     --glass: rgba(255,255,255,.72);
+    --al-ink: #191c21; --al-ink-soft: #5b6572;
   }
   :root[data-theme="dark"] {
     --bg: #0e1013; --surface: #171a1e; --surface-2: #20242a; --border: #2b323a;
@@ -65,6 +70,7 @@
     --shadow-lift: 0 2px 6px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
     --shadow-head: 0 4px 16px rgba(255,51,85,.22), 0 18px 44px rgba(0,0,0,.45);
     --glass: rgba(23,26,30,.72);
+    --al-ink: #ffffff; --al-ink-soft: #ffffff;
   }
 
   * { box-sizing: border-box; }
@@ -115,13 +121,6 @@
   }
   .hd-t span { font-size: 12.5px; opacity: .9; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
   .hd-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-  .hd-period { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: .92; }
-  .hd-period input {
-    font-family: var(--font); font-size: 14px; font-weight: 800; color: var(--brand-ink);
-    background: rgba(255,255,255,.14); border: 1.5px solid rgba(255,255,255,.35);
-    border-radius: 7px; padding: 5px 10px; width: 130px; text-align: center;
-  }
-  .hd-period input:focus-visible { outline: 2px solid rgba(255,255,255,.7); outline-offset: 1px; }
   .hd-btns { display: flex; gap: 8px; }
   .hd-btn {
     background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.4); color: var(--brand-ink);
@@ -134,8 +133,6 @@
   .hd-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   .hd-btn.solid { background: #fff; color: #a30028; border-color: #fff; }
   .hd-btn.solid:hover { background: #ffe9ee; }
-  .hd-period input { transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease); }
-  .hd-period input:hover { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.55); }
 
   .status { margin: 12px 2px 0; font-size: 12.5px; font-weight: 600; min-height: 18px; }
   .status.ok { color: var(--good); }
@@ -371,13 +368,50 @@
     font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
     padding: 10px 12px; border-bottom: 1px solid var(--border);
   }
-  .al-tab td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
+  .al-tab td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top;
+    line-height: 1.45; color: var(--al-ink); }
   .al-tab tbody tr:hover td { background: var(--surface-2); }
   .al-tab tbody tr.interna td.org { color: var(--warn); font-weight: 800; }
+  .al-tab tbody tr.manual td.org::after {
+    content: "a mano"; display: inline-block; margin-left: 7px; padding: 1px 6px; border-radius: 999px;
+    font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+    background: var(--info-soft); color: var(--ink-faint); vertical-align: middle;
+  }
   .al-tab td.org { font-weight: 700; color: var(--bad); min-width: 230px; max-width: 300px; }
-  .al-tab td.cli { font-weight: 700; color: var(--ink); white-space: nowrap; }
-  .al-tab td.fec { color: var(--ink-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .al-tab td.verb { color: var(--ink-muted); min-width: 260px; max-width: 340px; }
+  .al-tab td.cli { font-weight: 700; color: var(--al-ink); white-space: nowrap; }
+  .al-tab td.fec { color: var(--al-ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .al-tab td.verb { color: var(--al-ink-soft); min-width: 260px; max-width: 340px; }
+  /* en oscuro, toda la tabla en blanco (pedido: leerla mejor en la presentación) */
+  :root[data-theme="dark"] .al-tab tbody td,
+  :root[data-theme="dark"] .al-tab tbody td.org,
+  :root[data-theme="dark"] .al-tab tbody tr.interna td.org { color: #fff; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .al-tab tbody td,
+    :root:not([data-theme="light"]) .al-tab tbody td.org,
+    :root:not([data-theme="light"]) .al-tab tbody tr.interna td.org { color: #fff; }
+  }
+  /* fila de filtros, estilo Sheets */
+  .al-tab tr.filtros th {
+    top: 33px; z-index: 1; padding: 5px 7px; background: var(--surface);
+    border-bottom: 1px solid var(--border); text-transform: none; letter-spacing: 0;
+  }
+  .al-tab tr.filtros input, .al-tab tr.filtros select {
+    width: 100%; min-width: 90px; font-family: var(--font); font-size: 11.5px; font-weight: 600;
+    color: var(--ink); background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 6px;
+  }
+  .al-tab tr.filtros .act { color: var(--brand); border-color: var(--brand); }
+  .al-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 2px 10px; }
+  .al-bar .al-info { margin: 0; flex: 1 1 auto; }
+  .al-btn {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;
+    font-family: var(--font); font-size: 12px; font-weight: 800; padding: 7px 13px; border-radius: 9px;
+    border: 1.5px solid var(--border); background: var(--surface); color: var(--ink);
+    transition: all var(--dur) var(--ease);
+  }
+  .al-btn:hover { border-color: var(--brand); color: var(--brand); }
+  .al-btn.prim { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .al-btn.prim:hover { filter: brightness(1.08); color: #fff; }
   .al-tab td.ed {
     cursor: pointer; min-width: 150px; max-width: 260px;
     transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
@@ -692,7 +726,7 @@
         <span>Ventas y Posventa — Indicadores por sucursal</span>
       </div>
       <div class="hd-right">
-        <div class="hd-period">Período <input id="periodoInp" value="Junio 2026" aria-label="Período"></div>
+        <input id="periodoInp" type="hidden" value="Junio 2026">
         <div class="hd-btns">
           <button class="hd-btn" id="themeBtn" type="button">◐ Tema</button>
         </div>
@@ -830,6 +864,18 @@
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
         <h3 id="pmTitle">Plan de acción</h3>
         <p class="caso" id="pmCaso"></p>
+        <!-- solo para filas cargadas a mano: estas columnas también se editan -->
+        <div id="pmFijos" hidden>
+          <div class="pm-fila3">
+            <label>Origen<textarea id="pmOrg" rows="2" placeholder="Alerta interna / indicador"></textarea></label>
+            <label>Sucursal<textarea id="pmSuc" rows="2" placeholder="Kyoto Resistencia"></textarea></label>
+            <label>Cliente<textarea id="pmCli" rows="2" placeholder="Nombre y apellido"></textarea></label>
+          </div>
+          <div class="pm-fila3" style="grid-template-columns:150px 1fr">
+            <label>Fecha<textarea id="pmFec" rows="2" placeholder="dd/mm/aaaa"></textarea></label>
+            <label>Verbalización<textarea id="pmVerb" rows="2" placeholder="Qué dijo el cliente"></textarea></label>
+          </div>
+        </div>
         <div class="pm-fila3">
           <label>Interacción con el Cliente<textarea id="pmInter" rows="2" placeholder="Qué se habló con el cliente"></textarea></label>
           <label>Acción Preventiva<textarea id="pmPrev" rows="2" placeholder="Para que no vuelva a pasar"></textarea></label>
@@ -1646,47 +1692,141 @@ function renderAlertas() {
   if (current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
   if (filtroAlerta) filas = filas.filter(f => String(f.org).split(" ·")[0] === filtroAlerta.sig);
 
-  if (!filas.length) {
-    el.innerHTML = `<div class="al-empty">Sin casos de ${area} en ${current}${filtroAlerta ? " para ese filtro" : ""}. 🎉</div>`;
-    return;
-  }
+  filas.sort(cmpFilaPlan);            // agrupadas por indicador, no por cliente
+  FILAS_BASE = filas;
 
-  // celda editable: muestra el contenido, o un "+" si está vacía
+  const ctx = areaKey + "|" + current;   // al cambiar de área o sucursal, filtros en cero
+  if (ctx !== alCtx) { alFiltros = {}; alCtx = ctx; }
+
+  el.innerHTML = `
+    <div class="al-bar">
+      <div class="al-info"><b id="alCount">${filas.length}</b> caso${filas.length > 1 ? "s" : ""} ·
+        tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet</div>
+      <button class="al-btn" type="button" id="alLimpiar" title="Quitar todos los filtros">✕ Filtros</button>
+      <button class="al-btn prim" type="button" id="alNueva" title="Agregar una fila nueva (alerta interna, caso suelto…)">+ Agregar fila</button>
+    </div>
+    <div class="al-scroll"><table class="al-tab">
+      <thead>
+        <tr>${AL_COLS.map(c => `<th>${c.t}</th>`).join("")}<th></th></tr>
+        <tr class="filtros">${AL_COLS.map(c => `<th>${filtroCampo(c, filas)}</th>`).join("")}<th></th></tr>
+      </thead>
+      <tbody id="alBody"></tbody>
+    </table></div>`;
+
+  pintarFilasAlertas();
+}
+
+// Columnas de la tabla (mismas que las hojas del Sheet)
+const AL_COLS = [
+  { k: "org",    t: "Origen",                     f: "sel" },
+  { k: "suc",    t: "Sucursal",                   f: "sel" },
+  { k: "cli",    t: "Cliente",                    f: "txt" },
+  { k: "fec",    t: "Fecha",                      f: "txt" },
+  { k: "verb",   t: "Verbalización",              f: "txt" },
+  { k: "inter",  t: "Interacción con el Cliente", f: "est" },
+  { k: "prev",   t: "Acción Preventiva",          f: "est" },
+  { k: "corr",   t: "Acción Correctiva",          f: "est" },
+  { k: "plan",   t: "Plan de acción",             f: "est" },
+  { k: "resp",   t: "Responsable",                f: "sel" },
+  { k: "cierre", t: "Fecha de cierre",            f: "txt" },
+];
+let FILAS_BASE = [], FILAS_VISIBLES = [];
+let alFiltros = {}, alCtx = "";
+
+function sigOrg(org) { return String(org || "").split(" ·")[0].trim(); }
+
+// Orden: todas las VOC02 juntas, después las P03, etc. Alertas internas al final.
+function ordOrg(org) {
+  const s = String(org || "").trim();
+  if (/^alerta interna/i.test(s)) return [9, 999, "zzz"];
+  const sig = sigOrg(s).toUpperCase();
+  const m = sig.match(/^([A-Z]+)0*(\d+)/);
+  if (!m) return [8, 999, sig];
+  return [m[1] === "VOC" ? 0 : (m[1] === "P" ? 1 : 2), parseInt(m[2], 10), sig];
+}
+function cmpFilaPlan(a, b) {
+  const A = ordOrg(a.org), B = ordOrg(b.org);
+  if (A[0] !== B[0]) return A[0] - B[0];
+  if (A[1] !== B[1]) return A[1] - B[1];
+  if (A[2] !== B[2]) return A[2] < B[2] ? -1 : 1;
+  if (a.org !== b.org) return a.org < b.org ? -1 : 1;
+  if (a.suc !== b.suc) return a.suc < b.suc ? -1 : 1;
+  return String(a.cli) < String(b.cli) ? -1 : 1;
+}
+
+// Filtro de una columna: desplegable (como en Sheets) o cuadro de texto
+function filtroCampo(c, filas) {
+  const v = alFiltros[c.k] || "";
+  const act = v ? " act" : "";
+  if (c.f === "sel") {
+    const vistos = new Map();
+    filas.forEach(f => {
+      const val = c.k === "org" ? sigOrg(f.org) : String(f[c.k] || "").trim();
+      if (!val) return;
+      if (!vistos.has(val)) vistos.set(val, c.k === "org" ? String(f.org).slice(0, 46) : val);
+    });
+    const ops = [...vistos.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1)
+      .map(([val, lbl]) => `<option value="${esc(val)}"${val === v ? " selected" : ""}>${esc2(lbl)}</option>`).join("");
+    const vacios = filas.some(f => !String(f[c.k] || "").trim())
+      ? `<option value="__vacio__"${v === "__vacio__" ? " selected" : ""}>(vacío)</option>` : "";
+    return `<select class="alf${act}" data-k="${c.k}"><option value="">Todos</option>${ops}${vacios}</select>`;
+  }
+  if (c.f === "est") {
+    const o = (val, lbl) => `<option value="${val}"${val === v ? " selected" : ""}>${lbl}</option>`;
+    return `<select class="alf${act}" data-k="${c.k}">${o("", "Todos")}${o("__con__", "Cargado")}${o("__sin__", "Sin cargar")}</select>`;
+  }
+  return `<input class="alf${act}" data-k="${c.k}" type="text" value="${esc(v)}" placeholder="Buscar…">`;
+}
+
+function pasaFiltros(f) {
+  return AL_COLS.every(c => {
+    const q = alFiltros[c.k];
+    if (!q) return true;
+    const val = String(f[c.k] || "").trim();
+    if (q === "__vacio__") return !val;
+    if (q === "__con__")   return !!val;
+    if (q === "__sin__")   return !val;
+    if (c.f === "sel")     return (c.k === "org" ? sigOrg(f.org) : val) === q;
+    return val.toLowerCase().includes(q.toLowerCase());
+  });
+}
+
+// Repinta solo las filas: así no se pierde el foco mientras se escribe en un filtro
+function pintarFilasAlertas() {
+  const body = $("alBody");
+  if (!body) return;
+  const filas = FILAS_BASE.filter(pasaFiltros);
+  FILAS_VISIBLES = filas;
+
   const ed = (f, campo, i) => {
     const v = f[campo] || "";
     return `<td class="ed ${v ? "" : "novacio"}" data-i="${i}" data-campo="${campo}"
       title="${v ? "Editar" : "Agregar"}">${v ? esc2(v) : '<span class="mas">+</span>'}</td>`;
   };
 
-  const tr = filas.map((f, i) => {
-    const interna = f.org === "Alerta interna";
-    const cargado = f.plan || f.resp || f.cierre || f.inter || f.prev || f.corr;
-    return `<tr class="${interna ? "interna" : ""}">
-      <td class="org">${esc2(f.org)}</td>
-      <td>${esc2(f.suc)}</td>
-      <td class="cli">${esc2(f.cli)}</td>
-      <td class="fec">${esc2(f.fec) || "—"}</td>
-      <td class="verb">${esc2(f.verb) || '<span class="mas">—</span>'}</td>
-      ${ed(f, "inter", i)}${ed(f, "prev", i)}${ed(f, "corr", i)}
-      ${ed(f, "plan", i)}${ed(f, "resp", i)}${ed(f, "cierre", i)}
-      <td class="acc"><button class="al-add" type="button" data-i="${i}"
-        title="${cargado ? "Editar" : "Completar"} este caso">${cargado ? "✎" : "+"}</button></td>
-    </tr>`;
-  }).join("");
-
-  el.innerHTML = `
-    <div class="al-info">${filas.length} caso${filas.length > 1 ? "s" : ""} ·
-      tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet</div>
-    <div class="al-scroll"><table class="al-tab"><thead><tr>
-      <th>Origen</th><th>Sucursal</th><th>Cliente</th><th>Fecha</th><th>Verbalización</th>
-      <th>Interacción con el Cliente</th><th>Acción Preventiva</th><th>Acción Correctiva</th>
-      <th>Plan de acción</th><th>Responsable</th><th>Fecha de cierre</th><th></th>
-    </tr></thead><tbody>${tr}</tbody></table></div>`;
-
-  FILAS_VISIBLES = filas;
+  if (!filas.length) {
+    body.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:26px;color:var(--ink-muted)">
+      Ningún caso con esos filtros.</td></tr>`;
+  } else {
+    body.innerHTML = filas.map((f, i) => {
+      const cargado = f.plan || f.resp || f.cierre || f.inter || f.prev || f.corr;
+      return `<tr class="${/^alerta interna/i.test(f.org) ? "interna" : ""}${f.manual ? " manual" : ""}">
+        <td class="org">${esc2(f.org)}</td>
+        <td>${esc2(f.suc)}</td>
+        <td class="cli">${esc2(f.cli)}</td>
+        <td class="fec">${esc2(f.fec) || "—"}</td>
+        <td class="verb">${esc2(f.verb) || '<span class="mas">—</span>'}</td>
+        ${ed(f, "inter", i)}${ed(f, "prev", i)}${ed(f, "corr", i)}
+        ${ed(f, "plan", i)}${ed(f, "resp", i)}${ed(f, "cierre", i)}
+        <td class="acc"><button class="al-add" type="button" data-i="${i}"
+          title="${cargado ? "Editar" : "Completar"} este caso">${cargado ? "✎" : "+"}</button></td>
+      </tr>`;
+    }).join("");
+  }
+  const c = $("alCount");
+  if (c) c.textContent = filas.length === FILAS_BASE.length ? filas.length : `${filas.length} de ${FILAS_BASE.length}`;
 }
 
-let FILAS_VISIBLES = [];
 function esc2(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function esc(s) { return String(s || "").replace(/"/g, "&quot;"); }
 
@@ -1695,11 +1835,33 @@ let planCtx = null;
 const CAMPO_LBL = { inter: "Interacción con el Cliente", prev: "Acción Preventiva",
   corr: "Acción Correctiva", plan: "Plan de acción", resp: "Responsable", cierre: "Fecha de cierre" };
 
+function abrirModalNueva() {
+  abrirModalPlan(-1, "cli");
+}
+
 function abrirModalPlan(i, foco) {
-  const f = FILAS_VISIBLES[i];
+  const nueva = i === -1;
+  const f = nueva
+    ? { nueva: true, manual: true, org: "Alerta interna", suc: current !== "Grupo Kyoto" ? current : "",
+        cli: "", fec: "", verb: "", inter: "", prev: "", corr: "", plan: "", resp: "", cierre: "", clave: "" }
+    : FILAS_VISIBLES[i];
   if (!f) return;
   planCtx = f;
-  $("pmCaso").innerHTML = `<b>${esc2(f.cli)}</b> — ${esc2(f.suc)}<br>${esc2(f.org)}${f.fec ? " · " + esc2(f.fec) : ""}`;
+  $("pmTitle").textContent = nueva ? "Fila nueva" : "Plan de acción";
+  $("pmSave").textContent  = nueva ? "Agregar" : "Guardar";
+  // las columnas fijas solo se editan si la fila se cargó a mano
+  const fijos = f.manual || nueva;
+  $("pmFijos").hidden = !fijos;
+  if (fijos) {
+    $("pmOrg").value  = f.org  || "";
+    $("pmSuc").value  = f.suc  || "";
+    $("pmCli").value  = f.cli  || "";
+    $("pmFec").value  = f.fec  || "";
+    $("pmVerb").value = f.verb || "";
+  }
+  $("pmCaso").innerHTML = nueva
+    ? `Se agrega al final de <b>Planes de Accion VOC - ${areaActual() === "posventa" ? "Posventa" : "Ventas"}</b>.`
+    : `<b>${esc2(f.cli)}</b> — ${esc2(f.suc)}<br>${esc2(f.org)}${f.fec ? " · " + esc2(f.fec) : ""}`;
   $("pmInter").value  = f.inter  || "";
   $("pmPrev").value   = f.prev   || "";
   $("pmCorr").value   = f.corr   || "";
@@ -1708,7 +1870,8 @@ function abrirModalPlan(i, foco) {
   $("pmCierre").value = f.cierre || "";
   $("pmMsg").textContent = ""; $("pmMsg").className = "modal-msg";
   $("planModal").hidden = false;
-  const id = { inter:"pmInter", prev:"pmPrev", corr:"pmCorr", plan:"pmTexto", resp:"pmResp", cierre:"pmCierre" }[foco] || "pmTexto";
+  const id = { inter:"pmInter", prev:"pmPrev", corr:"pmCorr", plan:"pmTexto", resp:"pmResp",
+               cierre:"pmCierre", cli:"pmCli", org:"pmOrg", suc:"pmSuc", fec:"pmFec", verb:"pmVerb" }[foco] || "pmTexto";
   setTimeout(() => $(id).focus(), 30);
 }
 function cerrarModalPlan() { $("planModal").hidden = true; planCtx = null; }
@@ -1725,15 +1888,30 @@ async function guardarPlan() {
   const msg = $("pmMsg"), btn = $("pmSave");
   if (!url) { msg.textContent = "Falta la URL del Web App (⚙ Fuente)."; msg.className = "modal-msg err"; return; }
 
-  btn.disabled = true; msg.textContent = "Guardando…"; msg.className = "modal-msg";
+  // en filas cargadas a mano también viajan las columnas fijas
+  if (planCtx.manual || planCtx.nueva) {
+    d.org  = $("pmOrg").value.trim();  d.suc  = $("pmSuc").value.trim();
+    d.cli  = $("pmCli").value.trim();  d.fec  = $("pmFec").value.trim();
+    d.verb = $("pmVerb").value.trim();
+    if (!d.cli) { msg.textContent = "Poné al menos el nombre del cliente."; msg.className = "modal-msg err"; return; }
+  }
+
+  btn.disabled = true; msg.textContent = planCtx.nueva ? "Agregando…" : "Guardando…"; msg.className = "modal-msg";
   try {
-    const sig = String(planCtx.org).split(" ·")[0];
-    const q = new URLSearchParams(Object.assign({
-      accion: "guardarPlan", area, clave: planCtx.clave, cli: planCtx.cli, sig,
-    }, d)).toString();
+    const sig = sigOrg(planCtx.org);
+    const q = new URLSearchParams(Object.assign(
+      planCtx.nueva
+        ? { accion: "agregarFila", area }
+        : { accion: "guardarPlan", area, clave: planCtx.clave, cli: planCtx.cli, sig },
+      d)).toString();
     const r = await jsonp(url + (url.includes("?") ? "&" : "?") + q);
     if (!r || !r.ok) throw new Error((r && r.error) || "No se pudo guardar");
-    Object.assign(planCtx, d);          // reflejarlo sin volver a pedir todo
+    if (planCtx.nueva) {                // sumarla a la tabla sin recargar todo
+      const nf = Object.assign({}, d, { clave: r.clave, manual: true });
+      (PLANES_FILAS[area] = PLANES_FILAS[area] || []).push(nf);
+    } else {
+      Object.assign(planCtx, d);        // reflejarlo sin volver a pedir todo
+    }
     cerrarModalPlan();
     render();
   } catch (e) {
@@ -2121,10 +2299,29 @@ $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
 
 // ---- Plan de acción: botón + / ✎ y modal ----
 $("alertas").addEventListener("click", e => {
-  const btn = e.target.closest && e.target.closest(".al-add");
+  const t = e.target;
+  if (t.id === "alNueva") { abrirModalNueva(); return; }
+  if (t.id === "alLimpiar") { alFiltros = {}; renderAlertas(); return; }
+  const btn = t.closest && t.closest(".al-add");
   if (btn) { abrirModalPlan(+btn.dataset.i); return; }
-  const celda = e.target.closest && e.target.closest("td.ed");
+  const celda = t.closest && t.closest("td.ed");
   if (celda) abrirModalPlan(+celda.dataset.i, celda.dataset.campo);
+});
+
+// ---- Filtros de la tabla (estilo Sheets) ----
+$("alertas").addEventListener("input", e => {
+  const f = e.target.closest && e.target.closest("input.alf");
+  if (!f) return;
+  alFiltros[f.dataset.k] = f.value.trim();
+  f.classList.toggle("act", !!f.value.trim());
+  pintarFilasAlertas();
+});
+$("alertas").addEventListener("change", e => {
+  const f = e.target.closest && e.target.closest("select.alf");
+  if (!f) return;
+  alFiltros[f.dataset.k] = f.value;
+  f.classList.toggle("act", !!f.value);
+  pintarFilasAlertas();
 });
 $("pmCancel").onclick = cerrarModalPlan;
 $("pmSave").onclick = guardarPlan;

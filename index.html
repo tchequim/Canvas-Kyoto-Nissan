@@ -108,10 +108,13 @@
     animation: sheen 1400ms var(--ease) 320ms 1 both;
   }
   @keyframes sheen { to { left: 130%; } }
-  .hd-badge {
-    font-weight: 800; letter-spacing: .14em; font-size: 12px;
-    border: 1.5px solid rgba(255,255,255,.55); border-radius: 6px;
-    padding: 5px 9px; text-transform: uppercase; white-space: nowrap;
+  /* | KYOTO */
+  .hd-badge { display: inline-flex; align-items: center; gap: 14px; white-space: nowrap; }
+  .hd-bar { width: 1.5px; height: 34px; background: rgba(255,255,255,.6); border-radius: 1px; }
+  .hd-kyoto { font-size: 25px; font-weight: 500; letter-spacing: .07em; line-height: 1; text-transform: uppercase; }
+  @media (max-width: 560px) {
+    .hd-kyoto { font-size: 20px; }
+    .hd-bar { height: 28px; }
   }
   .hd-t { display: flex; flex-direction: column; gap: 3px; margin-right: auto; }
   .hd-t h1 {
@@ -720,7 +723,10 @@
 <div class="voc">
   <div class="voc-inner">
     <header class="hd">
-      <span class="hd-badge">NISSAN</span>
+      <span class="hd-badge">
+        <span class="hd-bar"></span>
+        <span class="hd-kyoto">KYOTO</span>
+      </span>
       <div class="hd-t">
         <h1>Voz del Cliente · Grupo Kyoto</h1>
         <span>Ventas y Posventa — Indicadores por sucursal</span>
@@ -830,6 +836,15 @@
         <span class="hint">lo que dijeron los clientes — puntos fuertes y débiles</span>
       </div>
       <div class="verbas-wrap" id="verbas"></div>
+
+      <!-- Solo para meses guardados: los planes de acción tal como se cargaban antes -->
+      <div id="planesSec" hidden>
+        <div class="section-t">
+          <h2 id="planesTitle">Planes de acción</h2>
+          <span class="hint">origen · cliente · desvío · acción correctiva (SERNISSAN)</span>
+        </div>
+        <div class="planes" id="planes"></div>
+      </div>
     </div>
 
     <div id="trainingView" hidden>
@@ -1168,6 +1183,13 @@ function renderPills() {
 }
 
 function render() {
+  // La solapa Alertas solo existe si el mes elegido tiene esas hojas
+  const tabAl = document.querySelector('.tab[data-tab="alertas"]');
+  if (tabAl) tabAl.hidden = !MES_TIENE_PLANES;
+  if (!MES_TIENE_PLANES && activeTab === "alertas") { activeTab = ultimaArea; filtroAlerta = null; }
+  // Los planes de acción del formato viejo solo se ven en los meses guardados
+  $("planesSec").hidden = MES_LIVE;
+
   document.querySelectorAll(".pill").forEach(p => p.setAttribute("aria-pressed", p.textContent === current));
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === activeTab));
   $("periodoInp").value = state.periodo || "";
@@ -1238,6 +1260,7 @@ function render() {
   renderBars();
   renderComunes();
   renderVerbas();
+  if (!MES_LIVE) renderPlanes();
   countUp();
 }
 
@@ -1547,6 +1570,8 @@ function findSheet(names, ...keys) {
 // planesObj = { "Plan de Accion Resistencia": [[fila]], ... }
 // Devuelve { "Kyoto Resistencia": {ventas:[{origen,cliente,desvio,plan}], posventa:[...]} }
 let PLANES = {};
+// mes elegido: en vivo (editable) vs. mes guardado (foto, solo lectura)
+let MES_LIVE = true, MES_TIENE_PLANES = true;
 const PLAN_SUC = [
   ["resistencia", "Kyoto Resistencia"], ["corrientes", "Kyoto Corrientes"],
   ["posadas", "Kyoto Posadas"], ["saenz", "Kyoto Sáenz Peña"], ["s. pena", "Kyoto Sáenz Peña"],
@@ -1576,6 +1601,32 @@ function parsePlanes(planesObj) {
     out[suc] = res;
   }
   return out;
+}
+
+// Se muestran solo con un mes guardado elegido (en vivo esto ya no se usa)
+function renderPlanes() {
+  const el = $("planes");
+  const tabName = activeTab === "ventas" ? "Ventas" : "Posventa";
+  if (!PLANES || !Object.keys(PLANES).length) {
+    $("planesTitle").textContent = "Planes de acción";
+    el.innerHTML = `<div class="plan-empty">Este mes no tiene planes de acción guardados.</div>`;
+    return;
+  }
+  const mine = PLANES[current];
+  if (mine) {
+    $("planesTitle").textContent = `Planes de acción · ${tabName} — ${current}`;
+    const items = mine[activeTab] || [];
+    el.innerHTML = items.length ? items.map(planCard).join("")
+      : `<div class="plan-empty">Sin planes de acción de ${tabName} cargados para ${current}.</div>`;
+    return;
+  }
+  // Grupo (o sucursal sin hoja de plan): mostrar todas
+  $("planesTitle").textContent = `Planes de acción · ${tabName} — todas las sucursales`;
+  const sucs = Object.keys(PLANES).filter(s => (PLANES[s][activeTab] || []).length);
+  if (!sucs.length) { el.innerHTML = `<div class="plan-empty">Sin planes de acción de ${tabName} cargados.</div>`; return; }
+  el.innerHTML = sucs.map(suc =>
+    `<div class="plan-suc-t">${suc}</div>` + PLANES[suc][activeTab].map(planCard).join("")
+  ).join("");
 }
 
 function planCard(e) {
@@ -1682,8 +1733,9 @@ function renderAlertas() {
 
   let filas = (PLANES_FILAS[areaKey] || []).slice();
   if (!filas.length) {
-    el.innerHTML = `<div class="al-empty">${ALERTAS.falta || ALERTAS.error
-      ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
+    el.innerHTML = `<div class="al-empty">${
+      !MES_LIVE ? "Este mes guardado no tiene planes de acción."
+      : ALERTAS.falta || ALERTAS.error ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
       : `Todavía no llegan los casos. En el Sheet, ejecutá <b>sincronizarPlanesAccion</b>
          y volvé a implementar el Web App.`}</div>`;
     return;
@@ -1701,9 +1753,11 @@ function renderAlertas() {
   el.innerHTML = `
     <div class="al-bar">
       <div class="al-info"><b id="alCount">${filas.length}</b> caso${filas.length > 1 ? "s" : ""} ·
-        tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet</div>
+        ${MES_LIVE ? "tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet"
+                   : `<b>${mesBonito(state.periodo || "")}</b> — mes cerrado, solo lectura`}</div>
       <button class="al-btn" type="button" id="alLimpiar" title="Quitar todos los filtros">✕ Filtros</button>
-      <button class="al-btn prim" type="button" id="alNueva" title="Agregar una fila nueva (alerta interna, caso suelto…)">+ Agregar fila</button>
+      ${MES_LIVE ? `<button class="al-btn prim" type="button" id="alNueva"
+        title="Agregar una fila nueva (alerta interna, caso suelto…)">+ Agregar fila</button>` : ""}
     </div>
     <div class="al-scroll"><table class="al-tab">
       <thead>
@@ -1800,6 +1854,7 @@ function pintarFilasAlertas() {
 
   const ed = (f, campo, i) => {
     const v = f[campo] || "";
+    if (!MES_LIVE) return `<td>${v ? esc2(v) : "—"}</td>`;      // mes guardado: solo lectura
     return `<td class="ed ${v ? "" : "novacio"}" data-i="${i}" data-campo="${campo}"
       title="${v ? "Editar" : "Agregar"}">${v ? esc2(v) : '<span class="mas">+</span>'}</td>`;
   };
@@ -1818,8 +1873,8 @@ function pintarFilasAlertas() {
         <td class="verb">${esc2(f.verb) || '<span class="mas">—</span>'}</td>
         ${ed(f, "inter", i)}${ed(f, "prev", i)}${ed(f, "corr", i)}
         ${ed(f, "plan", i)}${ed(f, "resp", i)}${ed(f, "cierre", i)}
-        <td class="acc"><button class="al-add" type="button" data-i="${i}"
-          title="${cargado ? "Editar" : "Completar"} este caso">${cargado ? "✎" : "+"}</button></td>
+        <td class="acc">${MES_LIVE ? `<button class="al-add" type="button" data-i="${i}"
+          title="${cargado ? "Editar" : "Completar"} este caso">${cargado ? "✎" : "+"}</button>` : ""}</td>
       </tr>`;
     }).join("");
   }
@@ -2218,6 +2273,14 @@ function aplicarMes(key) {
   if (!s) return { nV: 0, nP: 0, verbas: false };
   const label = key === "__live__" ? "En vivo" : mesBonito(key);
   PLANES = parsePlanes(s.planes || {});   // planes del mes elegido (antes de renderizar)
+
+  // Mes en vivo → tabla de alertas editable. Mes guardado → foto de ese mes:
+  // si todavía no existían las hojas de Planes VOC (junio), la solapa no se muestra.
+  MES_LIVE = key === "__live__";
+  MES_TIENE_PLANES = MES_LIVE || !!s.planesFilas;
+  const pf = s.planesFilas || { ventas: [], posventa: [] };
+  PLANES_FILAS = { ventas: pf.ventas || [], posventa: pf.posventa || [] };
+  alCtx = "";                              // filtros en cero al cambiar de mes
   const r = applyData(s.ventas, s.posventa, s.verbas, label);
   if (key !== "__live__") { state.periodo = mesBonito(key); $("periodoInp").value = mesBonito(key); }
   return r;
@@ -2236,8 +2299,11 @@ async function fetchLive(manual) {
     const d = await jsonp(url);
     if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
     // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
-    SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas, planes: d.planes || {} } };
-    (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa, verbas: h.verbas, planes: h.planes || {} }; });
+    SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas,
+                              planes: d.planes || {}, planesFilas: d.planesFilas || { ventas: [], posventa: [] } } };
+    // planesFilas = las hojas "Planes de Accion VOC" de ese mes (los meses viejos vienen sin nada)
+    (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa,
+      verbas: h.verbas, planes: h.planes || {}, planesFilas: h.planesFilas || null }; });
     conectado = true;
     if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
                                falta: d.alertas.falta || null, error: d.alertas.error || null };

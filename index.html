@@ -404,6 +404,7 @@
     border-radius: 6px; padding: 4px 6px;
   }
   .al-tab tr.filtros .act { color: var(--brand); border-color: var(--brand); }
+  .sel-grupo { display: inline-flex; align-items: center; gap: 16px; margin-left: auto; flex-wrap: wrap; }
   .al-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 2px 10px; }
   .al-bar .al-info { margin: 0; flex: 1 1 auto; }
   .al-btn {
@@ -424,6 +425,16 @@
   .al-tab td.ed .mas { color: var(--ink-faint); font-size: 15px; font-weight: 700; }
   .al-tab td.ed:hover .mas { color: var(--brand); }
   .al-tab td.acc { text-align: center; }
+  /* campos del modal (se arman según la tabla que se esté editando) */
+  #pmCampos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 4px; }
+  @media (max-width: 620px) { #pmCampos { grid-template-columns: 1fr; } }
+  .pm-campo { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; font-weight: 800; color: var(--ink); }
+  .pm-campo textarea {
+    font-family: var(--font); font-size: 13px; font-weight: 400; color: var(--ink); resize: vertical;
+    background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 11px;
+    min-height: 46px; line-height: 1.5;
+  }
+  .pm-campo textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
   .pm-fila3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
   @media (max-width: 640px) { .pm-fila3 { grid-template-columns: 1fr; } }
   .pm-fila3 label { display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; font-weight: 800; color: var(--ink); }
@@ -785,6 +796,7 @@
       <button class="tab" role="tab" data-tab="posventa" aria-selected="false">Posventa</button>
       <button class="tab" role="tab" data-tab="training" aria-selected="false">Training</button>
       <button class="tab" role="tab" data-tab="alertas" aria-selected="false">Alertas</button>
+      <button class="tab" role="tab" data-tab="planes" aria-selected="false">Planes de acción</button>
     </div>
 
     <div class="subbar">
@@ -858,19 +870,40 @@
     <div id="alertasView" hidden>
       <div class="section-t">
         <h2 id="alertasTitle">Alertas de clientes</h2>
-        <span class="hint">clientes que respondieron 4 o menos, No, o Probablemente</span>
+        <span class="hint" id="alertasHint">clientes que respondieron 4 o menos, No, o Probablemente</span>
         <span class="al-filtro" id="alFiltro" hidden>
           <span id="alFiltroTxt"></span>
           <button type="button" id="alFiltroX" title="Quitar filtro">✕</button>
         </span>
-        <span class="cargo-wrap" style="margin-left:auto"><label for="alAreaSel">Área:</label>
+        <span class="sel-grupo"><span class="cargo-wrap"><label for="alTipoSel">Tipo:</label>
+          <select id="alTipoSel" aria-label="Tipo de alerta">
+            <option value="voc">VOC</option>
+            <option value="interna">Internas</option>
+            <option value="indicador">Indicadores</option>
+          </select>
+        </span>
+        <span class="cargo-wrap"><label for="alAreaSel">Área:</label>
           <select id="alAreaSel" aria-label="Área de las alertas">
+            <option value="ventas">Ventas</option>
+            <option value="posventa">Posventa</option>
+          </select>
+        </span></span>
+      </div>
+      <div id="alertas"></div>
+    </div>
+
+    <div id="planesAccView" hidden>
+      <div class="section-t">
+        <h2 id="planesAccTitle">Planes de acción</h2>
+        <span class="hint">se carga a mano — lo que escribas acá va al Sheet, y lo que escribas en el Sheet aparece acá</span>
+        <span class="cargo-wrap" style="margin-left:auto"><label for="plAreaSel">Área:</label>
+          <select id="plAreaSel" aria-label="Área de los planes">
             <option value="ventas">Ventas</option>
             <option value="posventa">Posventa</option>
           </select>
         </span>
       </div>
-      <div id="alertas"></div>
+      <div id="planesAcc"></div>
     </div>
 
     <div class="tip" id="tip" hidden></div>
@@ -879,33 +912,7 @@
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
         <h3 id="pmTitle">Plan de acción</h3>
         <p class="caso" id="pmCaso"></p>
-        <!-- solo para filas cargadas a mano: estas columnas también se editan -->
-        <div id="pmFijos" hidden>
-          <div class="pm-fila3">
-            <label>Origen<textarea id="pmOrg" rows="2" placeholder="Alerta interna / indicador"></textarea></label>
-            <label>Sucursal<textarea id="pmSuc" rows="2" placeholder="Kyoto Resistencia"></textarea></label>
-            <label>Cliente<textarea id="pmCli" rows="2" placeholder="Nombre y apellido"></textarea></label>
-          </div>
-          <div class="pm-fila3" style="grid-template-columns:150px 1fr">
-            <label>Fecha<textarea id="pmFec" rows="2" placeholder="dd/mm/aaaa"></textarea></label>
-            <label>Verbalización<textarea id="pmVerb" rows="2" placeholder="Qué dijo el cliente"></textarea></label>
-          </div>
-        </div>
-        <div class="pm-fila3">
-          <label>Interacción con el Cliente<textarea id="pmInter" rows="2" placeholder="Qué se habló con el cliente"></textarea></label>
-          <label>Acción Preventiva<textarea id="pmPrev" rows="2" placeholder="Para que no vuelva a pasar"></textarea></label>
-          <label>Acción Correctiva<textarea id="pmCorr" rows="2" placeholder="Qué se corrigió"></textarea></label>
-        </div>
-        <label class="pm-lbl">Plan de acción</label>
-        <textarea id="pmTexto" placeholder="Escribí qué se va a hacer con este caso…"></textarea>
-        <div class="pm-fila">
-          <label>Responsable
-            <input id="pmResp" type="text" placeholder="Nombre y apellido">
-          </label>
-          <label>Fecha de cierre
-            <input id="pmCierre" type="text" placeholder="dd/mm/aaaa" inputmode="numeric">
-          </label>
-        </div>
+        <div id="pmCampos"></div>
         <div class="modal-btns">
           <span class="modal-msg" id="pmMsg"></span>
           <button class="src-btn ghost" id="pmCancel" type="button">Cancelar</button>
@@ -1184,25 +1191,33 @@ function renderPills() {
 
 function render() {
   // La solapa Alertas solo existe si el mes elegido tiene esas hojas
+  // Las solapas Alertas y Planes de acción solo existen si el mes elegido
+  // tiene esas hojas (los meses guardados antes se ven igual que siempre)
   const tabAl = document.querySelector('.tab[data-tab="alertas"]');
-  if (tabAl) tabAl.hidden = !MES_TIENE_PLANES;
-  if (!MES_TIENE_PLANES && activeTab === "alertas") { activeTab = ultimaArea; filtroAlerta = null; }
-  // Los planes de acción del formato viejo solo se ven en los meses guardados
+  const tabPl = document.querySelector('.tab[data-tab="planes"]');
+  if (tabAl) tabAl.hidden = !MES_TIENE_ALERTAS;
+  if (tabPl) tabPl.hidden = !MES_TIENE_PLANES;
+  if (!MES_TIENE_ALERTAS && activeTab === "alertas") { activeTab = ultimaArea; filtroAlerta = null; }
+  if (!MES_TIENE_PLANES  && activeTab === "planes")  { activeTab = ultimaArea; }
+  // Los planes de acción del formato viejo (hojas por sucursal) solo en meses guardados
   $("planesSec").hidden = MES_LIVE;
 
   document.querySelectorAll(".pill").forEach(p => p.setAttribute("aria-pressed", p.textContent === current));
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === activeTab));
   $("periodoInp").value = state.periodo || "";
 
-  // alternar vistas: VOC / Training / Alertas
+  // alternar vistas: VOC / Training / Alertas / Planes de acción
   const esTraining = activeTab === "training";
   const esAlertas  = activeTab === "alertas";
-  $("vocView").hidden      = esTraining || esAlertas;
-  $("trainingView").hidden = !esTraining;
-  $("alertasView").hidden  = !esAlertas;
-  $("cargoWrap").hidden    = !esTraining;
+  const esPlanes   = activeTab === "planes";
+  $("vocView").hidden       = esTraining || esAlertas || esPlanes;
+  $("trainingView").hidden  = !esTraining;
+  $("alertasView").hidden   = !esAlertas;
+  $("planesAccView").hidden = !esPlanes;
+  $("cargoWrap").hidden     = !esTraining;
   if (esTraining) { renderTraining(); countUp(); return; }
   if (esAlertas)  { renderAlertas(); return; }
+  if (esPlanes)   { renderPlanesAcc(); return; }
 
   const mets = (state.tabs[activeTab][current] || []).filter(m => !(m.obj <= 0 && m.base <= 0));
   const conObj = mets.filter(m => m.obj > 0 && m.base > 0);
@@ -1571,7 +1586,7 @@ function findSheet(names, ...keys) {
 // Devuelve { "Kyoto Resistencia": {ventas:[{origen,cliente,desvio,plan}], posventa:[...]} }
 let PLANES = {};
 // mes elegido: en vivo (editable) vs. mes guardado (foto, solo lectura)
-let MES_LIVE = true, MES_TIENE_PLANES = true;
+let MES_LIVE = true, MES_TIENE_ALERTAS = true, MES_TIENE_PLANES = true;
 const PLAN_SUC = [
   ["resistencia", "Kyoto Resistencia"], ["corrientes", "Kyoto Corrientes"],
   ["posadas", "Kyoto Posadas"], ["saenz", "Kyoto Sáenz Peña"], ["s. pena", "Kyoto Sáenz Peña"],
@@ -1662,7 +1677,6 @@ function planCard(e) {
 // ALERTAS = { ventas: [...], posventa: [...] } — solo clientes con
 // alguna respuesta mala (nota ≤4 / No / Probablemente / No decidido).
 let ALERTAS = { ventas: [], posventa: [] };
-let PLANES_FILAS = { ventas: [], posventa: [] };   // filas tal cual de las hojas "Planes de Accion VOC - …"
 let filtroAlerta = null;   // {sig, key, lbl} cuando se llega por click desde un gauge
 let ultimaArea = "ventas"; // recuerda Ventas/Posventa al pasar a Training o Alertas
 
@@ -1714,82 +1728,52 @@ function alertasActuales() {
   return out.sort((a, b) => (b.r || []).length - (a.r || []).length);
 }
 
-// La solapa Alertas muestra EXACTAMENTE las filas de las hojas
-// "Planes de Accion VOC - Ventas" / "- Posventa". Todo lo editable
-// se puede tocar acá y se guarda en el Sheet.
-function renderAlertas() {
-  const el = $("alertas");
-  const areaKey = areaActual();
-  const area = areaKey === "posventa" ? "Posventa" : "Ventas";
+// ================================================================
+//  TABLAS: Alertas (VOC · Internas · Indicadores) y Planes de acción
+// ================================================================
+// Las cuatro vistas usan la misma máquina de tabla: columnas propias,
+// fila de filtros estilo Sheets y, donde corresponde, celdas editables.
+const COL_DEF = {
+  org:   { t: "Origen",                     f: "sel", cls: "org" },
+  suc:   { t: "Sucursal",                   f: "sel" },
+  cli:   { t: "Cliente",                    f: "txt", cls: "cli" },
+  fec:   { t: "Fecha",                      f: "txt", cls: "fec" },
+  verb:  { t: "Verbalización",              f: "txt", cls: "verb" },
+  inter: { t: "Interacción con el Cliente", f: "est" },
+  prev:  { t: "Acción Preventiva",          f: "est" },
+  corr:  { t: "Acción Correctiva",          f: "est" },
+  plan:  { t: "Plan de acción",             f: "txt" },
+  resp:  { t: "Responsable",                f: "sel" },
+  herr:  { t: "Herramienta SERNISSAN",      f: "sel" },
+  obs:   { t: "Observación",                f: "txt" },
+};
 
-  const fw = $("alFiltro");
-  if (filtroAlerta) {
-    fw.hidden = false;
-    $("alFiltroTxt").textContent = `${filtroAlerta.sig} · ${filtroAlerta.lbl}`;
-  } else fw.hidden = true;
+// vista → columnas, qué se puede editar y si permite agregar filas
+const VISTAS = {
+  voc:       { cols: ["org","suc","cli","fec","verb","inter","prev","corr"], edit: null,     alta: false,
+               titulo: "VOC 01",     hint: "clientes que calificaron 4 o menos la satisfacción general" },
+  interna:   { cols: ["org","suc","cli","fec","verb"], edit: "manual", alta: true,
+               titulo: "Alertas internas", hint: "cargadas en el Sheet de Llamados de acompañamiento" },
+  indicador: { cols: ["org","suc","cli","fec","verb"], edit: null,     alta: false,
+               titulo: "Indicadores",  hint: "el resto de las preguntas con respuesta 4 o menos / No" },
+  planes:    { cols: ["org","plan","resp","fec","herr","obs"], edit: "todo", alta: true,
+               titulo: "Planes de acción", hint: "se carga a mano — se guarda en el Sheet" },
+};
+const CAMPOS_EDIT = { interna: ["org","suc","cli","fec","verb"], planes: ["org","plan","resp","fec","herr","obs"] };
 
-  $("alertasTitle").textContent = `Planes de acción · ${area} — ${current}`;
-  $("alAreaSel").value = areaKey;
+let ALERTAS_FILAS = { ventas: [], posventa: [] };   // hojas "Alertas - …"
+let PLANES_ACC    = { ventas: [], posventa: [] };   // hojas "Planes de accion …"
+let tipoAlerta = "voc";                             // voc | interna | indicador
+let filtros = { voc: {}, interna: {}, indicador: {}, planes: {} };
+let BASE = { voc: [], interna: [], indicador: [], planes: [] };
+let VISIBLES = { voc: [], interna: [], indicador: [], planes: [] };
+let ctxTabla = "";                                  // para reiniciar filtros al cambiar de mes/área
 
-  let filas = (PLANES_FILAS[areaKey] || []).slice();
-  if (!filas.length) {
-    el.innerHTML = `<div class="al-empty">${
-      !MES_LIVE ? "Este mes guardado no tiene planes de acción."
-      : ALERTAS.falta || ALERTAS.error ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
-      : `Todavía no llegan los casos. En el Sheet, ejecutá <b>sincronizarPlanesAccion</b>
-         y volvé a implementar el Web App.`}</div>`;
-    return;
-  }
-
-  if (current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
-  if (filtroAlerta) filas = filas.filter(f => String(f.org).split(" ·")[0] === filtroAlerta.sig);
-
-  filas.sort(cmpFilaPlan);            // agrupadas por indicador, no por cliente
-  FILAS_BASE = filas;
-
-  const ctx = areaKey + "|" + current;   // al cambiar de área o sucursal, filtros en cero
-  if (ctx !== alCtx) { alFiltros = {}; alCtx = ctx; }
-
-  el.innerHTML = `
-    <div class="al-bar">
-      <div class="al-info"><b id="alCount">${filas.length}</b> caso${filas.length > 1 ? "s" : ""} ·
-        ${MES_LIVE ? "tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet"
-                   : `<b>${mesBonito(state.periodo || "")}</b> — mes cerrado, solo lectura`}</div>
-      <button class="al-btn" type="button" id="alLimpiar" title="Quitar todos los filtros">✕ Filtros</button>
-      ${MES_LIVE ? `<button class="al-btn prim" type="button" id="alNueva"
-        title="Agregar una fila nueva (alerta interna, caso suelto…)">+ Agregar fila</button>` : ""}
-    </div>
-    <div class="al-scroll"><table class="al-tab">
-      <thead>
-        <tr>${AL_COLS.map(c => `<th>${c.t}</th>`).join("")}<th></th></tr>
-        <tr class="filtros">${AL_COLS.map(c => `<th>${filtroCampo(c, filas)}</th>`).join("")}<th></th></tr>
-      </thead>
-      <tbody id="alBody"></tbody>
-    </table></div>`;
-
-  pintarFilasAlertas();
-}
-
-// Columnas de la tabla (mismas que las hojas del Sheet)
-const AL_COLS = [
-  { k: "org",    t: "Origen",                     f: "sel" },
-  { k: "suc",    t: "Sucursal",                   f: "sel" },
-  { k: "cli",    t: "Cliente",                    f: "txt" },
-  { k: "fec",    t: "Fecha",                      f: "txt" },
-  { k: "verb",   t: "Verbalización",              f: "txt" },
-  { k: "inter",  t: "Interacción con el Cliente", f: "est" },
-  { k: "prev",   t: "Acción Preventiva",          f: "est" },
-  { k: "corr",   t: "Acción Correctiva",          f: "est" },
-  { k: "plan",   t: "Plan de acción",             f: "est" },
-  { k: "resp",   t: "Responsable",                f: "sel" },
-  { k: "cierre", t: "Fecha de cierre",            f: "txt" },
-];
-let FILAS_BASE = [], FILAS_VISIBLES = [];
-let alFiltros = {}, alCtx = "";
-
+function esc2(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function esc(s) { return String(s || "").replace(/"/g, "&quot;"); }
 function sigOrg(org) { return String(org || "").split(" ·")[0].trim(); }
 
-// Orden: todas las VOC02 juntas, después las P03, etc. Alertas internas al final.
+// Orden: todas las VOC02 juntas, después las P03, etc.
 function ordOrg(org) {
   const s = String(org || "").trim();
   if (/^alerta interna/i.test(s)) return [9, 999, "zzz"];
@@ -1804,170 +1788,228 @@ function cmpFilaPlan(a, b) {
   if (A[1] !== B[1]) return A[1] - B[1];
   if (A[2] !== B[2]) return A[2] < B[2] ? -1 : 1;
   if (a.org !== b.org) return a.org < b.org ? -1 : 1;
-  if (a.suc !== b.suc) return a.suc < b.suc ? -1 : 1;
-  return String(a.cli) < String(b.cli) ? -1 : 1;
+  if ((a.suc || "") !== (b.suc || "")) return (a.suc || "") < (b.suc || "") ? -1 : 1;
+  return String(a.cli || "") < String(b.cli || "") ? -1 : 1;
 }
 
-// Filtro de una columna: desplegable (como en Sheets) o cuadro de texto
-function filtroCampo(c, filas) {
-  const v = alFiltros[c.k] || "";
+// ---- Filtros de columna ----
+function filtroCampo(vista, k, filas) {
+  const c = COL_DEF[k], v = filtros[vista][k] || "";
   const act = v ? " act" : "";
   if (c.f === "sel") {
     const vistos = new Map();
     filas.forEach(f => {
-      const val = c.k === "org" ? sigOrg(f.org) : String(f[c.k] || "").trim();
+      const val = k === "org" ? sigOrg(f.org) : String(f[k] || "").trim();
       if (!val) return;
-      if (!vistos.has(val)) vistos.set(val, c.k === "org" ? String(f.org).slice(0, 46) : val);
+      if (!vistos.has(val)) vistos.set(val, k === "org" ? String(f.org).slice(0, 46) : val);
     });
     const ops = [...vistos.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1)
       .map(([val, lbl]) => `<option value="${esc(val)}"${val === v ? " selected" : ""}>${esc2(lbl)}</option>`).join("");
-    const vacios = filas.some(f => !String(f[c.k] || "").trim())
+    const vacios = filas.some(f => !String(f[k] || "").trim())
       ? `<option value="__vacio__"${v === "__vacio__" ? " selected" : ""}>(vacío)</option>` : "";
-    return `<select class="alf${act}" data-k="${c.k}"><option value="">Todos</option>${ops}${vacios}</select>`;
+    return `<select class="alf${act}" data-k="${k}"><option value="">Todos</option>${ops}${vacios}</select>`;
   }
   if (c.f === "est") {
     const o = (val, lbl) => `<option value="${val}"${val === v ? " selected" : ""}>${lbl}</option>`;
-    return `<select class="alf${act}" data-k="${c.k}">${o("", "Todos")}${o("__con__", "Cargado")}${o("__sin__", "Sin cargar")}</select>`;
+    return `<select class="alf${act}" data-k="${k}">${o("", "Todos")}${o("__con__", "Cargado")}${o("__sin__", "Sin cargar")}</select>`;
   }
-  return `<input class="alf${act}" data-k="${c.k}" type="text" value="${esc(v)}" placeholder="Buscar…">`;
+  return `<input class="alf${act}" data-k="${k}" type="text" value="${esc(v)}" placeholder="Buscar…">`;
 }
 
-function pasaFiltros(f) {
-  return AL_COLS.every(c => {
-    const q = alFiltros[c.k];
+function pasaFiltros(vista, f) {
+  return VISTAS[vista].cols.every(k => {
+    const q = filtros[vista][k];
     if (!q) return true;
-    const val = String(f[c.k] || "").trim();
+    const val = String(f[k] || "").trim();
     if (q === "__vacio__") return !val;
     if (q === "__con__")   return !!val;
     if (q === "__sin__")   return !val;
-    if (c.f === "sel")     return (c.k === "org" ? sigOrg(f.org) : val) === q;
+    if (COL_DEF[k].f === "sel") return (k === "org" ? sigOrg(f.org) : val) === q;
     return val.toLowerCase().includes(q.toLowerCase());
   });
 }
 
-// Repinta solo las filas: así no se pierde el foco mientras se escribe en un filtro
-function pintarFilasAlertas() {
-  const body = $("alBody");
-  if (!body) return;
-  const filas = FILAS_BASE.filter(pasaFiltros);
-  FILAS_VISIBLES = filas;
+// ---- Armado de la tabla ----
+function tablaHTML(vista, elId) {
+  const V = VISTAS[vista], filas = BASE[vista];
+  const puedeAlta = V.alta && MES_LIVE;
+  const info = MES_LIVE
+    ? (V.edit ? "tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet"
+              : "se arma solo desde el Sheet — para cargar planes usá la solapa <b>Planes de acción</b>")
+    : `<b>${esc2(mesBonito(state.periodo || ""))}</b> — mes cerrado, solo lectura`;
+  return `
+    <div class="al-bar">
+      <div class="al-info"><b id="alCount_${vista}">${filas.length}</b> ${filas.length === 1 ? "fila" : "filas"} · ${info}</div>
+      <button class="al-btn" type="button" data-lim="${vista}" title="Quitar todos los filtros">✕ Filtros</button>
+      ${puedeAlta ? `<button class="al-btn prim" type="button" data-alta="${vista}">+ Agregar fila</button>` : ""}
+    </div>
+    <div class="al-scroll"><table class="al-tab">
+      <thead>
+        <tr>${V.cols.map(k => `<th>${COL_DEF[k].t}</th>`).join("")}${V.edit && MES_LIVE ? "<th></th>" : ""}</tr>
+        <tr class="filtros">${V.cols.map(k => `<th>${filtroCampo(vista, k, filas)}</th>`).join("")}${V.edit && MES_LIVE ? "<th></th>" : ""}</tr>
+      </thead>
+      <tbody id="${elId}"></tbody>
+    </table></div>`;
+}
 
-  const ed = (f, campo, i) => {
-    const v = f[campo] || "";
-    if (!MES_LIVE) return `<td>${v ? esc2(v) : "—"}</td>`;      // mes guardado: solo lectura
-    return `<td class="ed ${v ? "" : "novacio"}" data-i="${i}" data-campo="${campo}"
-      title="${v ? "Editar" : "Agregar"}">${v ? esc2(v) : '<span class="mas">+</span>'}</td>`;
-  };
+function pintarFilas(vista) {
+  const body = $("body_" + vista);
+  if (!body) return;
+  const V = VISTAS[vista];
+  const filas = BASE[vista].filter(f => pasaFiltros(vista, f));
+  VISIBLES[vista] = filas;
+  const nCols = V.cols.length + (V.edit && MES_LIVE ? 1 : 0);
 
   if (!filas.length) {
-    body.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:26px;color:var(--ink-muted)">
-      Ningún caso con esos filtros.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="${nCols}" style="text-align:center;padding:26px;color:var(--ink-muted)">
+      ${BASE[vista].length ? "Ningún caso con esos filtros." : "Nada cargado acá todavía."}</td></tr>`;
   } else {
     body.innerHTML = filas.map((f, i) => {
-      const cargado = f.plan || f.resp || f.cierre || f.inter || f.prev || f.corr;
-      return `<tr class="${/^alerta interna/i.test(f.org) ? "interna" : ""}${f.manual ? " manual" : ""}">
-        <td class="org">${esc2(f.org)}</td>
-        <td>${esc2(f.suc)}</td>
-        <td class="cli">${esc2(f.cli)}</td>
-        <td class="fec">${esc2(f.fec) || "—"}</td>
-        <td class="verb">${esc2(f.verb) || '<span class="mas">—</span>'}</td>
-        ${ed(f, "inter", i)}${ed(f, "prev", i)}${ed(f, "corr", i)}
-        ${ed(f, "plan", i)}${ed(f, "resp", i)}${ed(f, "cierre", i)}
-        <td class="acc">${MES_LIVE ? `<button class="al-add" type="button" data-i="${i}"
-          title="${cargado ? "Editar" : "Completar"} este caso">${cargado ? "✎" : "+"}</button>` : ""}</td>
+      const editable = MES_LIVE && (V.edit === "todo" || (V.edit === "manual" && f.manual));
+      const celda = k => {
+        const v = f[k] || "";
+        const cls = COL_DEF[k].cls ? COL_DEF[k].cls + " " : "";
+        if (!editable) return `<td class="${cls}">${v ? esc2(v) : (k === "fec" || k === "verb" ? "—" : "")}</td>`;
+        return `<td class="${cls}ed ${v ? "" : "novacio"}" data-v="${vista}" data-i="${i}" data-campo="${k}"
+          title="${v ? "Editar" : "Agregar"}">${v ? esc2(v) : '<span class="mas">+</span>'}</td>`;
+      };
+      const cargado = V.cols.some(k => f[k]);
+      return `<tr class="${/^alerta interna/i.test(f.org || "") ? "interna" : ""}${f.manual ? " manual" : ""}">
+        ${V.cols.map(celda).join("")}
+        ${V.edit && MES_LIVE ? `<td class="acc">${editable
+          ? `<button class="al-add" type="button" data-v="${vista}" data-i="${i}"
+               title="${cargado ? "Editar" : "Completar"}">${cargado ? "✎" : "+"}</button>` : ""}</td>` : ""}
       </tr>`;
     }).join("");
   }
-  const c = $("alCount");
-  if (c) c.textContent = filas.length === FILAS_BASE.length ? filas.length : `${filas.length} de ${FILAS_BASE.length}`;
+  const c = $("alCount_" + vista);
+  if (c) c.textContent = filas.length === BASE[vista].length ? filas.length : `${filas.length} de ${BASE[vista].length}`;
 }
 
-function esc2(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-function esc(s) { return String(s || "").replace(/"/g, "&quot;"); }
+// ---- Solapa ALERTAS ----
+function renderAlertas() {
+  const el = $("alertas");
+  const areaKey = areaActual();
+  const area = areaKey === "posventa" ? "Posventa" : "Ventas";
+  const V = VISTAS[tipoAlerta];
 
-// ---- Modal: edita los 6 campos del caso ----
-let planCtx = null;
-const CAMPO_LBL = { inter: "Interacción con el Cliente", prev: "Acción Preventiva",
-  corr: "Acción Correctiva", plan: "Plan de acción", resp: "Responsable", cierre: "Fecha de cierre" };
+  const fw = $("alFiltro");
+  if (filtroAlerta) {
+    fw.hidden = false;
+    $("alFiltroTxt").textContent = `${filtroAlerta.sig} · ${filtroAlerta.lbl}`;
+  } else fw.hidden = true;
 
-function abrirModalNueva() {
-  abrirModalPlan(-1, "cli");
-}
+  $("alertasTitle").textContent = `${V.titulo} · ${area} — ${current}`;
+  $("alertasHint").textContent = V.hint;
+  $("alAreaSel").value = areaKey;
+  $("alTipoSel").value = tipoAlerta;
 
-function abrirModalPlan(i, foco) {
-  const nueva = i === -1;
-  const f = nueva
-    ? { nueva: true, manual: true, org: "Alerta interna", suc: current !== "Grupo Kyoto" ? current : "",
-        cli: "", fec: "", verb: "", inter: "", prev: "", corr: "", plan: "", resp: "", cierre: "", clave: "" }
-    : FILAS_VISIBLES[i];
-  if (!f) return;
-  planCtx = f;
-  $("pmTitle").textContent = nueva ? "Fila nueva" : "Plan de acción";
-  $("pmSave").textContent  = nueva ? "Agregar" : "Guardar";
-  // las columnas fijas solo se editan si la fila se cargó a mano
-  const fijos = f.manual || nueva;
-  $("pmFijos").hidden = !fijos;
-  if (fijos) {
-    $("pmOrg").value  = f.org  || "";
-    $("pmSuc").value  = f.suc  || "";
-    $("pmCli").value  = f.cli  || "";
-    $("pmFec").value  = f.fec  || "";
-    $("pmVerb").value = f.verb || "";
+  const ctx = areaKey + "|" + current + "|" + (MES_LIVE ? "live" : state.periodo);
+  if (ctx !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = ctx; }
+
+  const TIPO_GAS = { voc: "VOC", interna: "Interna", indicador: "Indicador" };
+  let filas = (ALERTAS_FILAS[areaKey] || []).filter(f => (f.tipo || "") === TIPO_GAS[tipoAlerta]);
+  if (current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
+  if (filtroAlerta) filas = filas.filter(f => sigOrg(f.org) === filtroAlerta.sig);
+  filas.sort(cmpFilaPlan);
+  BASE[tipoAlerta] = filas;
+
+  if (!filas.length && !ALERTAS_FILAS[areaKey].length) {
+    el.innerHTML = `<div class="al-empty">${
+      !MES_LIVE ? "Este mes guardado no tiene alertas."
+      : ALERTAS.falta || ALERTAS.error ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
+      : `Todavía no llegan los casos. En el Sheet, ejecutá <b>sincronizarAlertas</b>
+         y volvé a implementar el Web App.`}</div>`;
+    return;
   }
+
+  el.innerHTML = tablaHTML(tipoAlerta, "body_" + tipoAlerta);
+  pintarFilas(tipoAlerta);
+}
+
+// ---- Solapa PLANES DE ACCIÓN ----
+function renderPlanesAcc() {
+  const areaKey = areaActual();
+  const area = areaKey === "posventa" ? "Posventa" : "Ventas";
+  $("planesAccTitle").textContent = `Planes de acción · ${area}`;
+  $("plAreaSel").value = areaKey;
+
+  const ctx = areaKey + "|" + (MES_LIVE ? "live" : state.periodo);
+  if (ctx !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = ctx; }
+
+  BASE.planes = (PLANES_ACC[areaKey] || []).slice();
+  $("planesAcc").innerHTML = tablaHTML("planes", "body_planes");
+  pintarFilas("planes");
+}
+
+// ---- Modal: sirve para las dos tablas editables ----
+let modalCtx = null;
+function abrirModal(vista, i, foco) {
+  const nueva = i == null || i < 0;
+  const campos = CAMPOS_EDIT[vista];
+  if (!campos) return;
+  const f = nueva
+    ? (vista === "interna"
+        ? { nueva: true, manual: true, org: "Alerta interna", suc: current !== "Grupo Kyoto" ? current : "",
+            cli: "", fec: "", verb: "", clave: "" }
+        : { nueva: true, org: "", plan: "", resp: "", fec: "", herr: "", obs: "", clave: "" })
+    : VISIBLES[vista][i];
+  if (!f) return;
+  modalCtx = { vista, f };
+
+  $("pmTitle").textContent = nueva
+    ? (vista === "interna" ? "Alerta interna nueva" : "Plan de acción nuevo")
+    : (vista === "interna" ? "Alerta interna" : "Plan de acción");
+  $("pmSave").textContent = nueva ? "Agregar" : "Guardar";
   $("pmCaso").innerHTML = nueva
-    ? `Se agrega al final de <b>Planes de Accion VOC - ${areaActual() === "posventa" ? "Posventa" : "Ventas"}</b>.`
-    : `<b>${esc2(f.cli)}</b> — ${esc2(f.suc)}<br>${esc2(f.org)}${f.fec ? " · " + esc2(f.fec) : ""}`;
-  $("pmInter").value  = f.inter  || "";
-  $("pmPrev").value   = f.prev   || "";
-  $("pmCorr").value   = f.corr   || "";
-  $("pmTexto").value  = f.plan   || "";
-  $("pmResp").value   = f.resp   || "";
-  $("pmCierre").value = f.cierre || "";
+    ? `Se agrega a <b>${vista === "interna" ? "Alertas" : "Planes de accion"} ${areaActual() === "posventa" ? "Posventa" : "Ventas"}</b>.`
+    : (vista === "interna" ? `<b>${esc2(f.cli)}</b>${f.suc ? " — " + esc2(f.suc) : ""}` : esc2(f.org || "Sin origen"));
+
+  const largo = { verb: 3, plan: 4, obs: 3 };
+  $("pmCampos").innerHTML = campos.map(k =>
+    `<label class="pm-campo">${COL_DEF[k].t}
+      <textarea id="pm_${k}" rows="${largo[k] || 2}"></textarea></label>`).join("");
+  campos.forEach(k => { $("pm_" + k).value = f[k] || ""; });
+
   $("pmMsg").textContent = ""; $("pmMsg").className = "modal-msg";
   $("planModal").hidden = false;
-  const id = { inter:"pmInter", prev:"pmPrev", corr:"pmCorr", plan:"pmTexto", resp:"pmResp",
-               cierre:"pmCierre", cli:"pmCli", org:"pmOrg", suc:"pmSuc", fec:"pmFec", verb:"pmVerb" }[foco] || "pmTexto";
-  setTimeout(() => $(id).focus(), 30);
+  const id = campos.includes(foco) ? "pm_" + foco : "pm_" + campos[vista === "interna" ? 2 : 1];
+  setTimeout(() => { const e = $(id); if (e) e.focus(); }, 30);
 }
-function cerrarModalPlan() { $("planModal").hidden = true; planCtx = null; }
+function cerrarModal() { $("planModal").hidden = true; modalCtx = null; }
 
-async function guardarPlan() {
-  if (!planCtx) return;
+async function guardarModal() {
+  if (!modalCtx) return;
+  const { vista, f } = modalCtx;
+  const campos = CAMPOS_EDIT[vista];
   const url = $("srcUrl").value.trim();
-  const d = {
-    inter:  $("pmInter").value.trim(),  prev:   $("pmPrev").value.trim(),
-    corr:   $("pmCorr").value.trim(),   plan:   $("pmTexto").value.trim(),
-    resp:   $("pmResp").value.trim(),   cierre: $("pmCierre").value.trim(),
-  };
-  const area = areaActual();
   const msg = $("pmMsg"), btn = $("pmSave");
   if (!url) { msg.textContent = "Falta la URL del Web App (⚙ Fuente)."; msg.className = "modal-msg err"; return; }
 
-  // en filas cargadas a mano también viajan las columnas fijas
-  if (planCtx.manual || planCtx.nueva) {
-    d.org  = $("pmOrg").value.trim();  d.suc  = $("pmSuc").value.trim();
-    d.cli  = $("pmCli").value.trim();  d.fec  = $("pmFec").value.trim();
-    d.verb = $("pmVerb").value.trim();
-    if (!d.cli) { msg.textContent = "Poné al menos el nombre del cliente."; msg.className = "modal-msg err"; return; }
+  const d = {};
+  campos.forEach(k => { d[k] = $("pm_" + k).value.trim(); });
+  if (vista === "interna" && !d.cli) {
+    msg.textContent = "Poné al menos el nombre del cliente."; msg.className = "modal-msg err"; return;
+  }
+  if (vista === "planes" && !d.plan && !d.org) {
+    msg.textContent = "Escribí al menos el origen o el plan."; msg.className = "modal-msg err"; return;
   }
 
-  btn.disabled = true; msg.textContent = planCtx.nueva ? "Agregando…" : "Guardando…"; msg.className = "modal-msg";
+  const area = areaActual();
+  btn.disabled = true; msg.textContent = f.nueva ? "Agregando…" : "Guardando…"; msg.className = "modal-msg";
   try {
-    const sig = sigOrg(planCtx.org);
-    const q = new URLSearchParams(Object.assign(
-      planCtx.nueva
-        ? { accion: "agregarFila", area }
-        : { accion: "guardarPlan", area, clave: planCtx.clave, cli: planCtx.cli, sig },
-      d)).toString();
+    const accion = vista === "interna" ? (f.nueva ? "agregarAlerta" : "guardarAlerta") : "guardarPlan";
+    const q = new URLSearchParams(Object.assign({ accion, area, clave: f.clave || "" }, d)).toString();
     const r = await jsonp(url + (url.includes("?") ? "&" : "?") + q);
     if (!r || !r.ok) throw new Error((r && r.error) || "No se pudo guardar");
-    if (planCtx.nueva) {                // sumarla a la tabla sin recargar todo
-      const nf = Object.assign({}, d, { clave: r.clave, manual: true });
-      (PLANES_FILAS[area] = PLANES_FILAS[area] || []).push(nf);
+    if (f.nueva) {
+      const nf = Object.assign({}, d, { clave: r.clave, manual: true, tipo: "Interna" });
+      const destino = vista === "interna" ? ALERTAS_FILAS : PLANES_ACC;
+      (destino[area] = destino[area] || []).push(nf);
     } else {
-      Object.assign(planCtx, d);        // reflejarlo sin volver a pedir todo
+      Object.assign(f, d);
     }
-    cerrarModalPlan();
+    cerrarModal();
     render();
   } catch (e) {
     msg.textContent = "✗ " + e.message; msg.className = "modal-msg err";
@@ -2007,6 +2049,8 @@ function ocultarTip() { $("tip").hidden = true; }
 // Click en un segmento/cantidad → abre la solapa Alertas filtrada
 function irAAlertas(sig, key, lbl) {
   filtroAlerta = { sig, key, lbl };
+  // VOC01 vive en la vista VOC; el resto, en Indicadores
+  tipoAlerta = sig === "VOC01" ? "voc" : "indicador";
   ocultarTip();
   activeTab = "alertas";
   renderPills();
@@ -2277,10 +2321,14 @@ function aplicarMes(key) {
   // Mes en vivo → tabla de alertas editable. Mes guardado → foto de ese mes:
   // si todavía no existían las hojas de Planes VOC (junio), la solapa no se muestra.
   MES_LIVE = key === "__live__";
-  MES_TIENE_PLANES = MES_LIVE || !!s.planesFilas;
-  const pf = s.planesFilas || { ventas: [], posventa: [] };
-  PLANES_FILAS = { ventas: pf.ventas || [], posventa: pf.posventa || [] };
-  alCtx = "";                              // filtros en cero al cambiar de mes
+  MES_TIENE_ALERTAS = MES_LIVE || !!s.alertasFilas;
+  MES_TIENE_PLANES  = MES_LIVE || !!s.planesAccion;
+  const af = s.alertasFilas || { ventas: [], posventa: [] };
+  const pa = s.planesAccion || { ventas: [], posventa: [] };
+  ALERTAS_FILAS = { ventas: af.ventas || [], posventa: af.posventa || [] };
+  PLANES_ACC    = { ventas: pa.ventas || [], posventa: pa.posventa || [] };
+  ctxTabla = "";                           // filtros en cero al cambiar de mes
+  filtroAlerta = null;
   const r = applyData(s.ventas, s.posventa, s.verbas, label);
   if (key !== "__live__") { state.periodo = mesBonito(key); $("periodoInp").value = mesBonito(key); }
   return r;
@@ -2300,14 +2348,19 @@ async function fetchLive(manual) {
     if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
     // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
     SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas,
-                              planes: d.planes || {}, planesFilas: d.planesFilas || { ventas: [], posventa: [] } } };
-    // planesFilas = las hojas "Planes de Accion VOC" de ese mes (los meses viejos vienen sin nada)
+                              planes: d.planes || {},
+                              alertasFilas: d.alertasFilas || { ventas: [], posventa: [] },
+                              planesAccion: d.planesAccion || { ventas: [], posventa: [] } } };
+    // los meses guardados antes de que existieran estas hojas vienen en null:
+    // ahí la solapa no se muestra
     (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa,
-      verbas: h.verbas, planes: h.planes || {}, planesFilas: h.planesFilas || null }; });
+      verbas: h.verbas, planes: h.planes || {},
+      alertasFilas: h.alertasFilas || null, planesAccion: h.planesAccion || null }; });
     conectado = true;
     if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
                                falta: d.alertas.falta || null, error: d.alertas.error || null };
-    if (d.planesFilas) PLANES_FILAS = { ventas: d.planesFilas.ventas || [], posventa: d.planesFilas.posventa || [] };
+    if (d.alertasFilas) ALERTAS_FILAS = { ventas: d.alertasFilas.ventas || [], posventa: d.alertasFilas.posventa || [] };
+    if (d.planesAccion) PLANES_ACC    = { ventas: d.planesAccion.ventas || [], posventa: d.planesAccion.posventa || [] };
     poblarMeses(d.historico || []);
     const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
     localStorage.setItem(LS_URL, url);
@@ -2363,45 +2416,54 @@ document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
 
 $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
 
-// ---- Plan de acción: botón + / ✎ y modal ----
-$("alertas").addEventListener("click", e => {
-  const t = e.target;
-  if (t.id === "alNueva") { abrirModalNueva(); return; }
-  if (t.id === "alLimpiar") { alFiltros = {}; renderAlertas(); return; }
-  const btn = t.closest && t.closest(".al-add");
-  if (btn) { abrirModalPlan(+btn.dataset.i); return; }
-  const celda = t.closest && t.closest("td.ed");
-  if (celda) abrirModalPlan(+celda.dataset.i, celda.dataset.campo);
+// ---- Tablas: botones, celdas editables y filtros (Alertas y Planes) ----
+["alertas", "planesAcc"].forEach(id => {
+  const cont = $(id);
+  cont.addEventListener("click", e => {
+    const t = e.target;
+    const alta = t.closest && t.closest("[data-alta]");
+    if (alta) { abrirModal(alta.dataset.alta, null); return; }
+    const lim = t.closest && t.closest("[data-lim]");
+    if (lim) { filtros[lim.dataset.lim] = {}; render(); return; }
+    const btn = t.closest && t.closest(".al-add");
+    if (btn) { abrirModal(btn.dataset.v, +btn.dataset.i); return; }
+    const celda = t.closest && t.closest("td.ed");
+    if (celda) abrirModal(celda.dataset.v, +celda.dataset.i, celda.dataset.campo);
+  });
+  // filtros estilo Sheets: repinta solo las filas, sin perder el foco
+  cont.addEventListener("input", e => {
+    const f = e.target.closest && e.target.closest("input.alf");
+    if (!f) return;
+    const vista = id === "alertas" ? tipoAlerta : "planes";
+    filtros[vista][f.dataset.k] = f.value.trim();
+    f.classList.toggle("act", !!f.value.trim());
+    pintarFilas(vista);
+  });
+  cont.addEventListener("change", e => {
+    const f = e.target.closest && e.target.closest("select.alf");
+    if (!f) return;
+    const vista = id === "alertas" ? tipoAlerta : "planes";
+    filtros[vista][f.dataset.k] = f.value;
+    f.classList.toggle("act", !!f.value);
+    pintarFilas(vista);
+  });
 });
-
-// ---- Filtros de la tabla (estilo Sheets) ----
-$("alertas").addEventListener("input", e => {
-  const f = e.target.closest && e.target.closest("input.alf");
-  if (!f) return;
-  alFiltros[f.dataset.k] = f.value.trim();
-  f.classList.toggle("act", !!f.value.trim());
-  pintarFilasAlertas();
-});
-$("alertas").addEventListener("change", e => {
-  const f = e.target.closest && e.target.closest("select.alf");
-  if (!f) return;
-  alFiltros[f.dataset.k] = f.value;
-  f.classList.toggle("act", !!f.value);
-  pintarFilasAlertas();
-});
-$("pmCancel").onclick = cerrarModalPlan;
-$("pmSave").onclick = guardarPlan;
-$("planModal").addEventListener("click", e => { if (e.target.id === "planModal") cerrarModalPlan(); });
+$("pmCancel").onclick = cerrarModal;
+$("pmSave").onclick = guardarModal;
+$("planModal").addEventListener("click", e => { if (e.target.id === "planModal") cerrarModal(); });
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && !$("planModal").hidden) cerrarModalPlan();
-  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("planModal").hidden) guardarPlan();
+  if (e.key === "Escape" && !$("planModal").hidden) cerrarModal();
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("planModal").hidden) guardarModal();
 });
-$("alAreaSel").onchange = e => {
-  ultimaArea = e.target.value;   // cambia el área sin salir de la solapa
-  filtroAlerta = null;
-  renderPills();
-  render();
-};
+$("alTipoSel").onchange = e => { tipoAlerta = e.target.value; filtroAlerta = null; render(); };
+["alAreaSel", "plAreaSel"].forEach(id => {
+  $(id).onchange = e => {
+    ultimaArea = e.target.value;   // cambia el área sin salir de la solapa
+    filtroAlerta = null;
+    renderPills();
+    render();
+  };
+});
 $("cmpSel").onchange = renderBars;
 $("uploadBtn").onclick = () => $("fileInp").click();
 $("fileInp").onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; };

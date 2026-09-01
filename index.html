@@ -425,6 +425,8 @@
   .al-tab td.ed .mas { color: var(--ink-faint); font-size: 15px; font-weight: 700; }
   .al-tab td.ed:hover .mas { color: var(--brand); }
   .al-tab td.acc { text-align: center; }
+  .al-tab td.plan-txt { min-width: 260px; max-width: 340px; font-weight: 600; }
+  .plan-suc-t + .al-scroll, .plan-suc-t + .al-empty { margin-bottom: 18px; }
   /* campos del modal (se arman según la tabla que se esté editando) */
   #pmCampos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 4px; }
   @media (max-width: 620px) { #pmCampos { grid-template-columns: 1fr; } }
@@ -895,7 +897,7 @@
     <div id="planesAccView" hidden>
       <div class="section-t">
         <h2 id="planesAccTitle">Planes de acción</h2>
-        <span class="hint">se carga a mano — lo que escribas acá va al Sheet, y lo que escribas en el Sheet aparece acá</span>
+        <span class="hint">lo que hay en las hojas <b>Plan de Accion</b> de cada sucursal, tal cual</span>
         <span class="cargo-wrap" style="margin-left:auto"><label for="plAreaSel">Área:</label>
           <select id="plAreaSel" aria-label="Área de los planes">
             <option value="ventas">Ventas</option>
@@ -1928,18 +1930,96 @@ function renderAlertas() {
 }
 
 // ---- Solapa PLANES DE ACCIÓN ----
+// Espejo exacto de las hojas "Plan de Accion <Sucursal>" del Sheet:
+// mismas columnas, mismas filas y el mismo corte VENTAS / SERVICIO-POSVENTA.
+let PLANES_RAW = {};   // { "Plan de Accion Resistencia": [[fila]], … }
+
+// Parte una hoja en sus dos secciones, quedándose con su propio encabezado
+function seccionesPlan(rows) {
+  const out = { ventas: { hdr: null, filas: [] }, posventa: { hdr: null, filas: [] } };
+  let sec = null;
+  (rows || []).forEach(r => {
+    if (!r) return;
+    const celdas = r.map(c => String(c == null ? "" : c));
+    const c0 = norm(celdas[0]);
+    const resto = celdas.slice(1).some(c => c.trim() !== "");
+
+    if (c0.startsWith("ventas")) { sec = "ventas"; return; }              // "VENTAS — Herramientas SERNISSAN"
+    if (c0.includes("posventa") || c0.startsWith("servicio")) { sec = "posventa"; return; }
+    if (!resto && (c0.includes("sernissan") || c0.includes("kyoto"))) return;   // título de la hoja
+    if (c0 === "n°" || c0 === "no" || c0 === "n" || c0 === "nº") {         // encabezado de la sección
+      if (sec) out[sec].hdr = celdas;
+      return;
+    }
+    if (!sec || !resto) return;      // fila vacía, o solo el número de orden
+    out[sec].filas.push(celdas);
+  });
+  return out;
+}
+
+// 46218 → 15/07/2026 (serie de Google Sheets, base 30/12/1899)
+function fechaSerie(n) {
+  if (!(n > 30000 && n < 60000)) return String(n);
+  const d = new Date(Date.UTC(1899, 11, 30) + n * 86400000);
+  const p = x => String(x).padStart(2, "0");
+  return `${p(d.getUTCDate())}/${p(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
+}
+
+function sucDeHojaPlan(nombre) {
+  const nn = norm(nombre);
+  for (const [k, v] of PLAN_SUC) if (nn.includes(k)) return v;
+  return null;
+}
+
 function renderPlanesAcc() {
+  const el = $("planesAcc");
   const areaKey = areaActual();
   const area = areaKey === "posventa" ? "Posventa" : "Ventas";
-  $("planesAccTitle").textContent = `Planes de acción · ${area}`;
+  $("planesAccTitle").textContent = `Planes de acción · ${area} — ${current}`;
   $("plAreaSel").value = areaKey;
 
-  const ctx = areaKey + "|" + (MES_LIVE ? "live" : state.periodo);
-  if (ctx !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = ctx; }
+  // una entrada por sucursal, con las filas tal cual están en su hoja
+  const porSuc = {};
+  Object.keys(PLANES_RAW || {}).forEach(n => {
+    const suc = sucDeHojaPlan(n);
+    if (suc) porSuc[suc] = { hoja: n, rows: PLANES_RAW[n] };
+  });
 
-  BASE.planes = (PLANES_ACC[areaKey] || []).slice();
-  $("planesAcc").innerHTML = tablaHTML("planes", "body_planes");
-  pintarFilas("planes");
+  const sucs = current === "Grupo Kyoto"
+    ? Object.keys(porSuc).sort()
+    : (porSuc[current] ? [current] : []);
+
+  if (!sucs.length) {
+    el.innerHTML = `<div class="al-empty">${Object.keys(porSuc).length
+      ? `No encontré la hoja <b>Plan de Accion</b> de ${esc2(current)} en el Sheet.`
+      : "No llegan las hojas <b>Plan de Accion</b> del Sheet. Actualizá la fuente o volvé a implementar el Web App."}</div>`;
+    return;
+  }
+
+  let total = 0;
+  const bloques = sucs.map(suc => {
+    const sec = seccionesPlan(porSuc[suc].rows)[areaKey];
+    const hdr = (sec.hdr || ["n°", "Origen", "Cliente", "Desvio", "Fecha Atencion",
+                            "Plan de accion", "Responsable", "Fecha", "Herramientas SERNISSAN", "Observaciones"])
+      .map(h => String(h || ""));
+    total += sec.filas.length;
+    const titulo = current === "Grupo Kyoto" ? `<div class="plan-suc-t">${esc2(suc)}</div>` : "";
+    if (!sec.filas.length)
+      return titulo + `<div class="al-empty">Sin planes de ${area} cargados en la hoja <b>${esc2(porSuc[suc].hoja)}</b>.</div>`;
+    const esFecha = hdr.map(h => norm(h).includes("fecha"));
+    const cuerpo = sec.filas.map(f =>
+      `<tr>${hdr.map((_, i) => {
+        let v = f[i] == null ? "" : String(f[i]);
+        // en las columnas de fecha, Google a veces manda el número de serie (46218)
+        if (esFecha[i] && /^\d{5}$/.test(v.trim())) v = fechaSerie(+v);
+        return `<td class="${norm(hdr[i]).includes("plan de acc") ? "plan-txt" : ""}">${v ? esc2(v) : ""}</td>`;
+      }).join("")}</tr>`).join("");
+    return titulo + `<div class="al-scroll"><table class="al-tab"><thead><tr>${
+      hdr.map(h => `<th>${esc2(h)}</th>`).join("")}</tr></thead><tbody>${cuerpo}</tbody></table></div>`;
+  }).join("");
+
+  el.innerHTML = `<div class="al-bar"><div class="al-info">${total} ${total === 1 ? "fila" : "filas"} ·
+    tal cual están en las hojas <b>Plan de Accion</b> del Sheet</div></div>${bloques}`;
 }
 
 // ---- Modal: sirve para las dos tablas editables ----
@@ -2322,7 +2402,8 @@ function aplicarMes(key) {
   // si todavía no existían las hojas de Planes VOC (junio), la solapa no se muestra.
   MES_LIVE = key === "__live__";
   MES_TIENE_ALERTAS = MES_LIVE || !!s.alertasFilas;
-  MES_TIENE_PLANES  = MES_LIVE || !!s.planesAccion;
+  PLANES_RAW = s.planes || {};                       // hojas "Plan de Accion <Sucursal>"
+  MES_TIENE_PLANES  = Object.keys(PLANES_RAW).length > 0;
   const af = s.alertasFilas || { ventas: [], posventa: [] };
   const pa = s.planesAccion || { ventas: [], posventa: [] };
   ALERTAS_FILAS = { ventas: af.ventas || [], posventa: af.posventa || [] };
@@ -2359,6 +2440,7 @@ async function fetchLive(manual) {
     conectado = true;
     if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
                                falta: d.alertas.falta || null, error: d.alertas.error || null };
+    PLANES_RAW = d.planes || {};
     if (d.alertasFilas) ALERTAS_FILAS = { ventas: d.alertasFilas.ventas || [], posventa: d.alertasFilas.posventa || [] };
     if (d.planesAccion) PLANES_ACC    = { ventas: d.planesAccion.ventas || [], posventa: d.planesAccion.posventa || [] };
     poblarMeses(d.historico || []);

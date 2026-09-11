@@ -2425,7 +2425,9 @@ async function fetchLive(manual) {
   const btn = $("connectBtn"); btn.disabled = true;
   setSrc("", '<span class="src-spin"></span> Conectando con el Google Sheet…');
   try {
-    const d = await jsonp(url);
+    // el Sheet tarda ~15 s en armar todo: 20 s quedaba muy justo y, si se pasaba,
+    // la actualización fallaba sin que se note y quedaban los datos viejos
+    const d = await jsonp(url, 60000);
     if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
     // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
     SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas,

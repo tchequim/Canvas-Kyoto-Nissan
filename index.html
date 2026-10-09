@@ -90,6 +90,25 @@
   }
   .voc-inner { max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; }
 
+
+  /* ---- Acceso por usuario ---- */
+  .hd-user { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--brand-ink); max-width: 100%; }
+  .hd-user #userTxt { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .95; }
+  .login-bg { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; padding: 20px; background: var(--bg);
+    overflow-y: auto; font-family: var(--font); color: var(--ink); }
+  .login-bg[hidden] { display: none; }
+  body.login-abierto .voc-inner { visibility: hidden; }
+  .login-card { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lift); overflow: hidden; }
+  .login-top { display: flex; align-items: center; gap: 14px; padding: 18px 24px; color: var(--brand-ink);
+    background: linear-gradient(115deg, var(--brand), color-mix(in srgb, var(--brand) 70%, #000)); }
+  .login-body { padding: 24px 24px 22px; text-align: center; }
+  .login-body h2 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
+  .login-sub { margin: 4px 0 0; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
+  .login-txt { margin: 18px 0 16px; font-size: 13.5px; color: var(--ink-muted); line-height: 1.5; }
+  .login-gsi { display: flex; justify-content: center; min-height: 44px; }
+  .login-msg { min-height: 18px; margin: 14px 0 0; font-size: 12.5px; font-weight: 700; color: var(--bad); line-height: 1.45; }
+  .login-ayuda { margin: 12px 0 0; font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
+
   /* ---- Header ---- */
   .hd {
     display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
@@ -530,6 +549,8 @@
   .modal-btns { display: flex; gap: 9px; justify-content: flex-end; margin-top: 14px; align-items: center; }
   .modal-msg { margin-right: auto; font-size: 12px; color: var(--ink-muted); }
   .modal-msg.err { color: var(--bad); }
+  .al-aviso { margin: 0 0 12px; padding: 11px 14px; border-radius: 10px; font-size: 12.5px; font-weight: 600; line-height: 1.5;
+    background: var(--warn-soft); color: var(--ink); border: 1px solid color-mix(in srgb, var(--warn) 55%, transparent); }
   .al-empty { padding: 22px 18px; font-size: 13px; color: var(--ink-faint); font-style: italic;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
   .al-suc-t { font-size: 13px; font-weight: 800; letter-spacing: .03em; color: var(--ink-muted);
@@ -733,6 +754,22 @@
   }
 </style>
 
+
+<!-- Pantalla de ingreso: tapa todo hasta que el Apps Script confirme quién es la persona -->
+<div class="login-bg" id="loginOverlay" hidden>
+  <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitulo">
+    <div class="login-top"><span class="hd-bar"></span><span class="hd-kyoto">KYOTO</span></div>
+    <div class="login-body">
+      <h2 id="loginTitulo">Herramienta Canvas</h2>
+      <p class="login-sub">Voz del Cliente · Grupo Kyoto</p>
+      <p class="login-txt">Ingresá con tu cuenta de Google para ver los indicadores de tu área.</p>
+      <div id="gsiBtn" class="login-gsi"></div>
+      <p class="login-msg" id="loginMsg" role="alert"></p>
+      <p class="login-ayuda">¿No podés entrar? Pedí el alta a Calidad indicando el email con el que iniciás sesión.</p>
+    </div>
+  </div>
+</div>
+
 <div class="voc">
   <div class="voc-inner">
     <header class="hd">
@@ -747,6 +784,7 @@
       <div class="hd-right">
         <input id="periodoInp" type="hidden" value="Junio 2026">
         <div class="hd-btns">
+          <span class="hd-user" id="userChip" hidden><span id="userTxt"></span><button class="hd-btn" id="logoutBtn" type="button" title="Cerrar sesión">Salir</button></span>
           <button class="hd-btn" id="themeBtn" type="button">◐ Tema</button>
         </div>
       </div>
@@ -932,7 +970,7 @@
       También podés cargar un <code>.xlsx</code> a mano.
       <b>Training</b> se alimenta de un <b>segundo</b> Google Sheet (el de Academia): pegá su URL en “URL Training”.
       La línea vertical negra en cada barra marca el objetivo Nissan.
-      <button id="resetBtn" type="button">Restablecer datos originales</button>
+      <button id="resetBtn" type="button">Borrar datos guardados en este navegador y recargar</button>
     </p>
   </div>
 </div>
@@ -951,80 +989,9 @@ const TIPOS = {
   posventa: { VOC03:"llev", VOC05:"sino", VOC07:"sino", P01:"sino3", P02:"sino" },
 };
 // Datos Junio 2026 — [sigla, pregunta, obj, base, %1..%5, %DefLlev,%ProbLlev,%ProbNo,%DefNo, %Si,%No,%NoDecidido]
-const RAW = {"ventas": {"Kyoto Resistencia": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 14, 0.0, 0.0, 0.0, 0.0, 0, 92.9, 7.1, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 14, 92.9, 7.1, 13.0, 7.7, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 5, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 13, 0.0, 0.0, 0.0, 7.7, 92.3, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 13, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 13, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 13, 30.8, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 69.2, 30.8, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 9, 11.1, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 88.9, 11.1, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 8, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 13, 0.0, 0.0, 7.7, 0.0, 92.3, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 13, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 14, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Corrientes": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 9, 33.3, 0.0, 0.0, 0.0, 0, 66.7, 33.3, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 9, 0.0, 0.0, 0.0, 11.1, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 9, 100.0, 0.0, 9.0, 0.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 9, 0.0, 0.0, 0.0, 11.1, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 9, 33.3, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 66.7, 33.3, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 6, 66.7, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 33.3, 66.7, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 9, 0.0, 0.0, 11.1, 0.0, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 9, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Posadas": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 3, 100.0, 0.0, 0.0, 0.0, 0, 66.7, 33.3, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 3, 66.7, 33.3, 2.0, 50.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 1, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 2, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 2, 50.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 50.0, 50.0, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 1, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 3, 0.0, 0.0, 0.0, 33.3, 66.7, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Sáenz Peña": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0]], "Grupo Kyoto": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 91.0, 26, 0.0, 0.0, 0.0, 3.8, 96.2, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 26, 0.0, 0.0, 0.0, 3.8, 96.2, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_Llevar vehículo al próximo servicio", 84.0, 26, 19.2, 0.0, 0.0, 0.0, 0, 80.8, 19.2, 0.0, 0.0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con la experiencia del servicio", 86.0, 26, 0.0, 0.0, 0.0, 7.7, 92.3, 0, 0, 0, 0, 0, 0, 0], ["P02", "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", 97.0, 26, 92.3, 7.7, 24.0, 8.3, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P04", "P04 ¿Cómo califica los canales digitales?", 78.0, 9, 0.0, 0.0, 0.0, 11.1, 88.9, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Instalaciones", 87.0, 24, 0.0, 0.0, 0.0, 8.3, 91.7, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Qué tan satisfecho con el asesor/vendedor", 95.0, 24, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Qué tan satisfecho con el personal administrativo", 93.0, 24, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P08", "P08 El asesor le ofreció la prueba de manejo", 80.0, 24, 29.2, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 70.8, 29.2, 0], ["P09", "P09 ¿Realizó la prueba de manejo?", 60.0, 17, 35.3, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 64.7, 35.3, 0], ["P10", "P10 ¿Cómo califica la experiencia de la prueba de manejo?", 90.0, 11, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P11", "P11 ¿Cómo califica la negociación y financiamiento?", 80.0, 24, 0.0, 0.0, 8.3, 0.0, 91.7, 0, 0, 0, 0, 0, 0, 0], ["P12", "P12 ¿Cómo califica la entrega del vehículo?", 90.0, 24, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General Close Loop", 91.5, 26, 0.0, 0.0, 0.0, 3.8, 96.2, 0, 0, 0, 0, 0, 0, 0]]}, "posventa": {"Kyoto Resistencia": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 61, 0.0, 1.6, 0.0, 3.3, 95.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 61, 1.6, 0.0, 0.0, 9.8, 88.5, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 61, 18.0, 0.0, 0.0, 0.0, 0, 82.0, 14.8, 0.0, 3.3, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 61, 1.6, 0.0, 0.0, 8.2, 90.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 61, 3.3, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 96.7, 3.3, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 61, 14.8, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 85.2, 14.8, 0], ["P01", "P01_Intención de Recompra", 88.0, 51, 17.6, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 82.4, 0.0, 17.6], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 51, 2.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 98.0, 2.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 51, 0.0, 0.0, 0.0, 7.8, 92.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 51, 0.0, 0.0, 0.0, 3.9, 96.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 51, 0.0, 0.0, 0.0, 2.0, 98.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 51, 0.0, 0.0, 3.9, 7.8, 88.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 51, 0.0, 0.0, 0.0, 3.9, 96.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SCL", "Satisfacción Close Loop", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 61, 0.0, 1.6, 0.0, 3.3, 95.1, 0, 0, 0, 0, 0.0, 0.0, 0]], "Kyoto Corrientes": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 49, 0.0, 0.0, 0.0, 2.0, 98.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 49, 0.0, 0.0, 2.0, 10.2, 87.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 49, 10.2, 0.0, 0.0, 0.0, 89.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 49, 0.0, 0.0, 2.0, 10.2, 87.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 49, 6.1, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 93.9, 6.1, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 49, 4.1, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 95.9, 4.1, 0], ["P01", "P01_Intención de Recompra", 88.0, 46, 10.9, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 89.1, 2.2, 8.7], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 46, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 46, 0.0, 0.0, 2.2, 10.9, 87.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 46, 0.0, 0.0, 0.0, 8.7, 91.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 46, 0.0, 0.0, 4.3, 2.2, 93.5, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 44, 0.0, 0.0, 9.1, 13.6, 77.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 44, 0.0, 0.0, 0.0, 11.4, 88.6, 0, 0, 0, 0, 0.0, 0.0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SCL", "Satisfacción Close Loop", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 49, 0.0, 0.0, 0.0, 2.0, 98.0, 0, 0, 0, 0, 0.0, 0.0, 0]], "Kyoto Posadas": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 26, 0.0, 3.8, 7.7, 3.8, 84.6, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 26, 3.8, 0.0, 11.5, 15.4, 69.2, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 26, 19.2, 0.0, 0.0, 0.0, 80.8, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 26, 0.0, 3.8, 3.8, 15.4, 76.9, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 26, 19.2, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 80.8, 19.2, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 26, 23.1, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 76.9, 23.1, 0], ["P01", "P01_Intención de Recompra", 88.0, 20, 15.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 85.0, 5.0, 10.0], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 20, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 20, 0.0, 0.0, 0.0, 20.0, 80.0, 0, 0, 0, 0, 0, 0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 20, 0.0, 0.0, 0.0, 15.0, 85.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 20, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 20, 0.0, 0.0, 0.0, 20.0, 80.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 20, 0.0, 5.0, 5.0, 15.0, 75.0, 0, 0, 0, 0, 0, 0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SCL", "Satisfacción Close Loop", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 26, 0.0, 0.0, 3.8, 3.8, 92.3, 0, 0, 0, 0, 0, 0, 0]], "Kyoto Sáenz Peña": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 22, 0.0, 0.0, 0.0, 4.5, 95.5, 0, 0, 0, 0, 0, 0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 22, 0.0, 9.1, 9.1, 9.1, 72.7, 0, 0, 0, 0, 0, 0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 22, 31.8, 0.0, 0.0, 0.0, 68.2, 0, 0, 0, 0, 0, 0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 22, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 22, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 100.0, 0.0, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 22, 9.1, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 90.9, 9.1, 20.0], ["P01", "P01_Intención de Recompra", 88.0, 20, 35.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 65.0, 15.0, 0], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 20, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 100.0, 0.0, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 20, 0.0, 0.0, 0.0, 5.0, 95.0, 0, 0, 0, 0, 0, 0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 19, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0, 0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 0, 100.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["SCL", "Satisfacción Close Loop", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 22, 0.0, 0.0, 0.0, 4.5, 95.5, 0, 0, 0, 0, 0, 0, 0]], "Grupo Kyoto": [["VOC01", "VOC01_Satisfacción con la experiencia recibida", 90.0, 158, 0.0, 1.3, 1.3, 3.2, 94.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC02", "VOC02_Recomendación", 88.0, 158, 1.3, 1.3, 3.8, 10.8, 82.9, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC03", "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", 84.0, 158, 17.7, 0.0, 0.0, 0.0, 82.3, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC04", "VOC04_Expectativa con su experiencia del servicio realizado", 80.0, 158, 0.6, 0.6, 1.3, 8.9, 88.6, 0, 0, 0, 0, 0.0, 0.0, 0], ["VOC05", "VOC05_Servicio bien hecho en la primera?", 96.5, 158, 6.3, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 93.7, 6.3, 0], ["VOC07", "VOC07_Continuar Contestando", 0, 158, 12.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 88.0, 12.0, 0], ["P01", "P01_Intención de Recompra", 88.0, 137, 17.5, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 82.5, 3.6, 0], ["P02", "P02 Realizó una cita para llevar su vehículo a servicio o reparación", 95.0, 137, 0.7, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 99.3, 0.7, 0], ["P03", "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", 86.5, 137, 0.0, 0.0, 0.7, 10.2, 89.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P04", "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", 86.0, 136, 0.0, 0.0, 0.0, 6.6, 93.4, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05", "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", 95.0, 136, 0.0, 0.0, 1.5, 1.5, 97.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P05.1", "P05.1 Conocimiento del asesor sobre vehículos eléctricos", 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["P06", "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", 82.0, 134, 0.0, 0.0, 4.5, 10.4, 85.1, 0, 0, 0, 0, 0.0, 0.0, 0], ["P07", "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", 86.0, 134, 0.0, 0.7, 0.7, 7.5, 91.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SOL", "Estuvo satisfecho con la solución brindada", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SCL", "Satisfacción Close Loop", 0, 2, 0.0, 0.0, 0.0, 0.0, 100.0, 0, 0, 0, 0, 0.0, 0.0, 0], ["SPCL", "Satisfacción General después del Close Loop", 90.5, 158, 0.0, 0.6, 0.6, 3.2, 95.6, 0, 0, 0, 0, 0.0, 0.0, 0]]}};
-const VERBAS_DEFAULT = {
-  ventas: {
-    "Kyoto Corrientes": { fuertes: [
-      {cat:"Proceso en general",txt:"Satisfacción en general"},
-      {cat:"Atención",txt:"Buena atención del vendedor/Sector de ventas"},
-      {cat:"Atención",txt:"Agilidad en la atención en general"},
-      {cat:"Atención",txt:"Buena atención en general (sin especificar)"},
-      {cat:"Atención",txt:"Pasan buenas informaciones en general/Pasan las explicaciones necesarias"},
-      {cat:"Proceso en general",txt:"Cumplen lo prometido"}],
-      debiles: [
-      {cat:"Entrega",txt:"Entrega de vehículo diferente de lo especificado en la venta"},
-      {cat:"Negociación",txt:"Informaciones equivocadas sobre el vehículo"}]},
-    "Kyoto Resistencia": { fuertes: [
-      {cat:"Proceso en general",txt:"Satisfacción en general"},
-      {cat:"Atención",txt:"Buena atención en general (sin especificar)"},
-      {cat:"Atención",txt:"Pasan buenas informaciones en general/Pasan las explicaciones necesarias"},
-      {cat:"Atención",txt:"Buena atención del vendedor/Sector de ventas"},
-      {cat:"Atención",txt:"Cumple lo prometido"},
-      {cat:"Recepción",txt:"Buena atención en la recepción/cordialidad en la recepción"}],
-      debiles: []},
-    "Kyoto Posadas": { fuertes: [
-      {cat:"Atención",txt:"Buena atención en general (sin especificar)"},
-      {cat:"Proceso en general",txt:"Satisfacción en general"}],
-      debiles: [
-      {cat:"Entrega",txt:"Problemas con el manual del propietario"}]},
-    "Kyoto Sáenz Peña": { fuertes: [], debiles: [] },
-  },
-  posventa: {
-    "Kyoto Corrientes": { fuertes: [
-      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
-      {cat:"Servicios",txt:"Bien ejecutados"},
-      {cat:"Proceso en general",txt:"Satisfacción en general"},
-      {cat:"Información",txt:"Pasan todas las informaciones necesarias · Dan las explicaciones"},
-      {cat:"Servicios",txt:"Rapidez en la ejecución"},
-      {cat:"Consultor",txt:"Buena atención"}],
-      debiles: [
-      {cat:"Estructura",txt:"Insatisfacción con la estructura/Empleados"},
-      {cat:"Producto",txt:"Mala calidad del vehículo/Repuesto"},
-      {cat:"Servicios",txt:"Mal ejecutado/Dificultad en el diagnóstico"}]},
-    "Kyoto Resistencia": { fuertes: [
-      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
-      {cat:"Proceso en general",txt:"Satisfacción en general"},
-      {cat:"Servicios",txt:"Bien ejecutados"},
-      {cat:"Información",txt:"Pasan todas las informaciones necesarias · Dan las explicaciones"},
-      {cat:"Recepción",txt:"Buena atención"},
-      {cat:"Entrega",txt:"Buena atención/Cordialidad durante la entrega del vehículo"}],
-      debiles: [
-      {cat:"Servicios",txt:"Costo alto del servicio/Repuesto/M.O."},
-      {cat:"Pago/Documentación",txt:"Problemas con la forma de pago"}]},
-    "Kyoto Posadas": { fuertes: [
-      {cat:"Servicios",txt:"Bien ejecutados"},
-      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
-      {cat:"Proceso en general",txt:"Satisfacción en general"},
-      {cat:"Información",txt:"Pasan todas las informaciones necesarias · Dan las explicaciones"},
-      {cat:"Servicios",txt:"No hubo problemas después del servicio"},
-      {cat:"Recepción",txt:"Buena atención"}],
-      debiles: [
-      {cat:"Servicios",txt:"Falta de repuestos"},
-      {cat:"Servicios",txt:"Mal ejecutado/Mala calidad del servicio ejecutado/No solucionaron el problema"},
-      {cat:"Servicios",txt:"Mal ejecutado/Mecánica"}]},
-    "Kyoto Sáenz Peña": { fuertes: [
-      {cat:"Atención",txt:"Buena atención en general (sin especificar de quien)"},
-      {cat:"Proceso en general",txt:"Satisfacción en general"},
-      {cat:"Servicios",txt:"Bien ejecutados"},
-      {cat:"Producto",txt:"Satisfacción con la marca"},
-      {cat:"Atención",txt:"Conocimiento técnico del personal"},
-      {cat:"Estructura",txt:"Satisfacción con las instalaciones del concesionario"}],
-      debiles: [
-      {cat:"Servicios",txt:"Costo alto del servicio/Repuesto/M.O."},
-      {cat:"Entrega",txt:"Falta de limpieza en el vehículo/Entregaron el vehículo sucio, con manchas/Sin lavar"},
-      {cat:"Turno",txt:"Indisponibilidad de fecha/Hora"}]},
-  }
-};
+// Sin datos embebidos: la página los pide al Sheet (y, con el acceso activo, solo después de iniciar sesión).
+const RAW = { ventas: {}, posventa: {} };
+const VERBAS_DEFAULT = { ventas: {}, posventa: {} };
 
 // Convierte una fila cruda en métrica enriquecida: tipo de pregunta,
 // % favorable (columna correcta según el tipo) y distribución de respuestas
@@ -1088,7 +1055,8 @@ const DEFAULT_VOC_URL   = "https://script.google.com/macros/s/AKfycbz2cH6-_GycT7
 const DEFAULT_TRAIN_URL = "https://script.google.com/macros/s/AKfycbw9TNjw73dGvXwympV5gMtkZUNDxuGHm6mMeJU0h2q5OhZg4ZWm_vYc9WfgbRACn-Lwvw/exec";   // Sheet Academia
 let state = buildDefault();
 try {
-  const saved = localStorage.getItem(LS_KEY);
+  // con el acceso por usuario activo NO se reutilizan datos guardados en el navegador (podrían ser de otra persona)
+  const saved = localStorage.getItem("kyoto-voc-acc") === "1" ? null : localStorage.getItem(LS_KEY);
   if (saved) { const p = JSON.parse(saved); if (p && p.tabs && p.tabs.ventas) state = p; }
 } catch (e) {}
 
@@ -1192,6 +1160,7 @@ function renderPills() {
 }
 
 function render() {
+  aplicarUsuario();
   // La solapa Alertas solo existe si el mes elegido tiene esas hojas
   // Las solapas Alertas y Planes de acción solo existen si el mes elegido
   // tiene esas hojas (los meses guardados antes se ven igual que siempre)
@@ -1589,6 +1558,7 @@ function findSheet(names, ...keys) {
 let PLANES = {};
 // mes elegido: en vivo (editable) vs. mes guardado (foto, solo lectura)
 let MES_LIVE = true, MES_TIENE_ALERTAS = true, MES_TIENE_PLANES = true;
+let PUEDE_EDITAR = true;   // lo define el rol del usuario (hoja "Usuarios")
 const PLAN_SUC = [
   ["resistencia", "Kyoto Resistencia"], ["corrientes", "Kyoto Corrientes"],
   ["posadas", "Kyoto Posadas"], ["saenz", "Kyoto Sáenz Peña"], ["s. pena", "Kyoto Sáenz Peña"],
@@ -1671,6 +1641,137 @@ function planCard(e) {
       ${seg.length ? seg.join("") : '<div class="plan-v" style="color:var(--ink-faint)">—</div>'}
     </div>
   </div>`;
+}
+
+// ================================================================
+//  ACCESO POR USUARIO (inicio de sesión con Google)
+// ================================================================
+// El Apps Script decide qué datos le tocan a cada persona: esta página solo
+// muestra lo que recibe. Si el acceso está abierto (sin ID de cliente en el
+// script), todo funciona como antes, sin pantalla de ingreso.
+const LS_SES = "kyoto-voc-sesion";
+let SESION = null;        // pase firmado que entrega el Apps Script (dura 12 h)
+let USUARIO = null;       // { email, nombre, cargo, areas, sucursales, edita, training } — null = acceso abierto
+let AUTH_ACTIVA = false;
+let CLIENT_ID = "";       // lo informa el Apps Script; no hace falta escribirlo acá
+
+function leerSesionGuardada() {
+  try {
+    const g = JSON.parse(localStorage.getItem(LS_SES) || "null");
+    if (g && g.token && g.exp > Date.now() + 60000) { SESION = g.token; USUARIO = g.usuario || null; AUTH_ACTIVA = true; return; }
+    localStorage.removeItem(LS_SES);
+  } catch (e) {}
+}
+function guardarSesion(token, exp, usuario) {
+  SESION = token; USUARIO = usuario; AUTH_ACTIVA = true;
+  try { localStorage.setItem(LS_SES, JSON.stringify({ token, exp, usuario })); localStorage.setItem("kyoto-voc-acc", "1"); } catch (e) {}
+}
+function limpiarSesion() {
+  SESION = null; USUARIO = null;
+  try { localStorage.removeItem(LS_SES); localStorage.removeItem(LS_KEY); } catch (e) {}
+}
+// agrega el pase de sesión a un pedido al Web App
+function urlVOC(base, extra) {
+  let q = extra || "";
+  if (SESION) q += (q ? "&" : "") + "sesion=" + encodeURIComponent(SESION);
+  return q ? base + (base.includes("?") ? "&" : "?") + q : base;
+}
+
+// deja la pantalla sin ningún dato (para que nada quede visible tras salir o vencer la sesión)
+function vaciarDatos() {
+  state = buildDefault(); SOURCES = {}; current = null;
+  ALERTAS = { ventas: [], posventa: [] }; ALERTAS_FILAS = { ventas: [], posventa: [] };
+  PLANES_ACC = { ventas: [], posventa: [] }; PLANES_RAW = {}; PLANES = {};
+  BASE = { voc: [], interna: [], indicador: [], planes: [] }; VISIBLES = { voc: [], interna: [], indicador: [], planes: [] };
+  poblarMeses([]);
+  renderPills(); render();
+}
+
+function mostrarLogin(msg) {
+  $("loginMsg").textContent = msg || "";
+  $("loginOverlay").hidden = false;
+  document.body.classList.add("login-abierto");
+  prepararBotonGoogle();
+}
+function ocultarLogin() {
+  $("loginOverlay").hidden = true;
+  document.body.classList.remove("login-abierto");
+}
+
+function prepararBotonGoogle() {
+  if (!CLIENT_ID) return;
+  const iniciar = () => {
+    if (!(window.google && google.accounts && google.accounts.id)) return;
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: alCredencial, auto_select: false });
+    const cont = $("gsiBtn"); cont.innerHTML = "";
+    google.accounts.id.renderButton(cont, { theme: "outline", size: "large", text: "signin_with", shape: "pill", locale: "es", width: 280 });
+  };
+  if (window.google && google.accounts && google.accounts.id) { iniciar(); return; }
+  let sc = document.getElementById("gsiScript");
+  if (!sc) {
+    sc = document.createElement("script");
+    sc.id = "gsiScript"; sc.src = "https://accounts.google.com/gsi/client"; sc.async = true; sc.defer = true;
+    sc.onerror = () => { $("loginMsg").textContent = "No se pudo cargar el inicio de sesión de Google. Revisá tu conexión."; };
+    document.head.appendChild(sc);
+  }
+  sc.addEventListener("load", iniciar);
+}
+
+// Interpreta las respuestas de acceso del Apps Script. Devuelve true si la respuesta era un rechazo.
+function respuestaAcceso(d) {
+  if (!d || d.ok !== false || !d.error) return false;
+  if (d.clientId) CLIENT_ID = d.clientId;
+  if (d.error === "login" || d.error === "sesion" || d.error === "sin_acceso" || d.error === "credencial") {
+    AUTH_ACTIVA = true;
+    try { localStorage.setItem("kyoto-voc-acc", "1"); } catch (e) {}
+    limpiarSesion(); vaciarDatos();
+    mostrarLogin(
+      d.error === "sesion" ? "Tu sesión venció. Volvé a ingresar."
+      : d.error === "sin_acceso" ? `La cuenta ${d.email} no tiene acceso a esta herramienta. Probá con otra cuenta o pedí el alta a Calidad.`
+      : d.error === "credencial" ? (d.msg || "Google no pudo verificar tu cuenta. Probá de nuevo.")
+      : "");
+    return true;
+  }
+  return false;
+}
+
+// Google entregó la credencial: se canjea por el pase de sesión del Apps Script
+async function alCredencial(resp) {
+  const url = $("srcUrl").value.trim();
+  $("loginMsg").textContent = "Verificando tu cuenta…";
+  try {
+    const d = await jsonp(urlVOC(url, "accion=login&credential=" + encodeURIComponent(resp.credential)), 40000);
+    if (d && d.ok && d.sesion) {
+      guardarSesion(d.sesion, d.exp, d.usuario);
+      ocultarLogin();
+      await fetchLive(true);
+      return;
+    }
+    if (!respuestaAcceso(d)) $("loginMsg").textContent = "✗ No se pudo iniciar sesión.";
+  } catch (e) { $("loginMsg").textContent = "✗ " + e.message; }
+}
+
+// Aplica el rol: qué solapas ve, qué sucursales, si puede editar y el chip del encabezado
+function aplicarUsuario() {
+  const u = USUARIO;
+  const tiene = a => !u || (u.areas || []).includes(a);
+  const ocultar = (sel, v) => { const el = document.querySelector(sel); if (el) el.hidden = v; };
+  ocultar('.tab[data-tab="ventas"]', !tiene("ventas"));
+  ocultar('.tab[data-tab="posventa"]', !tiene("posventa"));
+  ocultar('.tab[data-tab="training"]', !!u && !u.training);
+  PUEDE_EDITAR = !u || !!u.edita;
+  ["alAreaSel", "plAreaSel"].forEach(id => {
+    [...($(id).options || [])].forEach(o => { o.hidden = !tiene(o.value); o.disabled = !tiene(o.value); });
+  });
+  const primera = tiene("ventas") ? "ventas" : "posventa";
+  if ((activeTab === "ventas" || activeTab === "posventa") && !tiene(activeTab)) activeTab = primera;
+  if (activeTab === "training" && u && !u.training) activeTab = primera;
+  if (!tiene(ultimaArea)) ultimaArea = primera;
+  $("userChip").hidden = !u;
+  if (u) {
+    $("userTxt").textContent = (u.nombre && u.nombre !== u.email ? u.nombre : u.email) + (u.cargo ? " · " + u.cargo : "");
+    $("userTxt").title = u.email;
+  }
 }
 
 // ================================================================
@@ -1834,11 +1935,12 @@ function pasaFiltros(vista, f) {
 // ---- Armado de la tabla ----
 function tablaHTML(vista, elId) {
   const V = VISTAS[vista], filas = BASE[vista];
-  const puedeAlta = V.alta && MES_LIVE;
-  const info = MES_LIVE
-    ? (V.edit ? "tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet"
-              : "se arma solo desde el Sheet — para cargar planes usá la solapa <b>Planes de acción</b>")
-    : `<b>${esc2(mesBonito(state.periodo || ""))}</b> — mes cerrado, solo lectura`;
+  const editMes = MES_LIVE && PUEDE_EDITAR;
+  const puedeAlta = V.alta && editMes;
+  const info = !MES_LIVE ? `<b>${esc2(mesBonito(state.periodo || ""))}</b> — mes cerrado, solo lectura`
+    : !PUEDE_EDITAR ? "tu usuario es de consulta: podés ver y filtrar, no editar"
+    : (V.edit ? "tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet"
+              : "se arma solo desde el Sheet — para cargar planes usá la solapa <b>Planes de acción</b>");
   return `
     <div class="al-bar">
       <div class="al-info"><b id="alCount_${vista}">${filas.length}</b> ${filas.length === 1 ? "fila" : "filas"} · ${info}</div>
@@ -1847,8 +1949,8 @@ function tablaHTML(vista, elId) {
     </div>
     <div class="al-scroll"><table class="al-tab">
       <thead>
-        <tr>${V.cols.map(k => `<th>${COL_DEF[k].t}</th>`).join("")}${V.edit && MES_LIVE ? "<th></th>" : ""}</tr>
-        <tr class="filtros">${V.cols.map(k => `<th>${filtroCampo(vista, k, filas)}</th>`).join("")}${V.edit && MES_LIVE ? "<th></th>" : ""}</tr>
+        <tr>${V.cols.map(k => `<th>${COL_DEF[k].t}</th>`).join("")}${V.edit && editMes ? "<th></th>" : ""}</tr>
+        <tr class="filtros">${V.cols.map(k => `<th>${filtroCampo(vista, k, filas)}</th>`).join("")}${V.edit && editMes ? "<th></th>" : ""}</tr>
       </thead>
       <tbody id="${elId}"></tbody>
     </table></div>`;
@@ -1860,14 +1962,15 @@ function pintarFilas(vista) {
   const V = VISTAS[vista];
   const filas = BASE[vista].filter(f => pasaFiltros(vista, f));
   VISIBLES[vista] = filas;
-  const nCols = V.cols.length + (V.edit && MES_LIVE ? 1 : 0);
+  const editMes = MES_LIVE && PUEDE_EDITAR;
+  const nCols = V.cols.length + (V.edit && editMes ? 1 : 0);
 
   if (!filas.length) {
     body.innerHTML = `<tr><td colspan="${nCols}" style="text-align:center;padding:26px;color:var(--ink-muted)">
       ${BASE[vista].length ? "Ningún caso con esos filtros." : "Nada cargado acá todavía."}</td></tr>`;
   } else {
     body.innerHTML = filas.map((f, i) => {
-      const editable = MES_LIVE && (V.edit === "todo" || (V.edit === "manual" && f.manual));
+      const editable = editMes && (V.edit === "todo" || (V.edit === "manual" && f.manual));
       const celda = k => {
         const v = f[k] || "";
         const cls = COL_DEF[k].cls ? COL_DEF[k].cls + " " : "";
@@ -1878,7 +1981,7 @@ function pintarFilas(vista) {
       const cargado = V.cols.some(k => f[k]);
       return `<tr class="${/^alerta interna/i.test(f.org || "") ? "interna" : ""}${f.manual ? " manual" : ""}">
         ${V.cols.map(celda).join("")}
-        ${V.edit && MES_LIVE ? `<td class="acc">${editable
+        ${V.edit && editMes ? `<td class="acc">${editable
           ? `<button class="al-add" type="button" data-v="${vista}" data-i="${i}"
                title="${cargado ? "Editar" : "Completar"}">${cargado ? "✎" : "+"}</button>` : ""}</td>` : ""}
       </tr>`;
@@ -1916,16 +2019,21 @@ function renderAlertas() {
   filas.sort(cmpFilaPlan);
   BASE[tipoAlerta] = filas;
 
+  // Si el Apps Script no pudo leer un RawData (hoja vacía, sin encabezados…), se avisa acá
+  // en lugar de dejar la tabla en cero sin explicación.
+  const avisos = MES_LIVE ? (ALERTAS.avisos || []).filter(a => a.area === areaKey).map(a => a.msg) : [];
+  const avisoHTML = avisos.length ? `<div class="al-aviso">⚠ ${avisos.map(esc2).join("<br>")}</div>` : "";
+
   if (!filas.length && !ALERTAS_FILAS[areaKey].length) {
-    el.innerHTML = `<div class="al-empty">${
+    el.innerHTML = avisoHTML + `<div class="al-empty">${
       !MES_LIVE ? "Este mes guardado no tiene alertas."
       : ALERTAS.falta || ALERTAS.error ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
-      : `Todavía no llegan los casos. En el Sheet, ejecutá <b>sincronizarAlertas</b>
-         y volvé a implementar el Web App.`}</div>`;
+      : avisos.length ? "No se pudieron armar las alertas de esta área (ver el aviso de arriba)."
+      : "No hay alertas para este mes: ningún cliente respondió 4 o menos, y no hay alertas internas cargadas."}</div>`;
     return;
   }
 
-  el.innerHTML = tablaHTML(tipoAlerta, "body_" + tipoAlerta);
+  el.innerHTML = avisoHTML + tablaHTML(tipoAlerta, "body_" + tipoAlerta);
   pintarFilas(tipoAlerta);
 }
 
@@ -2080,8 +2188,9 @@ async function guardarModal() {
   try {
     const accion = vista === "interna" ? (f.nueva ? "agregarAlerta" : "guardarAlerta") : "guardarPlan";
     const q = new URLSearchParams(Object.assign({ accion, area, clave: f.clave || "" }, d)).toString();
-    const r = await jsonp(url + (url.includes("?") ? "&" : "?") + q);
-    if (!r || !r.ok) throw new Error((r && r.error) || "No se pudo guardar");
+    const r = await jsonp(urlVOC(url, q));
+    if (respuestaAcceso(r)) { cerrarModal(); return; }     // la sesión venció: pide ingresar de nuevo
+    if (!r || !r.ok) throw new Error((r && (r.msg || r.error)) || "No se pudo guardar");
     if (f.nueva) {
       const nf = Object.assign({}, d, { clave: r.clave, manual: true, tipo: "Interna" });
       const destino = vista === "interna" ? ALERTAS_FILAS : PLANES_ACC;
@@ -2294,7 +2403,7 @@ function applyData(vRows, pRows, vbRows, fuente) {
   const nV = Object.keys(next.tabs.ventas).length, nP = Object.keys(next.tabs.posventa).length;
   if (!nV && !nP) throw new Error("No se encontraron datos en las hojas (¿el formato es el esperado?)");
   state = next;
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+  if (!AUTH_ACTIVA) { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
   renderPills(); render();
   return { nV, nP, verbas: !!(vbRows && vbRows.length) };
 }
@@ -2421,13 +2530,20 @@ async function fetchLive(manual) {
   if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)) {
     setSrc("err", "La URL debería empezar con https://script.google.com/… y terminar en /exec"); return;
   }
+  if (AUTH_ACTIVA && !SESION) { mostrarLogin(""); return; }     // sin sesión no se pide nada
   const isFile = location.protocol === "file:";
   const btn = $("connectBtn"); btn.disabled = true;
   setSrc("", '<span class="src-spin"></span> Conectando con el Google Sheet…');
   try {
     // el Sheet tarda ~15 s en armar todo: 20 s quedaba muy justo y, si se pasaba,
     // la actualización fallaba sin que se note y quedaban los datos viejos
-    const d = await jsonp(url, 60000);
+    const d = await jsonp(urlVOC(url), 60000);
+    if (respuestaAcceso(d)) { setSrc("", ""); return; }
+    if (d && d.ok) {                                    // acceso abierto o sesión válida
+      if (d.usuario) { USUARIO = d.usuario; AUTH_ACTIVA = true; try { localStorage.setItem("kyoto-voc-acc", "1"); } catch (e) {} }
+      else { USUARIO = null; AUTH_ACTIVA = false; try { localStorage.removeItem("kyoto-voc-acc"); localStorage.removeItem(LS_SES); } catch (e) {} }
+      ocultarLogin();
+    }
     if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
     // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
     SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas,
@@ -2441,7 +2557,7 @@ async function fetchLive(manual) {
       alertasFilas: h.alertasFilas || null, planesAccion: h.planesAccion || null }; });
     conectado = true;
     if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
-                               falta: d.alertas.falta || null, error: d.alertas.error || null };
+                               falta: d.alertas.falta || null, error: d.alertas.error || null, avisos: d.alertas.avisos || [] };
     PLANES_RAW = d.planes || {};
     if (d.alertasFilas) ALERTAS_FILAS = { ventas: d.alertasFilas.ventas || [], posventa: d.alertasFilas.posventa || [] };
     if (d.planesAccion) PLANES_ACC    = { ventas: d.planesAccion.ventas || [], posventa: d.planesAccion.posventa || [] };
@@ -2452,7 +2568,7 @@ async function fetchLive(manual) {
     const nMeses = (d.historico || []).length;
     setSrc("ok", `✓ Actualizado ${horaStr(now)} — Ventas: ${r.nV} · Posventa: ${r.nP}${r.verbas ? " · Verbalizaciones ✓" : ""}${nMeses ? " · " + nMeses + " mes(es) en histórico" : ""}`);
     $("status").textContent = "";
-    fetchTraining(true);   // trae Training en paralelo (si hay URL cargada)
+    if (!USUARIO || USUARIO.training) fetchTraining(true);   // trae Training en paralelo (si hay URL cargada y el rol lo permite)
   } catch (err) {
     let msg = "✗ " + err.message;
     if (window.location && /claude\.ai|claudeusercontent/.test(location.hostname)) {
@@ -2556,7 +2672,8 @@ $("resetBtn").onclick = () => {
   try { localStorage.removeItem(LS_KEY); } catch (e) {}
   state = buildDefault(); current = null;
   renderPills(); render();
-  const st = $("status"); st.className = "status ok"; st.textContent = "✓ Datos restablecidos a Junio 2026 (embebidos).";
+  const st = $("status"); st.className = "status ok"; st.textContent = "✓ Datos locales borrados. Volviendo a cargar desde el Sheet…";
+  fetchLive(true);
 };
 $("themeBtn").onclick = () => {
   const root = document.documentElement;
@@ -2580,6 +2697,7 @@ $("fuenteToggle").onclick = () => {
 
 // ---- Conexión en vivo ----
 $("connectBtn").onclick = () => fetchLive(true);
+$("logoutBtn").onclick = () => { limpiarSesion(); vaciarDatos(); mostrarLogin("Cerraste la sesión."); };
 $("srcUrl").onkeydown = e => { if (e.key === "Enter") fetchLive(true); };
 $("srcUrl").onchange = e => { try { localStorage.setItem(LS_URL, e.target.value.trim()); } catch (x) {} };
 $("autoSel").onchange = e => setAuto(parseInt(e.target.value, 10) || 0);
@@ -2590,6 +2708,7 @@ $("trainUrl").onkeydown = e => { if (e.key === "Enter") fetchTraining(false); };
 
 // Restaurar URLs y conectar automáticamente al abrir.
 // Prioridad: lo guardado en este navegador → si no, la URL horneada por defecto.
+leerSesionGuardada();
 try {
   const vocUrl   = localStorage.getItem(LS_URL)   || DEFAULT_VOC_URL;
   const trainUrl = localStorage.getItem(LS_TRAIN) || DEFAULT_TRAIN_URL;

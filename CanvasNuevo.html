@@ -1402,8 +1402,17 @@ function render() {
       <div class="sub"><span class="chip ${up ? "up" : "down"}">${up ? "▲" : "▼"} ${fmt(Math.abs(d))} pts</span><span>vs. obj. ${fmt(m.obj)} · n=${m.base}</span></div></div>`;
   };
 
+  // Encuestas del área y la sucursal elegidas; abajo, cuántas calificaron 4 o menos la satisfacción general
+  const kpiEncuestas = () => {
+    const d = MES_DATOS && MES_DATOS.datos && MES_DATOS.datos[activeTab];
+    const encs = d ? d.encuestas.filter(e => current === "Grupo Kyoto" || e.suc === current) : [];
+    if (!encs.length) return `<div class="kpi"><div class="lbl">Encuestas totales</div><div class="val" style="color:var(--ink-faint)">s/d</div><div class="sub"><span class="chip neutral">sin datos</span></div></div>`;
+    const bajos = encs.filter(e => /^n[1-4]$/.test(rdClase((e.r || {}).VOC01))).length;
+    return `<div class="kpi"><div class="lbl">Encuestas totales</div><div class="val">${encs.length}</div>
+      <div class="sub"><span class="chip ${bajos ? "down" : "up"}">${bajos} con 4 o menos</span><span>${bajos ? Math.round(bajos / encs.length * 100) + "% · " : ""}en satisfacción general (VOC01)</span></div></div>`;
+  };
   $("kpis").innerHTML =
-    kpiPct("Satisfacción general (VOC01)", voc01)
+    kpiEncuestas()
     + (conObj.length
       ? `<div class="kpi"><div class="lbl">Indicadores en objetivo</div>
           <div class="val">${cumplidos}<span style="font-size:18px;color:var(--ink-faint)">/${conObj.length}</span></div>

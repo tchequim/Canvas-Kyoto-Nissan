@@ -1,9 +1,4 @@
-<title>Canvas · Kyoto Nissan</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<title>Dashboard VOC · Kyoto Nissan</title>
 <style>
   :root {
     --bg: #f3f4f7;
@@ -30,8 +25,7 @@
     --shadow-lift: 0 2px 4px rgba(20,25,35,.07), 0 12px 32px rgba(20,25,35,.10);
     --shadow-head: 0 4px 12px rgba(195,0,47,.18), 0 16px 40px rgba(195,0,47,.14);
     --glass: rgba(255,255,255,.72);
-    --radius: 16px;
-    --font-ui: "Outfit", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --radius: 14px;
     --font: "Helvetica Neue", Helvetica, Arial, system-ui, -apple-system, sans-serif;
     /* motion + capas */
     --ease: cubic-bezier(.22,.8,.28,1);
@@ -84,7 +78,7 @@
   body { margin: 0; }
   .voc {
     font-family: var(--font); background: var(--bg); color: var(--ink);
-    min-height: 100vh; padding: 0;
+    min-height: 100vh; padding: clamp(14px, 2.5vw, 32px);
     -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
   }
   /* halo de marca muy suave detrás del contenido (profundidad para proyección) */
@@ -94,109 +88,8 @@
       radial-gradient(900px 380px at 12% -8%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 70%),
       radial-gradient(700px 320px at 95% 4%, color-mix(in srgb, var(--brand) 7%, transparent), transparent 72%);
   }
-  .voc-inner { max-width: 1304px; margin: 0 auto; position: relative; z-index: auto; padding: 22px clamp(14px, 2.5vw, 32px) clamp(14px, 2.5vw, 32px); }
+  .voc-inner { max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; }
 
-
-
-  /* ---- Canvas: tablas de alertas y planes ---- */
-  table.al-tab { min-width: 900px; }          /* ahora son 4-6 columnas: el lápiz queda a la vista */
-  .al-tab td.org { min-width: 200px; max-width: 280px; }
-  .al-tab td.acc { position: sticky; right: 0; background: var(--surface); box-shadow: -6px 0 8px -6px rgba(0,0,0,.12); }
-  .al-sub { display: block; font-size: 11px; font-weight: 500; color: var(--ink-faint); margin-top: 2px; }
-  .al-tab td.plan { min-width: 240px; max-width: 360px; }
-  .pl-txt { color: var(--al-ink); line-height: 1.45; }
-  .pl-meta { margin-top: 5px; font-size: 11px; color: var(--ink-muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .al-vacio { color: var(--ink-faint); font-style: italic; }
-  .est { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: .02em; white-space: nowrap; }
-  .est-ab { background: var(--warn-soft); color: color-mix(in srgb, var(--warn) 70%, var(--ink)); }
-  .est-ok { background: var(--good-soft); color: var(--good); }
-  .est-no { background: var(--surface-2); color: var(--ink-faint); }
-  .pl-resumen { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 10px; }
-  .pl-resumen .est { font-size: 12px; padding: 4px 12px; }
-  .vn { color: var(--ink-faint); font-weight: 700; font-size: 11px; }
-  .vflip { margin-left: auto; flex: 0 0 auto; border: 1px solid var(--border); background: var(--surface); color: var(--ink-faint);
-    border-radius: 6px; width: 24px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; }
-  .vflip:hover { color: var(--brand); border-color: var(--brand); }
-  /* ventanas */
-  .modal.modal-ancho { width: min(760px, 100%); }
-  .modal.modal-xl { width: min(1100px, 100%); }
-  .dt-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-  .dt-cuerpo h4, .dt-plan h4 { margin: 16px 0 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); }
-  .dt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 14px; }
-  .dt-f span { display: block; font-size: 10.5px; color: var(--ink-faint); font-weight: 700; }
-  .dt-f b { font-size: 13px; color: var(--ink); font-weight: 700; }
-  .dt-resp { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--ink); }
-  .dt-resp li { margin: 3px 0; }
-  .dt-resp li.esta { font-weight: 700; }
-  .dt-v { color: var(--bad); font-weight: 800; }
-  .dt-pq { color: var(--ink-muted); font-style: italic; font-weight: 400; }
-  .dt-cita { margin: 0; font-size: 13.5px; font-style: italic; color: var(--ink); line-height: 1.5; }
-  .dt-cod { margin: 6px 0 0; font-size: 11.5px; color: var(--ink-faint); }
-  .dt-acomp { display: grid; gap: 8px; }
-  .dt-acomp span { font-size: 10.5px; font-weight: 800; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .04em; }
-  .dt-acomp p { margin: 2px 0 0; font-size: 13px; color: var(--ink); line-height: 1.45; }
-  .dt-plan { margin-top: 6px; border-top: 1px solid var(--border); }
-  .dt-plan textarea { min-height: 90px; }
-  .dt-plan3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-  @media (max-width: 600px) { .dt-plan3 { grid-template-columns: 1fr; } }
-  .dt-plan3 label, .sb-campos label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 800; color: var(--ink); }
-  .dt-plan3 input, .dt-plan3 select, .sb-campos select, .usr-tab input, .usr-tab select {
-    font-family: var(--font); font-size: 13px; color: var(--ink); background: var(--surface-2);
-    border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 9px; }
-  .modal-msg.ok { color: var(--good); }
-  /* cargar Excel */
-  .sb-zona { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 16px; margin: 6px 0 12px;
-    border: 2px dashed var(--border); border-radius: 12px; cursor: pointer; text-align: center; color: var(--ink-muted); font-size: 13px;
-    transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease); }
-  .sb-zona:hover, .sb-zona.sobre { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 6%, transparent); }
-  .sb-zona b { color: var(--ink); font-size: 14px; }
-  .sb-ico { font-size: 24px; color: var(--brand); }
-  .sb-det { font-size: 13px; color: var(--ink); margin: 4px 0 10px; }
-  .sb-tab { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-bottom: 8px; }
-  .sb-tab th, .sb-tab td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
-  .sb-tab th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); }
-  .sb-aviso { margin: 6px 0; padding: 8px 11px; border-radius: 8px; background: var(--warn-soft); font-size: 12.5px; line-height: 1.45; color: var(--ink); }
-  .sb-error { color: var(--bad); font-weight: 700; font-size: 13px; }
-  .sb-leyendo { color: var(--ink-muted); font-size: 13px; }
-  .sb-campos { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
-  /* usuarios y objetivos */
-  .usr-scroll { overflow-x: auto; max-height: 56vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
-  .usr-tab { border-collapse: collapse; width: 100%; font-size: 12.5px; }
-  .usr-tab th { position: sticky; top: 0; background: var(--surface-2); text-align: left; padding: 8px; font-size: 10.5px;
-    text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); white-space: nowrap; }
-  .usr-tab td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  .usr-tab td.c { text-align: center; vertical-align: middle; }
-  .usr-tab input[type=email] { min-width: 210px; }
-  .usr-tab input[data-k=nombre], .usr-cargo { display: block; width: 100%; min-width: 150px; }
-  .usr-cargo { margin-top: 4px; font-size: 12px !important; }
-  .usr-sucs { white-space: nowrap; font-size: 12px; }
-  .usr-sucs label { display: block; }
-  .usr-tab input[type=number] { width: 90px; }
-  .usr-x { border: 0; background: none; color: var(--ink-faint); cursor: pointer; font-size: 14px; }
-  .usr-x:hover { color: var(--bad); }
-  .obj-fut { display: flex; gap: 8px; align-items: center; font-size: 12.5px; margin-top: 10px; color: var(--ink); }
-  .obj-nota { font-size: 11.5px; color: var(--ink-faint); margin: 8px; }
-  /* encabezado del PDF (solo al imprimir) */
-  .print-head { display: none; }
-  @media print {
-    @page { size: A4 landscape; margin: 10mm; }
-    :root, :root[data-theme="dark"] { --bg: #fff; --surface: #fff; --surface-2: #f2f3f5; --border: #d9dde3;
-      --ink: #15181d; --ink-muted: #4c5562; --ink-faint: #7a8491; --al-ink: #15181d; --al-ink-soft: #4c5562; }
-    body, .voc { background: #fff !important; }
-    .voc-inner { padding: 0 !important; max-width: none; }
-    .print-head { display: flex; align-items: center; gap: 18px; padding: 0 0 10px; margin-bottom: 12px; border-bottom: 2px solid #c3002f; }
-    .print-head img { height: 34px; width: auto; }
-    .print-head b { display: block; font-size: 18px; color: #15181d; }
-    .print-head span { display: block; font-size: 12px; color: #4c5562; font-weight: 700; }
-    .print-head small { display: block; font-size: 10px; color: #7a8491; }
-    .hd, .tabs, .subbar, .section-t select, .section-t .cargo-wrap, .sel-grupo, .no-print, .al-bar .al-btn,
-    .modal-bg, .tip, .login-bg, #status, .foot, .al-filtro button, .vflip { display: none !important; }
-    .al-scroll { overflow: visible !important; box-shadow: none !important; }
-    table.al-tab { min-width: 0 !important; font-size: 10px; }
-    .al-tab td, .al-tab th { padding: 5px 6px; }
-    .al-tab th { position: static; }
-    .card, .kpi { break-inside: avoid; }
-  }
 
   /* ---- Acceso por usuario ---- */
   .hd-user { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--brand-ink); max-width: 100%; }
@@ -216,102 +109,74 @@
   .login-msg { min-height: 18px; margin: 14px 0 0; font-size: 12.5px; font-weight: 700; color: var(--bad); line-height: 1.45; }
   .login-ayuda { margin: 12px 0 0; font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
 
-  /* ---- Encabezado (estilo herramienta Lean: logo | nombre ··· botones) ---- */
+  /* ---- Header ---- */
   .hd {
-    position: sticky; top: 0; z-index: 50;
-    display: flex; align-items: center; gap: 20px;
-    padding: 12px clamp(14px, 2.2vw, 28px);
-    background: color-mix(in srgb, var(--surface) 84%, transparent);
-    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 1px 0 color-mix(in srgb, var(--brand) 10%, transparent), 0 8px 24px rgba(0,0,0,.04);
-    font-family: var(--font-ui);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+    padding: 20px 24px; border-radius: var(--radius);
+    background:
+      radial-gradient(120% 180% at 88% -30%, rgba(255,255,255,.18), transparent 58%),
+      linear-gradient(100deg, var(--brand), color-mix(in srgb, var(--brand) 72%, #000));
+    color: var(--brand-ink); box-shadow: var(--shadow-head);
+    position: relative; overflow: hidden;
   }
-  .hd-brand { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 0 0 auto; }
-  .hd-logo { height: 34px; width: auto; display: block; }
-  .hd-logo-oscuro { display: none; }
-  :root[data-theme="dark"] .hd-logo-claro { display: none; }
-  :root[data-theme="dark"] .hd-logo-oscuro { display: block; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .hd-logo-claro { display: none; }
-    :root:not([data-theme="light"]) .hd-logo-oscuro { display: block; }
+  /* brillo diagonal que barre una vez al cargar */
+  .hd::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 45%;
+    left: -60%; pointer-events: none;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.16), transparent);
+    animation: sheen 1400ms var(--ease) 320ms 1 both;
   }
-  .hd-div { width: 1px; height: 32px; background: color-mix(in srgb, var(--brand) 45%, var(--border)); flex: 0 0 auto; }
-  .hd-txt { line-height: 1.2; min-width: 0; }
-  .hd-name { margin: 0; font-family: var(--font-ui); font-size: 19px; font-weight: 800; letter-spacing: .16em; line-height: 1.05; color: var(--brand); }
-  .hd-sub { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 500; color: var(--ink-muted); white-space: nowrap; }
-  .hd-mid { flex: 1 1 auto; min-width: 0; }
-  .hd-btns { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
+  @keyframes sheen { to { left: 130%; } }
+  /* | KYOTO */
+  .hd-badge { display: inline-flex; align-items: center; gap: 14px; white-space: nowrap; }
+  .hd-bar { width: 1.5px; height: 34px; background: rgba(255,255,255,.6); border-radius: 1px; }
+  .hd-kyoto { font-size: 25px; font-weight: 500; letter-spacing: .07em; line-height: 1; text-transform: uppercase; }
+  @media (max-width: 560px) {
+    .hd-kyoto { font-size: 20px; }
+    .hd-bar { height: 28px; }
+  }
+  .hd-t { display: flex; flex-direction: column; gap: 3px; margin-right: auto; }
+  .hd-t h1 {
+    margin: 0; font-size: clamp(18px, 2.5vw, 25px); font-weight: 800;
+    letter-spacing: -.02em; text-wrap: balance; line-height: 1.15;
+    text-shadow: 0 1px 2px rgba(0,0,0,.18);
+  }
+  .hd-t span { font-size: 12.5px; opacity: .9; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+  .hd-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+  .hd-btns { display: flex; gap: 8px; }
   .hd-btn {
-    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer;
-    font-family: var(--font-ui); font-size: 13px; font-weight: 700; line-height: 1;
-    color: var(--ink); background: color-mix(in srgb, var(--brand) 6%, var(--surface));
-    border: 1px solid color-mix(in srgb, var(--brand) 16%, var(--border));
-    border-radius: 10px; padding: 9px 14px; min-height: 38px;
-    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease),
-                box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+    background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.4); color: var(--brand-ink);
+    border-radius: 8px; padding: 8px 13px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font);
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
   }
-  .hd-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
-  .hd-btn:hover { background: color-mix(in srgb, var(--brand) 13%, var(--surface)); border-color: color-mix(in srgb, var(--brand) 45%, transparent); color: var(--brand); }
-  .hd-btn:active { transform: translateY(1px); }
-  .hd-btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 2px; }
-  .hd-btn.solid { background: var(--brand); color: #fff; border-color: transparent; }
-  .hd-btn.solid:hover { background: color-mix(in srgb, var(--brand) 86%, #fff); color: #fff; }
-  .hd-btn.hd-btn-pri {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 78%, #000), color-mix(in srgb, var(--brand) 82%, #fff));
-    color: #fff; border-color: transparent; font-weight: 800;
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--brand) 40%, transparent);
-  }
-  .hd-btn.hd-btn-pri:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 7px 22px color-mix(in srgb, var(--brand) 52%, transparent); }
-  .hd-user { color: var(--ink-muted) !important; font-family: var(--font-ui); font-weight: 600 !important; margin-right: 4px; }
-  /* ventana de ingreso: mismo logo | CANVAS sobre la banda roja */
-  .login-top .hd-logo { height: 32px; }
-  .login-top .hd-div { background: rgba(255,255,255,.55); }
-  .login-top .hd-name { color: #fff; font-size: 18px; }
-  @media (max-width: 1180px) { .hd-user #userTxt { display: none; } }
-  @media (max-width: 980px) { .hd-btn .lbl { display: none; } .hd-btn { padding: 9px 11px; } }
-  @media (max-width: 640px) {
-    .hd { position: relative; flex-wrap: wrap; gap: 10px; padding: 10px 14px; }   /* en el celular no queda fijo: ocuparía media pantalla */
-    .hd-sub, .hd-mid { display: none; }
-    .hd-logo { height: 28px; }
-    .hd-name { font-size: 16px; }
-    .hd-btns { flex: 1 1 100%; flex-wrap: wrap; }
-  }
+  .hd-btn:hover { background: rgba(255,255,255,.28); border-color: rgba(255,255,255,.7); box-shadow: 0 3px 10px rgba(0,0,0,.14); }
+  .hd-btn:active { background: rgba(255,255,255,.2); }
+  .hd-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .hd-btn.solid { background: #fff; color: #a30028; border-color: #fff; }
+  .hd-btn.solid:hover { background: #ffe9ee; }
 
   .status { margin: 12px 2px 0; font-size: 12.5px; font-weight: 600; min-height: 18px; }
   .status.ok { color: var(--good); }
   .status.err { color: var(--bad); }
 
-  /* ---- Solapas (como los pasos de la herramienta Lean) ---- */
+  /* ---- Tabs ---- */
   .tabs {
-    display: flex; gap: 6px; margin: 16px 0 6px; padding: 8px;
-    background: color-mix(in srgb, var(--surface) 80%, transparent);
-    border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow);
-    overflow-x: auto; scrollbar-width: thin;
+    display: inline-flex; margin: 16px 0 4px; background: var(--surface);
+    border: 1.5px solid var(--border); border-radius: 12px; padding: 4px; gap: 4px; box-shadow: var(--shadow);
   }
   .tab {
-    flex: 1 1 0; min-width: 138px; display: flex; align-items: center; gap: 10px;
-    font-family: var(--font-ui); font-size: 14px; font-weight: 700; letter-spacing: .01em;
-    color: var(--ink-muted); background: transparent; border: 1px solid transparent; border-radius: 12px;
-    padding: 9px 14px; cursor: pointer; min-height: 48px; text-align: left; white-space: nowrap;
-    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
-  }
-  .tab-ico {
-    width: 28px; height: 28px; border-radius: 50%; flex: 0 0 auto; display: grid; place-items: center;
-    background: var(--surface-2); color: var(--ink-muted);
+    font-family: var(--font); font-size: 14px; font-weight: 800; letter-spacing: .02em;
+    color: var(--ink-muted); background: transparent; border: 0; border-radius: 9px;
+    padding: 10px 26px; cursor: pointer; min-height: 44px;
     transition: background var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
   }
-  .tab-ico svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .tab-lbl { overflow: hidden; text-overflow: ellipsis; }
-  .tab:hover:not([aria-selected="true"]) { background: color-mix(in srgb, var(--ink) 4%, transparent); color: var(--ink); }
-  .tab:hover:not([aria-selected="true"]) .tab-ico { color: var(--brand); }
+  .tab:hover:not([aria-selected="true"]) { background: var(--surface-2); color: var(--ink); }
   .tab[aria-selected="true"] {
-    background: color-mix(in srgb, var(--brand) 9%, transparent); color: var(--brand);
-    border-color: color-mix(in srgb, var(--brand) 38%, transparent);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--brand) 92%, #fff), var(--brand));
+    color: var(--brand-ink); box-shadow: 0 4px 14px color-mix(in srgb, var(--brand) 38%, transparent);
   }
-  .tab[aria-selected="true"] .tab-ico { background: var(--brand); color: #fff; box-shadow: 0 0 14px color-mix(in srgb, var(--brand) 50%, transparent); }
   .tab:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 2px; }
-  @media (max-width: 640px) { .tab { min-width: 118px; font-size: 13px; padding: 8px 10px; } }
 
   /* ---- Sucursal pills ---- */
   .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
@@ -805,8 +670,8 @@
   .srchead { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
   .src-toggle {
     display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
-    font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--ink);
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    font-family: var(--font); font-size: 13px; font-weight: 800; color: var(--ink);
+    background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px;
     padding: 9px 15px; box-shadow: var(--shadow);
   }
   .src-toggle:hover { border-color: var(--brand); }
@@ -832,17 +697,15 @@
   }
   .src input:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); outline-offset: 1px; }
   .src-btn {
-    font-family: var(--font-ui); font-size: 13px; font-weight: 700; cursor: pointer;
-    border-radius: 10px; padding: 9px 16px; border: 1px solid transparent;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 82%, #000), color-mix(in srgb, var(--brand) 84%, #fff));
-    color: #fff; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
-    box-shadow: 0 4px 14px color-mix(in srgb, var(--brand) 28%, transparent);
-    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+    font-family: var(--font); font-size: 13px; font-weight: 700; cursor: pointer;
+    border-radius: 8px; padding: 8px 15px; border: 1.5px solid var(--brand);
+    background: var(--brand); color: var(--brand-ink); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  .src-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 7px 20px color-mix(in srgb, var(--brand) 40%, transparent); }
-  .src-btn:disabled { opacity: .45; cursor: default; box-shadow: none; }
-  .src-btn.ghost { background: color-mix(in srgb, var(--brand) 5%, var(--surface)); color: var(--ink); border-color: color-mix(in srgb, var(--brand) 16%, var(--border)); box-shadow: none; }
-  .src-btn.ghost:hover:not(:disabled) { background: color-mix(in srgb, var(--brand) 12%, var(--surface)); border-color: color-mix(in srgb, var(--brand) 45%, transparent); color: var(--brand); box-shadow: none; }
+  .src-btn:hover { filter: brightness(1.06); }
+  .src-btn:disabled { opacity: .55; cursor: default; }
+  .src-btn.ghost { background: transparent; color: var(--ink-muted); border-color: var(--border); }
+  .src-btn.ghost:hover { border-color: var(--brand); color: var(--ink); filter: none; }
   .src-auto { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-muted); font-weight: 700; }
   .src-status { font-size: 12px; color: var(--ink-muted); flex: 1 1 100%; min-height: 15px; }
   .src-status.ok { color: var(--good); }
@@ -895,7 +758,7 @@
 <!-- Pantalla de ingreso: tapa todo hasta que el Apps Script confirme quién es la persona -->
 <div class="login-bg" id="loginOverlay" hidden>
   <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitulo">
-    <div class="login-top"><img class="hd-logo" alt="Nissan Kyoto" src="data:image/png;base64,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"><span class="hd-div"></span><span class="hd-name">CANVAS</span></div>
+    <div class="login-top"><span class="hd-bar"></span><span class="hd-kyoto">KYOTO</span></div>
     <div class="login-body">
       <h2 id="loginTitulo">Herramienta Canvas</h2>
       <p class="login-sub">Voz del Cliente · Grupo Kyoto</p>
@@ -908,39 +771,33 @@
 </div>
 
 <div class="voc">
-  <header class="hd">
-    <div class="hd-brand">
-      <img class="hd-logo hd-logo-claro" alt="Nissan Kyoto" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcwAAACdCAYAAAA5fkhgAAAz60lEQVR42u2deZxkZXX3v1XVPQvDDoPAwLAMCCi8gBpFQVQygASNiuvH4BJFRI2+xMRoVFxRESQaNwIqLxEVRVAMuIASDLgAagATZEcBkYFhgJlhpquqa3n/OOexDg/33rpVfauqu+v8Pp/76Znuqnuf+9znnt9z9hKObigBZf3ZSPnMcmA3YBdgB2BXYEdgO2ArYFv92dTzJF2jCfwReBRYBawG7gXuAu4B7tZ/P5Lw/QmgHR0Oh8PhKJgMHMnzUlESi8lnNyXEvwCeBuyhhLg1sCTlfC09umEi5fdN4GFgrZLmb4GrgVuBO4B10ecr5nsOh8PhcMIsFEGLbEUkuRR4JnAYcCCwj/4uiRQb+rNk5rbUwzy3E362lUgnUq55kyHQnwB3AtUc9+VwOBwOJ8ye7j+YXBuRFnkUcCiwEtgmIrV6wvyVBjif7ZSfZWDSfK6h5HkZcDlwhdEyw306cTocDocTZs9+SWuy3Ak4AnglYmrd2pBTw5hUy7No3oIG2tJxlY0m2kBMtpcA31UNFGOybec0EzscDodjDAkzJspJ4BnA64HnA8vMZ2szJMh2hmaY9Sz6MeWS4C+dNL7MhhLmBcC3kKCitI2Dw+FwOMaYMGNiWAK8SonyEPO5qiHIUg+k2E643oSeq180E6JyS32MrRX5QFcB5wPnANdFmwInTofD4RhTwoyJckfg1cBxwF76u7oSSykHwbWNFteOtLgYDwMPAOuBB/Xcq5WUSxHJbgMsVCLfCtgCCSxanHLumn4/L7lb8+tC/TkFXAScBfzUECduqnU4HI7xIsyKIcqlwAnA8Yiv0hJlJQfZhPzJyYhUa0ju5APADcBtwC1I/uQ6JA1kCtiYc8wTSpqbAJvruPcAnohE564Atk+I0m3oUc5J+k1D9k3Ez3k6cJWZOw8OcjgcjnlOmFZLWgi8CThRyQZjdi3n0Mhi0+pGJcirgJ8rOd4MPJRjnkN6SCnF/Jqn4EAF2FO14wOBg4GnqFYazjttxp7nHivGXHsecAoSaevE6XA4HPOY/G2u4ouAawwRVVUjnE456vr3KUMSbcSMeiHwTmC/FI20rL+3RznyOZZypriUDKHH50zCdnqvnwWuj/yqNb3vepf7rhqNewPwL0jFInKaqh0Oh8Mxx7RKEBPmN3ogymn9zLT5zkNIKsbrEL9nGjlXhqyll0zqSBKBbgo8C/g0YiK25DmVcx4a+vnfA280c1vxZeZwOBzMeV9lIM13IgE2Qbuq5dCsLFFeB7wL2HsAUa+DLuMXE9pi4Ejg68CaHjXtKfP57yP+U9c2HQ6HYw5rlUF4H4BUtgl+uWoOomwYArkQeGFEOrFplTkUFRyT5+7ASUhQUl7iDObcNhLU9LaETYrD4XA45ohWCRL5+oghgXpOk+MUkot4YMK5y/OogLy9l82At/NYc22eOQtBSRchZQOZYxsJh8PhGGuy3BY4N6dWWTNBLY8qUe6fQC7zWRuvRMT5ViTKNw9x1o22eS/wYjfROhwOx9yIgn2mEfZ5BX0b+A7w1BSz7ji1LQvYHEm5WUWnZm7WxmPK5HGejAcEORwOx6zOF30tUhSgnUOrDObX6xEf5XwzuxZFnDsjaSnVHJsQq61fjBRSIKOXp8PhcDgYbspISbWaoOFUc2iV64H3IukWbkLsTpzPRoq0d5vjaTPH1wFPck3T4XA4mBX+ykWI3zH0oqznyKf8KdKmyyM7eyPOTYD3RNpmGmlu1M/cDxzu8+xwOByj1Sy3AC41ka31LhpPFfgAsMAIcI/m7L0AxEFG28zKaa2aYKpjnDQdDodjNJrljsCVhiy7mQdvAVa6VlmYtrkI+JyJRK5l+DVDDdsTfO4dDodjuGS5nE5t1KkMf2UIQLmAThcPF9bF5rq+Fum8kvUskkjTA4EcDoeDwZoEl9NJrp/KEQX7IdcqB65tHgD8rgfSfIuTpsPhcAzeZ3l9l4CTYIJdq9rPOOZUDhOB9LYHLuvybGzayVt8E+NwOByDIcslPDbAJyt5/gHgLz2wh2GbaBcAX+sSsRx+36KT/+qk6XA4HBRTMLyMtNTKQ5a3IL0p3eQ3uija07tELoffPYrkdzppOhwOR0E+ss92Ictghr0d2MvJcqSkGbT507pUBqqplnkfXtzA4XA4KMLM986cPsvbDFm64B29VQDgUyZXM+vZ3Qhs49WWHA6Ho3+yPNxoJ/UuOZZOlrObNKtdTOkXus/Z4XA46MsXtgvSLiotKb5mWko9yc2ws5o0T89Jmh/05+hwOBy9CdmFwBUZQraO5FmuAw51zXJWb37C8e0uzzMcRyUEETkcDoeDZFPsyTmEaxt4uZPlnAkEWgL8MuO5hiCge4Ad3J/pcDgc3U2xKyNiTDPf/RNuvptrz3ZH4I4MM3vV+DPL7s90OBwOUk2xWyMBPK0ULSQI1HM9QGTOWg+eA2zIEcj1BrceOBwOR7ow/WIXk10bqSO7RZTz52BOldE7ISPdJNQBvh9Y4aZZh8Ph4HHmukMzTLHh/2uBA13zmBebo/MyNkdBy/yOBwA5HA4HjzHFLgGuzSFAT3S/5byJnN0OMb+3u6QNeWCXw+FwGCF4Yg6yvMQIWzfFzo/nfpRaD2oJVoUa0ARuAjb15+5wODzdQAoU3If4rWopPRQfAnZ18xzz0Z/5+RybpQ+5lulwOFzL6BRWzwr0+TsXmPN2w7QVcKtqk2kbpjW6sfIAIIfDMbbCcj8kkGc6xSTXBn6h2oib5ObvpukVdM/NPMMtDA6HY5wjY7+aol3WjW/rma5djsXm6fsZa6EBPIIU2Hct0+FwjB1Z7k/3/pZnu1YxNuvhAKQ2cJK1IayHL/h6cDgc4yggz+2iUTyIJ64zZqbZMzP82U1gPbCnk6bD4RgnstzbaJdp2sSn3BQ7dmbZPZCI6EbGujjD14XD4fDIWBGSTSQqcjmd4gaO8VkbH8tYG9OI2XYPtzw4HA7GIO9uX8S0lqRdhk4kp7rZbWy1zF2RyOlmhpZ5lld8cjgczNPyd0F7mAQu66JdPozn3I27yf4MXSNTKVpmFTjarCm3QjgcjjlbG7ZicicDFgFfyqgdGmsPTpaMrVl2P+BRkn2ZoWTeQ8Dh0dqb0KPiebsOh2M2aYyVnLVdFwEvBH6ZEQFpSfOpkVbqGL/1BXBRjgpQ64GPAjvk2MSVo3XrcDgchQuuXrA90oViRz2eDDwXeIr+vZ4irJrAQuBK1RoaSOUXx3hqmS3dZH0vY820jBVjDXA5cA1wF7AKeAC4F9joU+pwOIZNmOH/mwArgZ2VFHcGdleiXIx0ltg00hCnVcClaY0tYAFwHPAV/VzTH8HYrrs2sJkS4N5Kmklrp23Wjl2vU8AGxKy7HvgD8CfgTqTQ/6+RLijhWg6Hw8EgAjL2USGTdLSMaTUIrI36/7QjBHasArb1VBKHIceP6prakGMNhfU2ZYpfpK3Tc+gEDDkcDgdFpYEk7eqztIOJPsP9L0Gq+5TdHDv2aOtauhB4v1o1ikTDp9jB4K1zpZxr3a0c82DuJ1KI8kHgEyp0itAEg0ntAn/Wjmgh/w/wDiSop4j11gSWAD8za2+uauCllHlrjuC6aRuerL83Z8F82XXRLihDoGQ2ZO0ex9cqSIjPlaDJZkGEZQP7Gj3OYWFz72ZRh8OBccm05rBPfFBzUk6xWGylm7MtSA5a24D41x9BXFKxEG+7pS3XpiCJdLegE0uzMPp7CXHbrEeqhm1MKaDSLIowB7V7afkCccxAqxmXtVYGjo207jZiEXoAaZnXLJAoSkZbeinSYq2aEe2+BCk+sjhl3hcD1yPt3IYVdPUaYJkSUykazybAd4EbexhPLFRLSODjs4Gn6b93BbZBgiGTsB5YjURy/0GtKVfoz1qfxBnG/yTgBWYdMAstSJPAxTrv5R7vsRwR2lLgYD320rlfqvOfFKdQ1blfBdymx1VI6uPG6DotN5k7HHPXNzOBRPgmBTPdpjvqoixE9hzvzwiissdvkdSwezI+8xASXT/I4hKB0J/aJQBsA9IVKU+xlFhZ2BVxGVyBBJwlBUGGvr7x0Uz4fF2f7cnAgX1sGsPYXp/zWY36eGOPJS7t3G8O/A3wbcRNmHT+6ZS5T1oPTeAO4DMJBVE8b9vhmMOE+St96UME+kb9/3UFEmYQEguBf6VToaua8DPUgD4P2FK/90Yd05SJZq4pQbWBUwbcdSaM/xuGGGsJ4/hAznFYobk78C/A/ZHArZv7rSVUqYrLPNr5iwX5OuBrdHLY84wx/P1v9FzVWXqE9fqanIRZMut5G+BE3RzGG5Ne5j7M/5QpjmLP91PV0vHuSA7H3CbM30QlJkPloxsKIswgHBbrDj5UXEoqU1jXv59uSKWCBPL9OqEUZvj3mgH2uw3ne0pKGc6g4f1eBXCpy3xVzM93RxrNVA4BbYV0ns9NGQ20BpyG+OO6Ce7wt2ONxjo9C4+wXl+bgzDt2ngdcLOZ+2rKupzp3NfNNb6DmHkH5R5yOBxzmDCD0N1Od9lt1QjSaj9PA38XaQLhHEfrbr025LrRsXZZTRHYb+mBhPZDKpEFbTJNUFvNMdYeYy00Sxuqm2uEZ/v0LuO1GmbTnL/foxvp9XuEDUE3DTPcz9bAuRFR1nLOfdXMfeiINRXNTdrch3WyCniZB8M6HE6YSQJqOfDzjFq+wQS7xnSNmYhy4ELt3qTuRKGwxDqkEEqRpGm1y40JbQTDXP2vzlWWdhnOdYQKzXYGUQYiaKX400LVqWbK37NIIMz3WuDlGaRZtA+zkUKWjYLO/4YMwgz3sgfigmh3IbipjHFt1Lmvpfy9llHj3D7Tf87asHivQYeDsSpU0gCeCPxAzaXVBDnQRBoq3AG8Ss2ucWpF20SRvg+JHp2IyL+BlD/8Z2OaK3Jz8U+ISbmWIOCC77KWUYYzzMeLgG8hJuak+Wjp9Rbo/x9B/GvXIhGgdyL+0rV63cWIn3dH4P8AB6nJbxs6ZUTbhqxDMZiammW/rr87P2PsDwG39FmgI0TaVpA2iwsS0jIaev5+o0dDlOxDKfmqIQr2SUgk7e4pcx/8jQv1fDWd8+t083iHzvtaHfMCJOVkB13fh6jlYAdT0KQZrZcJE139cX127/byrQ7H+GqYQUDspUImqRep1SyvQaJcu22sw3m/0qVT0dML0jKDj+mwFJ9VMAX/qEunpTCOQ5XsGl1aEraBq5FglCf3Me4VwNuQghrtLl16GqqtHjrgNoiLgFt5rC80mIf/OIR1vtyQ8lTK3AfN73bgw0qAveIJwKuVmJsZVoS6ed5vS9M0K6bU3UTUb7A0w0mJz1nu8cWIv1+aYf/OIo9yAf1Eiz4YgJ9ooqDn0Ms66We95FlDlTElzEB4ByFBMGnN3QNZXqy79LyRpSUk/WJ1Qn/TIIAuMc+0VMAc/SDFDBzu4+CM8Yd1tSOd1Jhqiq+sDfwOeGWU71dOeY/LCf8vR8/iFWoubqf4N8Oc/R7pDpVGmqU+j/AMtjCRqDFh3msat8/kSBvzQqT7UBZZtpEo5X8wkdl2/nude4C/pOOnnk4hzRCd/uxx6ts8G0tHVeZ56zcGmDrgGmZ/hBnW3CF0Ij+nMsjhLHP+co/r+v0Z5NMEjpzhexC+96KUCNEgZL+UcR0bsfuDjPEG4jgjEtb9buTKkaa+BfD/MgR32LycO4D3oGTyHLMIc2KAMvBDOXrh/gRxH9jvVmawKbfv13uUGBsZ6+hGpEjHn8m/pKrqXjy2QkZZbcKfVZW43Eclir313HVj1/8V0v8wT7WNN6rKPm2ufzbSwqmUo0B8+PtmiA17N+OLYIYVLBYgydvX9Vg5pGXMYgfog5vpmIIv4lEk+GJjAdVVwvePVEFbM4umBXxe1wczuE64xk5IYEA7uqdFulZ+ZXxNvZx3MXA8Ur6soedYp4Tw6Cxt+2Ur+lyDBLXUzdoJ6+7p5pm0c/gsD9a53CbB39c2XV0+DpzUxzsfhPmmiL9zhb63lagX7jW6nvqp6RnW3yTwn8CzonsJPsGHgWeodlZKuIfgl3od0tEmaT7CO/5u4NSoh2u7QF8yOt8fSfHDhmf+Yn1+RfnUwrrZXDdmexj5H3yPf0L8m40BlF48APiFIeRSQt/ks4G3qzybKLAmrV3XL9dNy6IEORzGcRJSZOLPc395RoTTl4z63utu8xUJ5/tGD7ul6xO+f1COHWrJCIB/QBzyrQIrV4QH9+ke7iV85jDg0oxIrpkcf1LymeluNDzvZXSiBuPjswVozGWj+aTd0/0qGHsJULPJz/dH53uEjvN/NoaOF6lhhvk6GCmnl5Z6Ma1r+r0zrHoSv/e1FK3hDX2unYrJ00u6l6AVvKuLdllSreF3et9p43yfOc8grBzWXHhKl3u6SoV6ueDqTsPWMMN1L+5yv98asFXOBnC91miZ9QTT7EOquP1Zy/yPqKJINars8aUuzvO0hf0Sc95H9d9f7kGg/0y/s8FU7Xhal0m09vFv8djySfWCjo36op2a817C348zZFvkeKomQXtZQYSJ7r7bUZ/KKeMsP3iG1yobv1o9pVJIW82IB/dAmiWT13W7WUMNxF+1/RgQpjXDrs4gy2CS+tuEtJGZ+OYvTbhmKCRwp5o4Sz1cK8ifzZEglTjvs2rSSDbNOHeYl+O7COxvDimJvWTMjJdmPKcW8FcFEsgoCDOM+9kkFxkI6/u/1Vw9jHJ14f5OS9nkhfVwkr2HS1I+bP0aX4q0jzwTc4w5byDfs3sQsr8wCyiUgPqLLosmnPfjJjfHlkgqooJFuJfTctxL+NvTTKmoKfMwiqyo8YcCCDN87/kJPqJ6tIiu0V1av7vecK1nmoTjNMf/mh5I0xLmnWYNBSEw3wkzvBsHGp9lLaUKzvQMNL6sd/8pZp0nBQB9osdrhrXyvi5E94Ic2uWkCuWk6kQNXSM7DbG+aNm4adYkROuGe7uwQF/mKAgzjPvLCX50K6OfM8R4j/CMFyPutVbCmmghkbxbZE1+y9xkTbWjs4wNuTSLWxPtgVT3aJgd4oQKd9tTbSZHnjmw/uCQLzatY2mr0KsUNKYi64puCnwq8jEF/1Dwl9YQP9o7CvILk5J7VdEXaWvgItVGG17zMZOwmsCeSLm74LMsJ/jF1iPBM2cbHxEF9D6sKCGdkXDekMv5ViSuoJnTQtNGYhDemdCdI/iazke6o6T5+cJ5DgH21XGUE2IBTkVSKipD6nbT0nm6ReesEvnqwrgPVdNgaw4GwgVf8lLEH9uO3uGWbmS+C/zXEPMf26YV2CcT5FhZZfYTQ1pU2g5igQ64ZQTkm/RvJ5gLtWchYR6iJp+qeSiPIjk8V+qDac9wkidMnlK7y8uwFRLK3DYv4QKkfuHnTJufmS7Imprf+m2aHJLQ343kmdkghAmdzwXmhQ1+r4vU9FlkL8UQvl83m7ZtEd/HXyMteiYKDkiYL2S5QudpRUIgSRBM65CAhx8PYB7D5uoUJeTdTOBeWGOb6/t4TM6NZwuJwN06IdCnggSgvT9nINFf6hzYJPnwTt5Fp2jAMFvDhU3nl3UTuon5XUnfg22B5wH/Pgf7lgZ5sVI3cXELtrCx+tcR8EqQZxchbdf2M3LHBoG9QN+Xx5hk63qCc43fsZ5QG7KUYYoblUk2nPPUqGivDVIZRTrEUxJU/NuVSGdbusv++tzrkUn+v5CKL62E9XCh8cWUZmiSDfPzv3QKMFej6z1IJxCo4ibZx8zltnTagk2lJIGvR0zug6z0VTEBFWl+uaZqG1nyoGKC5aYzwv9P6sGMd22COXYqRzrKMORFGbgg4fmF8X2hILPssE2yYT7PTLi3sK5/YT5XGpH8e1eK772NRH+XygkmlZIy/XFGCLbMTv9NwL9FZtvZ2n09/FxLcU7iyR7JYTJhfBt4fBfwmSbml2c4XyWkG8WSaHc7jeRMfVN335PG9FbXjdHLc5rX8ppIbgNeqBuLhSYtpK471O8Zoh1382zQNrbRXfLeCSXGgtlyPVJg+kcD1tCDZeo8JAVkYYKJraxmsC1ShGTJdFP5mEnBstdYqFrBp7toXWFd7qzz046uVzHRm6URP8efJMjV8O+nF5SKNmx5HNbfvgn3FtbFD/XfEyOwXIb1cJmRKbH7cSc0J/SSBE1wpX7orXoCq2mGz5wZVY4YtYYZBMSbzS4mJEzfZ8xD2yK29LzHtkhXh83pLbG/ZMoyrTddDMIO7lOq/j+hx/HYMRWR4F8xUbx25101idvhc8uRVI2G0UBD5ONWJFfW6EXDrJqEZZCi3XemaJr3I/7qeD2Mk4YZ5nsR4r9L0iyD1r4WKTA+rBrSccBbWgDQR1Le6YqRQUkVfUKR7qNzaIVhLEeZYuN2LE0kf3O7Ea6NcM29TacPq/UF68DSAsY4TA2zbAhnTWSlss/ziBFr9+jm7cbovaubNXN0GmEeZk5yvMlXis1xZyaknIyKMMPvnhyZFesmiOR+xE9xd4/HXUgU6hU6H3ny4OxmIg4ZDxX3H+5jLGE896jp8jNIkEc/L1H4/DIkj7NpBFELSVXZQe9hMhJgMbF+tkfiziLMS83f91FNs226FVRNybIV0fMfJ8IM9/y1Lqkj64Zghs3ajJ2SQnrTam3ZL1oTQZ7srO9sM4Vsv5ZTyIZ7fktKdGw7I5F+2M9+kSlfWI+6h9RNal15jhHmAQlzXzettZaP2GIZ1lCWSfxNWYQJneTONycUrK0Z0kzqkzfKtJKvmhxC+3IWVSTgCqQOZbd7qZidbdP4Ve3Ov4jxrDE7tHIfi+ScFC3u2Cgfraxr4opoPYTjWX0Uc0gjTCvo9jIv9lT02ZsjTXNcCDPM3yczUkeCQDpmRN2JAvFtiUSBpuVP/tgUCLAWq3/PaBu2Si1GedI/wmbvYwm9P2PyLc0CE/uPU+67rZaymWpiwyTMMM4XZGxWbh9AjWr6DDQ8LWHuwxr5eDmnL+JMJHdqoRHSwad5vCHNUfs026btz/VItFmoztM0yfe9HrYJ7EbguUhg1MIu9vbg1/sh4mdZSMcnZzcTMxlPVcnhfCTAKG/YecXU9zxWz1Ux/oZLEB+ULQkWIvb+STcj5Sj68nTdIRcleBom5P6FSoCLjJ+hqmQaokLHxacZnsk79FnUo/lum4T445CI7FFEFYe1+AhSuzOOgAwR+Ct1nGEdhUR9uy7jeztZNbFeIkY3TZEZIMFko5ZfIV5kdcY4t5ija3bHjL/dp2uzNGLugE47siRsUu4hH+69alpZYEgzCK3jEV9XacThzuGmV6m9+evGzLFQfy7u41ikL3LZ9Mw7jE4ZsIkcYfb/CPy9mlKLGM9Ck2M6pS/SJ3oM9NkE8aVWoh52j6ogbiW8zJNIfdczjHALAUAHqcm2yKCEQII36y71zigQqIb4fUJPvcY875he0U3bMUhwXj2lsk1bSeorI07BCc/vu0jgWBwAFIJCPox0PGmo5nNqwj019f37T11/5Rz5eiVz79slkGLbCO3ZQJgg7hES6iszyy0kWcgi+gdn0TgfzpjfTSZ6SCIv0+lG/R59UTFC6816kRN6LHs1CNIs66I7VrWeZ6gw7VWQl0zD3aOjCK42Ulz+6ya6uJ0ynvD7zyAJ5c9BfK2TPY4pCJet1cy7M51iCC2kGs6+iG+zW9RgU5/jvlGT3QrwQSQ9gQSBNE2nM8XhSIPcafPZ9yHlFu8oMF8sRM/dpKR5cdT8uIb4Oi9B8jRvn8fN0TeqVeBsszlIS+Q/TdfYqPNV20ZuPFeJq2nMqQ0k+O2TSButDyfkAocN+nok/L+fqOxyF214tqA1B7oI9fMO08XHPBvW6P0J8xz+vctEjyeLSbNmgn6CebaMOEfbI15wQZBcp8dMEbob2C4M++rLv8pU5OhWhuleOkXoZ4JdEF/iLiaKawkSep5FmIEs90cqp9iKJ6Hz+OGIb7GSck9lFdwLjKk2bC62VkH9koJ3642INC+JkvOrhjT/ik61lvmGUJxgc32+sRm6onP1V0iz48+Ytdca4ftYQYLVPoSkpTWiQMEm4p/7NFLbtpmQfrBI//7fQ6wG42Dgbfoas1ATtqlHQQY+MNEHAwfSLCFVYabNoq8ivojbkOCE2fBwJgtoQwVSzP0jSDRX3Zh6F/TQmqhtnNvtGeaD3qWa1juMFaCthEWX5q0TSmpLEnbxE3QiKvMSmU2gryMJ6S9DIs6KFGwNY579ayXH3fQegqa5F5Kn+TrEzzrfsAT4om68vob45ZJaVC1WcllGx7w+atIsI8UBXqqbsqT2XCeaJgWliCx/jZhqeylb1zYm6TUJsqBkij4wS1xKSzO0nPtnKM9GhWrG37aaRQF3T8iY3zUTfT7QimqYKGnWze+nkWi0q4z20hqhSaOoa++lC7kRvcitnPPWLnA8YQz78dgE25JZmO0M7fKNKrDqUc/Clhlju4coSNsGKdzrKaoBP1RwuaugUf3OmGd3N8K3ppr/hUou7Xnm0wxk+D3ELH8+kvpTi1Jrgvb5j/r3N+sGYlSaWduM60SkTOWWkUuiFJUls0Ra1c3hhhzWnDRhuC7j3ZgthFkyLeiS7mH9HF2392X8bVkfz3RQhJlF3tMTMyiMXVbSbEfm2XDh541I1S4rkSwpIPgkmBn31o3BIv1/eKnuTtm1xsE1u+miaBTUwHpz4DVmjstmrDenjCcsyGWIj6gVnXNhAXM/bQKAViAly04cgJCOSfM/kNSSmrn+roY05lsQUHj/fob4BL+N+JJj0gw1hv8GiVJ8JRKBOSrSbJnn9hEkaGk68mGVE76zEPFv/rLPsdtgwDglI1xvT3PuUdTJLpnG1StSqv1Mm3uYKxpmGOcfM0hqiW4S7h1hjfIgD3fNCLi6e2KGkxCbZ+vmM/UhR5zZBXeukmajoHJtFUMIZfNSXYpEqKZFIYYx/QPwNp2TiQLH04jMTjcCP8/YKbeQcPxlRriGyNjz6a+IeiDil5so1RDI8WbEX3vtgEgz+DRfitS73dKsu+l5Hi0bulzcqprmuUjkdjXKRw2ukuch+X3HIJHGo4qcDaR5BuJnPTLBpByT5a/VYtGvtcoK7djiENbvPrp+1oz4ue6km5tWgpY9re/oXDTJrkKi7zcx9xaCGLdBAivvzRn5PKjyfZuqckRCcfhWIP2swgWVnA1QMdU8agmlj4ZRuMBWyrghJZl7Jj0nw7k2mv6T3UK8w31+LqVsWb9HPSqAEBJrX9ulzNiRUXfx8L1fFrDojowqsthu8QsS6u/mKVxAD/1XVyLl31oJFW/q87j4erj/TXRz0k5ozmvfwdvo3oh9WDEGTwQeMBWmplP6rz5jhuO113s0oXJQWB9HjjC1JNzb3yZU+QnP/noTkzFXSuOVTA7sdRmF708acWm84OKqResvzMcDwJPLxmxlj7y7l9g8+0nTAqqZcPSyOyxiXEVV9ilFxaDXI2W2VuW0vRc9HvtSL1ABehoSBFJOyZ9crJuaoJk2jdYcksoX6gvZ67FQSe6r+v9gaZhCUl2OyzCNtme4ToJ59ieqaa4zeZozOS9zKGo2RC2/BilROJnghw5BUXsgxddXGi19VFrmrWqZamWkh30AaVY+EwtFOP+dSLBc/M6G875whJupIGeOSEjDCGO9zlhO5pJJtqwblRsTrF9Bjh09Iu3SWgJfYFpblhLydG8GuDxBIB/eI9vb8lSnZAj6b/Swg7s+4fsH5dQwf1cgOdmjCvwAqYtIzua3qPmpbUi/qKOJpJC8IUMjq5hOJEnn+EIBOztb+3N1wjVqmlcX1wsF6V8af/7KPvLOJky/w4dS7vUROgEV86m9VxyA9WGjNdRSWmJtQCKZGWFZsnDNOxIKXreRXOpei/p3exfPSmkx1VKr0dKc5fYGoeHsrmu0kVI7900F5S0Ou71XOM//zbD8NemttGaRa7CM+FGTNODQFu/McCNfQYIHpk0EXq92chup+R59AXYyu6Gg4fyqh/N+DknhmDZa090Z/rm20Zj+Ue3iRQXZhDzTG3SBkdOfEsZ0NnB1Qgmzmfox79CHXE3YEcWtde5SQRrPyRcL2LGG4Kp7kGIOz1WNJ8zRZkpUNybMzR+QQglBC1+ElMKjzzzNy5F8viP0mVlf3ro5HGWY9xlM6HzeZzZD1pcfIokX6QZ2qamaM2zfWLdG9A1jsSoV1D7rh0iUeBxQU0dymo+l0y5s2CXx3ozkAcbpNgsQ3+qPZ2GRhV40/B/SKbHajLINJpC88F8MefMWtNrnI7np0ymt5i4e9K6RMU3CZYT+j9miIfmzGb6GmbQejtWNSyulk0nYJJ+YULx+mLg9RcO8h+JabgW3ylZIDdpWQiHwpl5zpyFqmWWTtvZggnYZnvsPClzfw9Yw7TUvSemsE/zuhw9RptmGEjckvCdhTfxBFbDHNSGeKMg8k3TOiT46afQ7rrIpPl3kUe5zbmbDeNKeSWkAAqCXZ19K+GxlQGOojAlhWjPY0UgwVJaQahv/dnkEm45hEKYVwh9LCcILps9vD8lUXTKblEszWrS1Ef98UUQyCsIM435pSnBomPsbdVMzjA3LRNTxp5qyHj4xyxQTh8NRMGFagXCIkk8aaQbBcNqIrAXDIsywwdwTMc8nRRPXTG75ILVuG+Gc1qIt+M9+g0SZFlWje1QaZgmJ5v5NF4I6L2opOIi5D9HGr0yZ+9BGbj2SRz/XrVcOhxNmDzv7A+nkIU5lkOaZptxjaZ4RZpKWmbSBqEWm6qK1C0vCJ2cEwoRxvKrgMYyCMO34X5HiJrD3/NWoxnWRFrBw3pclpJE8rgema5cOx/gQphU4+yEmr3aKsKqaaPaJIe6qh0mYpaipdRppBv/uqQl5r6UZaJSWBELk+nRG3ux/DOA5jIowS8addFFGbnpYhxcjRVaIym/2S9aW9I7XazdTyLKl62OrEXffcjgcQyZMu0PeGfhtBmluNKS5YEikOUzCtHNxmPGl1TM0zatNMZdYAJeNqdceZXPE2smzkdSptEIvQWDfz2DMgaMiTHsfy/Uaadp1IM07kEYKlYy5L3eZe7t29kGqmrV5fIDVdLQWjnTt0uEYT8KMSfOGjB3+1JBJc9iEaefiXRnVkazgnkYK3j8fSZHrB89FAopqGRsWO44XDWjuR0mYdu6P0A1avQtptpGUxGNJLkyfB09DWt09bOa+nuGa+ICTpcMx3oRpBcAyOsVBprqYZxcOWHiMgjBt0M1HM7S9OAUnRHJ+CQkY2V+1pa2Q5PclSN7xMiRV5MVIXudvTPWlRob/Ltz7WwY456MmTHtfrzMbkmpGWdK2KUn6TeCtSoK76hrZBAmMWoKUv9xDNygfROoMbKCT613NKDfa1mfrQT4OhxPm40jz6gxtJ2ial9Fpf1WeJ4QZVyj7aBcyCwK1llBBag3SBOBXelyPFI5oRJ+rp2g21gzbRtqYDTpCd9SEWYpIc2OXetu1SOMMx1qk5OG1+s78CinSUk2oijaVMfd1Q5aTvaYQllLy2GZ6OGM7eskRHbe1NizCtMS3pRJiN9K8kk7ydnmeEGYsuI9Dap62DTlmCe+aKauXVIrRfraaob0G4f6gaqQMgaxGTZhE97lSia4dNbvoNvfNLnNfy5j7ulnfdTqpRB7k43A4YaaS5hI6ifNZPs0fmfy18jwhzHguno60yLP1o6s5ugfVoqPe5TvVSAu6FDHhDsNvNpsI097vjsA5UQ3qfue+3qX71JS5zk1Iizy6aZYTKVXbt0Xq+jUKWqgtJHjgAhUE5XnaOcLRe4eACuKP2KGg9dZUAvgZEqQxqmbJRbwztktPawAdV0KnoQ1IP9P/BJ6qwqQcPasNSNTgV9SE1iqwa0Z8r+0RdK4IHVSuRSJij0MCgnahU6O6FWkgpR40klbUaShsem5FChecY8bQHNE6K41o7kPHoT8Brwe+A7xPNy9Ea6OfuW9Hzy4Esq1G6iiHYKCe5z68JHsPqNvHl92Z6oh2cgcMeK1NzlENM63jzm0FaphJof7/k2NuLwK2nkGpyBh/SrnOGuAJQy6iYGXTlkhB9KsSzK7BnFftckyl+D1/BpyABKsMuw5ymMstTGpHfDw8gtZvtqhAGSlwcCEd/2bb+Jnzzn014dndhPTf3KXXuZ/oo4h22+x0G2ZHUu7ynQmk39i2iK2+NAe7hjuK79DwUmMKrOTsKRrX5u1lbTNHegj+GvGn2f6Hk8aExgA0zbuR2rP/Rnq3nyaSG/hq4PM5+8F2w9U8trtReH73m96qw+76UkZabZ2JdBvaD/hrpOH5HjoHvWzG7kMS4X+OFCMIvS3RNdwagdWtoXO/s/7bvjurRyCfW2Y+mki+5PnACrVurFRlbjek205erEbyOf8bKf7+Mzpdi3qa+1KKmWwJEpK7THedu+qkbk8ndHdJJJQaRrXOMssep2aduWoqcxRnjt0MaQ68twrGSgZRLojWa1UJZSMSKfcH1VTuUcH/a91JztWNWTmj4XZrwM8lCM12BqEv0rlnwN12miNep5WITEDcBzsryQcZGTTSxboOJ4EHkAjOP+rvfp+wqWuOeH3O1rm3ZGbnZyvlox103nfSOZ9Ua8S9+rn1Ovd36/zfGd1PX3Pfj5lje8QRv50O+InK/E/Vv9dSHkLoy3il6fbufkzGNiq2hXS4/56SZTllkzVhdvuX6474Ht2x36dCaa1PaeHmOrf+PL6cXmmGG5aS0cjbPsc9z30pYfNCjxG5rUHMfSml9FMaFiEVMK4iPTzdRoc9w6souFCmU08yqwjzeiRHboccgsiWwyrPM0ERBzuM6tqDGMco75UC2vWVU44iWgPO53U2U27KmvvybJn7khlM3GNwAZL42a0+4Nke/DPW2iWIT+jRlHqOIb/qIToNZeP84NkshBwOhyNX8u8k6YnQdRWEjwC7D7GruWN27c5BwrnTWk2FzdXRZk05MTocjnmFEAS0L9KgNattzamuZY5tKskuiN+xmdGH7qx5EO3qcDgc5DG5fSFDy2whOVbLR9Dd3TH6tXFKlz6E65DQfbdAOByOsTC5PdmY29K0iE+5FjF22uWeql02MtbFGR4U5nA4xo00z83QJBpIAYMVrkmMlXZ5ZkZkbBOJit3TzfUOh2PcCHP/jHYtQZs4x4Xj2KyHA0j3bYf18AVfDw6HY1yF5FcztMwgNA92E9xYmGO/38Xi8AjSscEtDg6HYyyF5H6Iz2o6Jd+uDfyCTkUXDwBiXppiX4EEe2Xl557h2qXD4Rh3YfnZHBVd/s61zHm7adoKaWPUTCDM8P81SLqJa5cOh2OsBeZOSP3PLIH5MFKE2zUM5l1e7uczNkxBu/yQb5gcDodrmYK/zyE0f5Szdq1j7jz3o+h0RU8rgXcb0pvPn7vD4WDcy+aVkXZg1+YgzRM9N3NeWBbKSEebWzJqCwdz/Ctcu3Q4HI7HmlgP5fERsnGVl7XAgS5A54V2eV6ODdJ33AzvcDgcyUL0izkCgG7ATXTMcb/l27tolg3gfrxwhcPhcJBmmt0auBlJMcjSPM41ROukObc2Rc8BNqakEtln/Aa3JDgcDgeZptnnZJhmbUeT97g/c8492x2BO3LkXH7P9FX1DZHD4XBkaCEnZ5hmA5nagBAnzdmfPrQE+GUXk3sLSTFa5qZYh8PhIJdpdiFwRYZwDeXS1iHBQm66m90RsWXg212eZziO8kAfh8Ph6M18twtwb4b5LgQB3Qs8yTXNWbv5ATi9i8UgmNk/6M/R4XA46Ms0ezgdP2ZWgMgtSGFu1zRnH1l+KidZXuiBXA6HwzEz0nxnF4EbSPM2Q5quocwusqx1eXY3Atu439LhcDj6F7xxgfZu/TNvd9JkNgT4AJxmNjr1jCCf++iY1N064HA4HDPUVsrAd7uQ5pQxzx7opDky3zN0fJZTKWQZfvco8GwnS4fD4ShWEC8BLs1JmmuAI9wnxrDN5wuAr+kzqGeQZV21yxc6WTocDsdgSHML4PqcPs0NwGuj9AYHAyt3tz1wWZdnUzM5tG9xsnQ4HI7BkuZypJ5slqYZgkxsL0UXzgzMx3wA8Lucz6RlyNJN5g6Hw8FgTX/LjaY5lVENKGgzFwBLnTQLfw6oFr+2B7I8wcnS4XA4hiusdwSu7CKo41zNla5tFqZVLgI+p3PbykgdSSJLn3uHw+Fg+D7NS7tEZFrSrAIfQIJTPCCo/yjYg4CrTY5ltzzLR4FjnCwdDodjtJrmIuCcLpGZ0yYQpQ38FHiaa5s9a5WbIF1iql2Ce6aRFl5tpK/l4T7PDofDMTu0nhKdDifNLl1OgrBfD7wX2DShQo3jsUQJ0nbt6hxzbDXL65GAICdLh8PhmCWCHROAsi6H9lNDup0Eof6SSNssO1H+GTsjvspml8o9cdrIxUiqCXiAj8PhcMwqIR+E8jOBm3IId6tttoHvAE9NaE01rkS5OXAisErnZ7rLJmTKaJ8nm7lzzdLhcDiYvUn0WwPnmgjObtpm3QSnnAPsn0EkzEOztr2/zYC3IlHF7Rzaut143Au82E3cDofDwZzLETweeCSHthm0p4aJuD2HTk3a+WauLSXcy2bA2+kUhcg7Z8FUexGwW0IRdofD4XDMcq2pbKrQXJ5T26xHxFlF+jS+JCLiiiGcuUIMpQRtEmB34CSkPZolyloXrTxolQ8Ab/OIY4fD4Zgf2mYF6au52qSf1HIQ57QhkeuAdwF7p/hPy7NYk4xJbDFwJPB1pFB9XqKsG19lG/g+sI+bYB0Oh2P+JdyvUJJo5SSIaWOWDCTxENJq7HVItaG0AKRhF0UIhDWRouVtCjwL+DSPNbsGE3SeeQia9++BN3pgj8PhcDCvo2gBjgau6VGzqimxtMz3ViMm23cC+6UQR9loebEp1x5ZY7dHOeWcSdgOeBHSgPv6iCRrOXyU9WjDsAH4F2AH1yodDocjOb9xvmmbLWAh8CYkdWKF/r6aI50k+EJjU+xG4I/AVcDPkSjTm1Uj7TbPbT1X0pw3zHXpYn7eE9gLCVY6GHgKsJU577QZe557rJiNxnnAKcBvzfVaOcblcDgcTpjMbd9mU/+9FCkKfjywk/4uaFTdTI0h77AETEYkVFMCfQAxgd6mJHovUlxhrWqsG8mfMrMEiWZdouPeA3gi4kdcgRQKWJpAuI2ceaXhfibNHF0CnK4bASdKh8PhGDPCtObEpul+8mrgONXSLHGWcpINhkwmMwj3YSXS9cCDeu7VquGWIjJ6gp5nCbAlsA2SZ7o45dw1/X45h7nXapOo1o0S+UXAWUjd3Vg7dzgcDscYEWYacS4BXgW8HjjEfK7aAwkR+QuLjqpt0jHVJvk6846tpWMJZtdVwPlIDup1UU5l018Jh8PhGG/CTCPOSeAZSpzPB5ZFWtxMEvQtkcY/s56DJcR+rtvSw2q/DaSo+gXAt5Q0k+bD4XA4HE6YmcQJ4ts8Angl0hZsa0NyDTpmytlUyMBqkWWTchJI8lbEP/ldJUyMj7LtpleHw+Fwwuzl/gN5WvPnbsBRwKHASsSnaEmq3kUzHAQxJv0sqyaJIcnfApchlY+uMJuCcJ8ezONwOBxOmMw0HaWUQChLke4ohyGpHPskRKmi32uYlI5SH0SaRIztyAcZX/MmJcmrgZ8AdyK+2G735XA4HA4nzMLKzTUTSGY3YFfgLxDT7R7AtogJdwnZfkVydmIhIQDoYSRN5S5DkLcCdyApLCSUC3TfpMPhcDhhDt3fWUqIWg1YrkS6C1IhZ1ckhWU7pKjAtvqzmTLnIUL1j0j7sVVICsq9SpD3AHfrvx9JIdo26VG7DofD4Zgh/j+xQ80p0HFicwAAAABJRU5ErkJggg==">
-      <img class="hd-logo hd-logo-oscuro" alt="Nissan Kyoto" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcwAAACdCAYAAAA5fkhgAAAmhUlEQVR42u2dd5hdVdX/P3syCaQSagoBEnooEkWKhhARKfqCdKWEomBovqJ0BCSAvAFFRBT9ISC8aOgSRGLoCiYYkYSWEAJEQgopBNJ7Zr6/P/ae12G495Q75/b1eZ55xMydc/ZZe9+1zl57FYfRLiQ1AtsB2wBbA32AAUAvoC/QA+gNdIm51DpgJrAKmAvMA2aHf5vZ8t/OucUmdcMwjNLjTASpjGPXYBS3BwYB+wD9gY2BngmMYqGsBpYCi4H3gFeBl4F3gBnOuSU2O4ZhGGYwy2kgO4Xd4X7AAcBuwM7BOFYCq4CpwBRgPPAcMMc5t9JmzzAMwwxmKQzlIODA8DMY71atBlYDLwHPA2OBl5xzTTajhmEYZjCzNJIDgUOAY8JOsmeVP9Jy4G3gEWCsc26SzbJhGIYZzEKN5MbAEOBkYH9gixp91CVh53k/MMY5N9+WvmEYhhnMJIZyS+A44FR88E49MR14APi9c+4t+woYhmGYwczndj0ZGAZsVeTbfQQsDLu7xYDCv63L8dnNgUb8WWl3YBNgU6BTkcf3MHCHc+5l+yoYhmGYwUTS9sB3gRPI1u26HPgAmA+8hj8zfAefQ7kcWIaPZF0JKF8AjiQHdAA2BDoDXYFuYaw74dNYBuJTWHoFg0qG7trRwK+ccxPtK2EYhlGHBlNSH2A4cBY+PaS9LAVmAC8AE/DuzWnOuUUlep7uwLbBgO6Nj+DdlWwClFYAdwO3OOfetq+GYRhGfewoN5R0uqQ31X7mSLpX0jmSBobczIqpMiRpG0mnSLpT0rQMnne+pMskbWoryTAMo7aN5RckPdVOozFb0v2SjpHUt4qefXNJh0q6TdJb7ZTBq5KOlNRgq8owDKO2DOWmkn4qaWmBBmKVpHGShkvargbk0UvScZL+LGlxgTJpknS3pP62wgzDMGrDWB4kaWKBRmGRpLskHViruylJe0q6SdKsAmU0XdKJttIMwzCquBi6pB9JWl6AEVgo6RZJO9VT/mmQ19sFyGu9pN9K6m0rzzAMo7qU/64FnlUukPQLSTvXsez6SrpS0swCzzaH2go0DMOoDoV/VIheTXtGeZekXUyC/yfHfpJGSvo4pSyXSDov5I8ahmEYFajgO0q6VNLqlAr+edsVRXdnCVHBTSnleluox2sYhmFUkFLfKERspmGupHND42cjWr4NIY0mbe7qXyyK1jAMo3KU+VaSnkihxJslPVLP55TtkHXvcMa7JoW8J0vay6RnGIZR5jqwkialUN4fSjpTUgeTXrvkfrikqSnkPkvS/iY5wzCM8ijtvcPuJSnjbaeTqfy3lvTHFPL/WNLRJjnDMIzSKusvSno/RUWaX0vqaZLLfB42kHSxpBUJ52KpGU3DMIzS1oNNWpVmuaRzTGpFn5PDUszJEklHmdQMwzCKq5h3lzQjxbnZ10xqJZubPULhgiQsNqNpGIZRPIW8Q4oAnzckfdakVpbyes+kqKo02KRmGIaRfWuqCQkV8d8t96+sc9VT0gMJ52qmpM+Y1AzDMLJRwJ0ljU4RCbulSa0iCkk8nHDOJkrqZ1IzDMNon+JtlHRrip2lKd7KMpoPJpy7sZK6mdQMwzAKV7pnJ6xh+oKkviaxipu/7incs7+o1Z6jhmEYxVa2g0MKQhyvmBu2ouexR0L3bJOkb5vEDMMw0kdbJin0/a6k3U1iFT+ffcL5chzzJQ0yiRmGYSQ/t7wvgXJdaG25qi4tKEn92QnWFswwDCOZYj0ngVJdJ2mYSasq6//OTzC/N5u0DMMwohXqLpLmJVCoI01aVTvHp4cWa1GskXSwScswDCO3Iu0g6fEExvIxa/pc9XN9U8JqTZuatAzDMHLvPOJSSKZL2sakVRPpJi8kMJo/M2kZhmF8UoFuk6Bd11pJx5q0aqqQ/oIE3WaGmLQMwzD+ozyTVPP5jSRn0qqpef9egnl/TlInk5ZhGKY0pf0SNCCeImkLk1bNzX0nSWMSGM3TTVqGYdS7wnQJFOYaSUeYtGp2DeyWwDU7WdJmJi3DMOpZWR4maXWMshxlrtiaXwdXJNhlnm+SMgyjXpXkBpKej1GSH0jayaRVF51NXksQIW27TMMw6lJJHptgV3GFSapu1sORoYJTFBeZpAzDqDfl2CXB7nKa7Sjqak10lPRUzJr4t6TNTVqGYdSTcvxagiIF/22Sqrt1cYikVTHr4mKTlGEYVgLvk1GR1rGi/tZGg6T7E7R062XSMgyjHpTiESFVJIqzTVJ1uz6+HKo6RXGZScowjFpXhr0TRENOs91l3Z9lPhGzRuZJ2tOkZRhGrSrCfgmrulxq0rKIWUnrY9bJW2Y0DcOoNeXXQ9LJQcEpwc6hv0nNoqglvZJgvcyWdIGdaRqGUW5cWlca0AfoBfQG+gGfAYYCAxNeZpRzbpiJ3pB0AXBjwo/PBZ4CXgbmAPOAD4EPnHMrTZqGYZTFYIY8uKHAVsCWwNZAf2BjoCvQJfxvY8r7NQOHOueeNtEbknYAXgQ2K2AdrQBWAcuBJcGIvg+8F/57gnNuhknZMIxiK7KjVBwmSupqEjZapR/dV6S1dqVJ2DCMLGnIp8uKdL/RzrkVJnYDwDnXBDxSpMs3m4QNw8iSfC7VacANGSodB6wHHjCRG214ArgK6Jzhi1oDMM5EaxhG2YJ+DMMwDJC0IdATH8/RLYcuFf6cfQWwxDm3yqSWXVN6YCOge3jRzrXxWxVkv8w5t9QMpmHUcFs84Gxgwza77g7AW8CjzrnmIimiYfgo+OYYz9SioLDy/f5F59xfSyiv7wTDpTx67g/OudntNJA74oMhP4cPhNwKH7CWrwjLYmAhMCv8vAI8A0xvrwGVNAQYAjRV8GZsHfCQc25mO5+1Mch6P+Dz+IyMfsAWwCZ57NiKIPt5eI/pNLzXaaIdCxpG7fUOXZ4nmOnxoECKkUv964QBVY9LOljS4pha0T1LJK9vxDR6mFJoVyRJe0i6XNI/Ja3MIBhthaR/SbpU0s7teObrVPmslfRl2lcI52xJf5a0JIPxrAnr8seS9jNNYxi1YzDzKYg/ZW0wJW0u6aGESudXLZHukq4vd73oUABjXMw4vlPAdT8n6XeSPiqiQZkf5LlrAeO7tgoM5ipJBxTwbAPC871fxLEtD9+loaZxDKP6DebiUhhMSf0ljU+4M7pIkmv1t31ilNrUYldoknR8zLjHpUllC7Wwfy5paQkNy0eSLks5zmowmCvTGExJG4aqXrNKOMY1km6XtJVpHsMwgxl1n10lvZFAqXwo6bg81zgv5m8vKaKcusYY+zWSDk9xvQMSNI4oJs9JGliPBlPSDpLGlnGsUyUdSIF5mIZh1LZR3gt4ENgt5qPTgSOdcw/l+f19wJSIvz9L0hZFeoyvAvtG/P5pYExCeZwBjMaX+iyU5cCydqRHHQA8mkRx4wPAKp1OSWxMOOccAxzajnutCLJfV+Df7ww8LOlbFJCHaRhG7RrLA4F78VGGUbwInOace4f8xScWSLoOGJUnWrE/cC4+1zbLZ+gMXBChkJcC/xMXTRxczOcD16fQh/OAd4FJwOv4CNgVwWCCLxvaDdgeH9E5BB9Vm6Sl4Y7AA5KOd849EzOGqe0UY0dguzzzthJfarI9rG4lk3zyPyisxaRBWYvx5S9fAt4ML3Qt5TEFbAD0wJd0HQjsE4xh7wTX7gncLmkj59zNpikMo85dspIODB2D4hgtadOk6SiSno05o9s2Yxl9R1JzxD1/k/A635a0LoE8miQ9E+67bQHj/aykS1K4fOdI2r3I66xvxLO/UIJ1/gVJCxLK45Ugv8+1PkdPeJ9tJQ2X9NeE91om6WjTRIZRxwZT0nEJFdRv09Z8Dud/q6KiazOUT/cYw7NQ0k4JrrNv+GwcL0o6LOR7ZpG+c66kGQnu+4KkbkVcZ1tFGMy/S2qguL2TJyeQwduSzpTUPYt83RAk9nqC+85qT9qPYRhVbDAlDYvI7WyhWdJVhRoGSXdGXHuxpEEZyefCmOe4IsE1NkvQj3VNkEePIszxjiGfNY5r0+6oKt1gSmqU9IcEz36vpH5FuP+mkm6Oyd2VpL+0/a45SecBm7Y5qG4APgBud86tb0clioP5T8WQjsDTSap/hL6b38dXElHwsS8G7nLOLUo5ji2APfB9PJVhDd4XnXPTConsA3bC+9c7ZDSmDsAC4KlC5yvPWE/Bn6k0taresRT4TVbVMoISPYrcxdMfcs69WeB1ewOn4s+TFNb0AufcL6vBYOLPjzbK8evHgGPSzHOYx18HWeRjDXBRe+QTIjz/iq8UlIuHgG8659QeNyK+YsuAPB+ZAuzvnPs45jojgUsjPrIUOM85d3cR57kb8HPgjIiPrQK+5Jx7qRgGE/h3nrPbccDQIlWUOhofcJYvcKkJf6Z8jXNubRHl/z3gZxFn183At5xz97T+oyjXwI8KfbuRdEWO6/046YG+pI/b/O3cNGcHIRn7BkmzE7xJFMI5Bcjk2FAxZG0RxvOypC4ZLqZ9I5LnL8zwPt+OqRYzsMDrfjZHLt279bbDlHRSOJOJYomk0zMa++UxiewHt/P6UcUS1kk6PsE1to9xTa+R9O1S1aSV9EDM/Iwqxm6vHDvM4E6P29n/tITftRExY3lT0sat/+CdmIPuKwsxmiERty1XpzCY89v87UxJAxL+fZ8UB7xFN5iSnKRrJK0v4ngyM5hB/k9H3GteVv59SafFPNfkAiuhDMpRpWVqPRnMhMbyozS5ikk8OjFnU38LdVkLufbOMQFLY4J3Ku46P4mRycgSz3dvSZNiglA+WyMG85SYYK0xWZwVp6mfLOnhmPVwStI8zAZgBHBFMQ+AMxZAR+Bm4EsVNKxjgMuqJHcKfCHrr0T8vhdwdYnWxK7Ag5J2w0jzPTgGuA2f3kBEasIpzrk/k12P0wXAtRFFwYcCpxV4+Ysi3L3LgBHOuXUJXLonRHzkFWBkifvCzgMuCW7xXHSLGXM1dRk5LaLpx4JwLLCmhLJfC1wIzIn42GktRjyJwmsArglGsxq6m3wRODrCN57FT3PSs8ew67skj5+8OcMxNWUVjAD8MMFHjwSOLdGc7oLPTdvFTGGyiFXgVqLPLFsKEowpwhAeBh6P+P0laUuRSfoSvpNKPm5zzv0rwaUOxne6IM/38dos20GlUNxPA49GfOTwLCJFy8weQT/n465CYxbaKfsZwP+L+Mje+LiTVIULRoQF9eMKn5Sv5HiuucDVwOSMWpo1AO8k/OwOwKAcvfJuCwff6zJqpbMs4g01qVJqwCeY98ox3vX4wC1aVfG4StLfwq6iVEbzm+X4UlWRsRwK/D5iJwY+0ON459zLRVJATZKuAvYnd7J+f3xQ3wUpvEZXhDWXi3eBm5IcjRBdTWYi8FQZp++28BKayxM1ANgLeK6Kl+dX8YUFcrEoPH+5uAffUq9vjt91DZ6R13OdYS6W9FieQJn1IZinoVLPMCU9kuO+PyijAjshx3gmlNJPn2KsR+YJSLpP0vl5zh5uao/nIc8Z5hRJ70Wcae5mZ5h5A53iCle/I2nPEj3HtTFpJvsmvM6ZSc+YEuRAzo24zpVlnvceIRYhHxdV6xlmOCt8IiaFxJVZ/lFpUX/M55J14W3ux3nSF64BLq9gfZNL6EvKOJ7GPOctaytMSW8ezp7aBk0sDN6FXwJ/y/GnZ+Ebu2bJOOAk/JkGOc40zT2bo5A6cD/53Y0tO7FvOucmlmhYN+MbXudiI+DHcQFAIQ8vqoD7GHxZviR8Ht9wOBfr8Sk75VNc3hUclXa3l6QOVbpENw/f3ZzTDDzZnnSjjIia/90lbdSYx90o51xLAvMlOQzSNZLknKtE92yu1IHvS5oZXFErCnDLOmCZc255AeOZjndlt345GQJcLOmx4IoohOaMXaHnk7sQ940t+abBzfYFoLWS6xwU31edcyszGktn59yLkk7Fuxc3y+GevUfSYSFgot6NZe8gpx0jPjYDOME5N6mEBuAjSSOCISdPsfGTgDsjLnMB+XMul4RAn6YUAWT53LrTgn4oN+OBH+Rxy34mfN+WV+Ey7RXxMrcIeLkCxvgmPt+/Z54XvAGNMZXwW3aSud7wRkgSvsCxKmhinsux4HYH/hyEsbbAc8y1kqaFt9mHUyTUTsGfd7Yu1bUBPjH3AnyB4gL1pD4Oz3W7c25WOxTuF4Hv5vjVBHzwSOud323AeW0+tx8wPOwoslS4T0gaFozB5m1+vSfwB0nD6tlohiIH9wKfjXmJPKFYZ5Yx/BF/Vv+NPC/nV0p6xjn3fo5nG0x0Uv+tKZ+pf8TvXg8v0+XmlaATcgVs9QW6VKnB3C7idx+liAkpJvOBt/FBPrkMZr9cZ5jLWpewktRB0k8j8jQvz+V7LuMZZueQ61VMHvhEMmv8mM4p8njeDe2aCu0p+FzSbukhz25qjs9/UEiRgTxnmPe0+cwhEfl3z0rqU49nmGHu7o9ZG/Ml7Vfm5xkYUyjgd23PyyR1kfR8xN+8LmmzlLnQoyKud12FzH1XSf/OM8bVkvao0jPMqHKGz1aI7F1ETmazpOENSSLe8JGTo/K8IV5bSWeazrlVYYc5o4i3+QZwY4rzhN+Ft+xivr09KKl/AX97anCNfWrMucoYBjfwCD4d3dsnRM02FmFOnwzj/DDHr78M/F5SrzraWDYHZXYd8M2Izy0CznDOjSvzd3Iq8JOIjwzj09Grw/FRtuQ5b7zSObeQdJHtUTmpCytkbpvyrPOWZ+hZpWu2T8TvZlEZtkP4+JJ8x3IbNiS80Ep8MvuoPBe6Ot9Os0wP/gq+WMCT4ctVDE5OGuzinFsdXEsji/jF7A9cnLbtDblzLqeHF6F8z/MA8KccvzoOn59JkYzmKXnkdyAwqk6MpkJ9z/OA70V8bhnw31kWJaD9KRPjyd+X8TpJm7TKBb4wJgUgbYBOF6L7fy6oEDmtxdfxJk8AYe8qXbcbEe2SrRSiYkq6NabZuUkaHv7vSTnefK4Oi70izjSdc5MkfR0fGbcP3v9fyLiEPx8ayicDBjoCwyS9kOR5nXPLgB8Gd+NgfH5mIcXXm8Pb2tf4dDDM1yVd5Zz7MGHO5dX4RqutWRcCKeZFuGQUvA5D+GS+X0N4eRpXjHPFVmea9+RQfi1Gs9bPNJtCMNT1MWfxdzjnRlE5np9lki7F5zl2zvGRQcAFIbBsZI512cJ7+KLcKiBwr0PMzq5SWJ8yC6AqXvRidv+VQpTu7NeYctGvlHRmHqPZIexKHD4lpRKM5lp81/gXs8gpw6fb0CZqrVvENj7XmN4if6h9quarYZfXOhhms6B4niZZpZ7j83xZjw+l1VzE4s9XXWiXsDu4sFg7zZB3lysQ6EB8INAJlZa2k3Ha1A4R0Z4tDJP0snPu3goymuMk3RqxNs7Guxy/HnGZq3MFCGWgtF2Fp8bVwrqN2gRUClHVlBY2FrDoV0QYzZaUk5kZVbCpJO4M7suGNtGuncqkfP4haTKfPH/cIMeuM2c/uJBPm2v+OwP/1c7hfUfSaOfc+CIazVPDTnOzHEbzbuAXRXTHl1vxjAiu6Z/kyJulVd7b3cFNfXMFRbL/BDgEH7nelo2BqKYGjwL3FXjfVUS7/japEPl0zPEi2Ppldn6VrtvVBbprKUP6S16D2VCgwloRc6b5K3KHkVczn8vxltRcrrcjST35dBmn9SQLjb+A/EnEWdADfybVuYgvDGPx58i5XChfI77/Y7XSgM/BvRl/prskRvn+FLi+mHORct4+xJ+1p02nmgdcUmh/xFCUfVmBipISFzrZMmKHvLRK1+0HEb/bukp2mOsb2xONGnaaDjgxx033LpMh2RDvKt0gI7dwE76G40U5DOb7cQs4BEIN5NNNugulGX/wfxafzO0kKIRpcX0uiQ4WyYqheBfbTRRP+T4h6eQ8Z5rbUbu0GM37Jc3DR2EPiMipvhjYUtK5zrkllN9oPiEpVz5vlCv1Sufc2+28dVRgzwBJDcVomJySjSOM97oq3mHOjjKYkhrTNEUvYkPvfhG7+3mN7Vz4K1oFAp1YIRPTD58s3SfDa+YLFhiToMpIR+AGfOHhYo/nny1VefIsiA3w58tdcyyGe2IOvOPeik/OYbQulPQn59z0IirfJyWdhU/e35A6wzn3t9DB/n/Di2I+TgK2kHRKhQRFXYd3nydp2/YocFcG95wTUwWocwUUL9g9Yh3PwxdfqUbejXGHb4svGkCZy/ftQP6qUrMbM/jCrpB0RoUZzQ4l6D35D+CBChrPGrz7LYoz8HmLbXnYOXd6O9/O3gduIXdu5rdSlC8rZA2OlnQu/iigM9Sd0Xw1BGndTnQf2IPw+bpnZLBba7drVtIF+MC1DWOM3A8zWj9vhJfDxjwGc2ug3MUt9ovoIvU6hVcGowJcsh/nOSveDN/2q9wGc7eIGJDFwPSGDIsFDA9v+fXAdOB7IVWECglDv9g591yEQdseuDKHW3l+Ri3b7iB34ejjgcNLoIB/B5xbxQqlvc//Lr411EMxHx0CjJb0+QoY81PAz8if0rEmrOu3MrrlJPIfoXQqxTqNq/KT54W2hdfK7bakfekaUyIC2Q4pUUP6KI6L2iE75z5q4NNRdp0KCWsOgUBxRrNDymixtv/flTmPaCm+kPShZarLmctQvhh6G94S44q9jtxnIzc556Zk9NJ0JT4ase28XR8KhJMwB6uxwDHcFYzmqoRrqtaM5kf4iki/I7636KOS9q+AYd9O/ujV12OaKlNArdBXI35/bDBa5WIv8sd+rMXXdq7WtbkiRvaHUMa4g9DQPOpl5dkWxfRz/hOQ4sJb3dx2nmlOxOdTqY2yejaFIRiJDx5qGddiknX2mB+CWrpkmAvqgrF8HZiRMjBgPXAj3n3bnOF4mvEFi99I0CWka3i7ntZKJg7vl789wy/F+OCeH9jmWTvg3bPz8rz1X9PGWE5sz05T0iJ8cfamNoZ5AdT8TrMlGG8+cFnER7fEu2fPcs49SmUmtTdleZThnGuW9HiEYtwTOBgYXY46pvgGCPl2We/jj4GqmSfDC21DnmCns0jYVLwIHB8RnbyG6m7cbRjUdAeSQhpIt7lGB0mXSFoTU5x9qaQTy/is20QU1v+HpO5Z9w2V9HGEPF7J+p4Jx3VIKK6ej18WY1dVquLrrQrLvx7xjB9J+kwZZL91aB6Rj3GSulRaSSLDMLLbTTU5524Avh/ekInIO7tD0vl1IpcpRFfCGgT8qAzN22/Ep8KRJ+l/VA3IfgW+QhcR0bI/C0dIpZL9BkH2UVkVv8+w169hGJW2w2xzvRMlLYrZaa6X9INa32GGex4UsbNS2JUPK9Hzd07Qou1PkjpW+w4z3LNfaNUYxQ2lauQh6dKYsbyXppWjYRhVbjDDNY9MYDTXSRpRjBZtFWYwO4SetlEsl3R8CYzlPTHjWCVpaLECXUptMMN9L4955mZJI4sdNSvp+5LWxozlTNNIhlFnBjNc96uSZiVoSH5Til6vVWcww313ydGkvi0rJF1UDBehpL4xDa1b+HmxdltlNJg9JL2c4NnvSNMkPOVZ6ogYL4MkPR0qxxmGUW8GM1x7H0kzEiirG0uRF1cugxnufUZwRccxJpSUzGp3e6Sk1xLc95XQKIFaMpjh3oNDwFkc/5J0dFZjkfQFSX9NcN+FkgaZNjKMOjaYLfWEJb2fQGn8pNg7zTIbzAZJv1Eylkm6W9KXCilkL6l7MJRPJnADKkTyDi6y7MtmMMP9z04oi3WSng3y26yQ+uKShoT5W57gfqslnU5WCeKGYVDN0YoTJB2HL8IxIOKjFwEdJP3QObemBuXQHMrzdcF3fomiG74oxInAG5JeBF7Al9JbgW98sL6VXu0efgYCh+Ib2e+WcGgrgOHFao9XQfL/TWg/dxXxtaq/HH6mSXoJeB5fCGERsBIfSezCT9cg+23xTSAOwNfo7ZQwJ/h659ydpikMw3aYre+zt6SpCd64/7eIZ4ll22G2Cb65W4WzUNJkSRPDzxvh3wphkaRvlKq6TTl3mGEMjZJ+mNA1ni93891Wsn9V0uwE55O5aJJ0dakidA3DqCKDGe61Y1AycfyhGGXjKsFgtuTjSboqoYuwWLxTrIjYSjWYrcZymqQPyyj7DyV9hwR99QzDoG7ds2/ji7ZPivnoSfik8sYalcMa59zV+ALcUyh9TehRwFecc8/X6Tq8G/gKMLYMtx8HHOGcuz1JH8Nc1n4g3l+fZe3T9cA9zrl3TE0ZrYMhgB/g23IpwwbLY+tV+RTS6SSUxxtDdAHsM4Hlki4pZru2MsviT5Im4BtJnINv1l7MGrr/BG50zv3R1qF7TdKRwGn4euC7FvmWM0KVn3va1XkqRCMVgytMPRlt1tpxRVprl1e5S3ZVnuf6S7F2eSmiZ39RSKRonnv2jyioMLEcdV3b1Bi9TNKkjNfmWklPSDqpnHl+4fny8c9yttuS1FPS6SEXMms3+T8lXRACjlLRGLEjLAZHSfp5qClomLHsABxdpMtX83FDEzAeH5nZ9ns5JcOdeK7o2ROA/yG6qfO++MjPLLp6rMZ34cjVWHhyRK/MUux4ZgIjJf0a2AP4Oj7adTugX8r5nIXvLvQC8BgwrQIij9fg2wPmSh16rcy7zcXAnZJGATvie5UODrIfQLpWfXOA94B/4RuWTyp0R+kiigEPxrc72Sb89AO2wIfsdgkutE4p79ccekk+bebCkLRD+MIWUs1jOT6cfCU+tHwOvgVSy5djgnNuRpXKxeELcbtcRxvOubVFvn/HmJSzBkBZFKSOeFaA5kpLZwnjHQD0DfqxX/hvgtFvABaG55kb1uIcYE4wwJX2LPlejJorMZVIUh9ga3xv3/5B/o3hOTYJMnf4Hqv/DrKfBbyfRfNtV8AXqU8wnJuHAQ8EDsQ3pU3CH5xzJ5u5MEIO3I0JPz4P30/1pfClmBv+bYFzbqlJ0zCMalF8PSQdH3KR4pgvaYBJre7XTJdQ+iuO2eG8obflRxmGUUtKsG+ou2jBP0aSwLK4ZOW3JO1p0jIMo1YVYe8EhYWnW4+xul4jHUOUYBTzzFgahlEPCvGI0IQ1irNNUnW7Pg5IECp+mUnKMIy6SBeQNDZGIU62XWbdro0HY9bGu4XkSBmGYVSrYjw8FLON4r9NUnW3Lg5NsLu82CRlGEa9RUE+H6MYpxWzQapRkWeXT8WsiX+HPGDDMIy6UpDHJoiYHWGSqqvI2Li2OxeZpAzDqEcFuUGCXeY8STuZtOqiZVWS6OnNTFqGYdSrojxM0uoYRTnKktJrfh1ckcDbcL5JyjCMelaULkExgzWSjjBp1ewa2E3SggRR07a7NAyj7hXmPpJWJAgA2tKkVXNz3ylh9afTTVqGYRhecd6aQGnebq7Zmpv37yWY9+ckdTJpGYZheMW5TYLmtGslHWvSqpk53z2BK3a5pCEmLcMwjE8q0NMTFDOYLmkbk1bVz3V3SS8k2F3+zKRlGIaRuyza4wmU6GOSuprEqnqub0kwz29Y4QrDMIz8inQXSXMTKNORJq2q9iQ0x8zvakkHm7QMwzCiFeoZCQzmOkmnmrSqbm73Dk3C4/iVScswDCNeqTZKui+BUv1Y0lCTWNXM6w6SpiaY1wnmijUMw0iuXLeU9GYC5fqupN1NYhU/n30kjU8wn/MlDTKJGYZhpFOygyUtSaBkX7GiBhU9jz0kPZxgHpskfdskZhiGUZiyPTtBqolCikJfk1hFpo88oGT8QlKDSc0wDKPw88xbEyrcv0vqZ1KrqA4kDyacu7GSupnUDMMw2qd4O0sanVDxjjf3bMUYy4cTztlEe9ExDMPITgFvHqInk+40tzeplW2ueqZww86U9BmTmmEYRvZpCZMSKuIpkvY0qZUluvmZhHO0QNJgk5phGEbxCnbPSKiQP5D0Xya1ks3NHpJeTTg3iyUdZVIzDMMormL+gqRZCRXzcknnmNSKPieHpZiTJWYsDcMwSqegv5igHVjr/L5fS+ppkst8HjaQdHGCBuAtLJV0tEnOMAyj9HVJJys54yXtZZLLTP5bS/pjCvl/bMbSMAyjfEp7+xSBQJL0oaQzJXUw6bVL7ocnrAvbwixJ+5vkDMMwyqu8t5L0RArl3SzpEUk7m/RSy7p3qMizJoW8J9vO3jAMo7IS5e9WOuZKOteaUSdu7n1cwoL4rXlK0rYmQcMwjMpS6h0lXRqaD6fhb5IONAnmlesgSfcrPbdJ2tgkaBiGUbkK/ogUKQ4trJZ0l6RdTIL/J8d+kkaGYJ00LJF0niRnUjQMw6h8Zb9LcAemZUE4o9u5jmXXV9KVoWxdWl61pt6GYRjVp/i7SvpRKF6QloWSbpG0U52VtfuRpLcLkNd6Sb+V1NtWnmEYRvUagoNCR4xCWBSCiQ6q1V6NkvaUdFMBbuwWpks60VaaYRhGbRiFTSXdEM7XCmGVpHGShkvargbk0StEvf451HUthKbwMtHfVphhGEbtGc59U+Zs5mJ2iBo9RlLfKmuRdmiIXn2rnTJ4VdKRtbrrNgzDMLzhaJR0egE5hbmYI+leSedIGiipU4U95zaSTpF0p6RpGTzvfEmXSdrUVpJhGMZ/cDVuOPsAw4GzgCyCVZYCM4AXgAnAdGCac25RiZ6nO7AtsD2wNzAY2BXIouj8CuBu4Bbn3Nv21TAMw6gjg9m6Hi3wXeAEYIsML70c+ACYD7wGvA28A8wLv1sGrAJWAnLONeUZXwPQAGwIdAG6hp8tgJ2CgRwI9Ad6AZtk+AxLgNHAr5xzE+0rYRiGUccGs5VhGgicDAwDtiry7T4CFgaDtBhQ+Ld1bT7XAGwe/rd72C1uAmwMdCry+B4G7nDOvWxfBcMwDDOYOfMRgeOAU4FBdfb404EHgN87596yr4BhGIYZzCSGc2NgSNh17k+27tpKYgnwEnA/MMY5N9+WvmEYhhnM9rhrDwGOAXYjm0CacrIcf6b6CDDWOTfJZtkwDMMMZubdO4ADw89goEeVDH112Ek+D4wFXsoXaGQYhmGYwczScHbCp6PsBxwQdp47V9DucxUwFZgCjAeeA+Y451ba7BmGYZjBLGuxd2BrfJrHIGAffKrHxsGIdiniznEpPtr2PeBV4GV8CssM59wSmx3DMAwzmBVfVQjYDtgmGNM+wAB8vmRfvDu3dwJjug6YGXaNc/G5nLPDv81s+W/n3GKTumEYRun5/1yFq7UxI5CsAAAAAElFTkSuQmCC">
-      <span class="hd-div"></span>
-      <div class="hd-txt">
-        <h1 class="hd-name">CANVAS</h1>
-        <span class="hd-sub">Voz del Cliente · Grupo Kyoto</span>
-      </div>
-    </div>
-    <div class="hd-mid"></div>
-    <div class="hd-btns">
-      <span class="hd-user" id="userChip" hidden><span id="userTxt"></span><button class="hd-btn" id="logoutBtn" type="button" title="Cerrar sesión">⎋<span class="lbl"> Salir</span></button></span>
-      <button class="hd-btn hd-btn-pri" id="subirBtn" type="button" hidden title="Subir el RawData de Nissan">⬆<span class="lbl"> Cargar Excel</span></button>
-      <button class="hd-btn" id="usrBtn" type="button" hidden title="Quién puede entrar y qué ve"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M15.5 4.8a3.3 3.3 0 0 1 0 6.4M18 14.8c2 .6 3.2 2.3 3.5 5.2"/></svg><span class="lbl"> Usuarios</span></button>
-      <button class="hd-btn" id="objBtn" type="button" hidden title="Objetivos de cada indicador"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span class="lbl"> Objetivos</span></button>
-      <button class="hd-btn" id="themeBtn" type="button" title="Cambiar entre modo claro y oscuro">◐<span class="lbl"> Tema</span></button>
-      <button class="hd-btn" id="xlsBtn" type="button" hidden title="Descargar lo que estás viendo en Excel">⬇<span class="lbl"> Excel</span></button>
-      <button class="hd-btn solid" id="pdfBtn" type="button" hidden title="Guardar lo que estás viendo como PDF">⬇<span class="lbl"> PDF</span></button>
-    </div>
-    <input id="periodoInp" type="hidden" value="Junio 2026">
-    <input type="file" id="fileInp" accept=".xlsx,.xlsm" hidden>
-  </header>
   <div class="voc-inner">
-    <div class="print-head"><img alt="Nissan Kyoto" src="data:image/png;base64,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">
-      <div><b id="prTitulo">Voz del Cliente</b><span id="prSub"></span><small id="prGen"></small></div></div>
+    <header class="hd">
+      <span class="hd-badge">
+        <span class="hd-bar"></span>
+        <span class="hd-kyoto">KYOTO</span>
+      </span>
+      <div class="hd-t">
+        <h1>Voz del Cliente · Grupo Kyoto</h1>
+        <span>Ventas y Posventa — Indicadores por sucursal</span>
+      </div>
+      <div class="hd-right">
+        <input id="periodoInp" type="hidden" value="Junio 2026">
+        <div class="hd-btns">
+          <span class="hd-user" id="userChip" hidden><span id="userTxt"></span><button class="hd-btn" id="logoutBtn" type="button" title="Cerrar sesión">Salir</button></span>
+          <button class="hd-btn" id="themeBtn" type="button">◐ Tema</button>
+        </div>
+      </div>
+      <input type="file" id="fileInp" accept=".xlsx,.xlsm" hidden>
+    </header>
+
     <div class="srchead">
       <button class="src-toggle" id="fuenteToggle" type="button" aria-expanded="false">
         <span class="src-dot" id="srcDot"></span>Fuente <span class="arr">▾</span>
       </button>
       <span class="src-auto"><label for="mesSel">Mes:</label>
         <select id="mesSel" aria-label="Mes a mostrar">
-          <option value="">Cargando…</option>
+          <option value="__live__">● En vivo (actual)</option>
         </select>
       </span>
       <span class="src-status" id="srcStatus"></span>
@@ -948,7 +805,7 @@
 
     <div class="src" id="fuentePanel" hidden>
       <div class="src-field">
-        <label for="srcUrl">Servidor Canvas <span>(Apps Script · /exec)</span></label>
+        <label for="srcUrl">URL VOC <span>(Sheet de indicadores · /exec)</span></label>
         <input id="srcUrl" type="url" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" aria-label="URL del Web App de VOC">
       </div>
       <div class="src-field">
@@ -968,17 +825,18 @@
             <option value="3600">cada 1 h</option>
           </select>
         </span>
+        <button class="src-btn ghost" id="uploadBtn" type="button">o cargar .xlsx</button>
       </div>
     </div>
 
     <div class="status" id="status" role="status"></div>
 
     <div class="tabs" role="tablist" aria-label="Área">
-      <button class="tab" role="tab" data-tab="ventas" aria-selected="true"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 15.5v-3l2-5.2A2 2 0 0 1 7.4 6h9.2a2 2 0 0 1 1.9 1.3l2 5.2v3"/><path d="M2.5 15.5h19v2.5h-19z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></span><span class="tab-lbl">Ventas</span></button>
-      <button class="tab" role="tab" data-tab="posventa" aria-selected="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0 5 5l-8.8 8.8a2.1 2.1 0 0 1-3-3z"/><path d="M14.5 6.5 17 4l3 3-2.5 2.5"/></svg></span><span class="tab-lbl">Posventa</span></button>
-      <button class="tab" role="tab" data-tab="training" aria-selected="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/></svg></span><span class="tab-lbl">Training</span></button>
-      <button class="tab" role="tab" data-tab="alertas" aria-selected="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><span class="tab-lbl">Alertas</span></button>
-      <button class="tab" role="tab" data-tab="planes" aria-selected="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="m8.5 13 2 2 4-4.5"/></svg></span><span class="tab-lbl">Planes de acción</span></button>
+      <button class="tab" role="tab" data-tab="ventas" aria-selected="true">Ventas</button>
+      <button class="tab" role="tab" data-tab="posventa" aria-selected="false">Posventa</button>
+      <button class="tab" role="tab" data-tab="training" aria-selected="false">Training</button>
+      <button class="tab" role="tab" data-tab="alertas" aria-selected="false">Alertas</button>
+      <button class="tab" role="tab" data-tab="planes" aria-selected="false">Planes de acción</button>
     </div>
 
     <div class="subbar">
@@ -1077,7 +935,7 @@
     <div id="planesAccView" hidden>
       <div class="section-t">
         <h2 id="planesAccTitle">Planes de acción</h2>
-        <span class="hint">el seguimiento de todas las alertas del mes: plan, responsable, fecha y estado</span>
+        <span class="hint">lo que hay en las hojas <b>Plan de Accion</b> de cada sucursal, tal cual</span>
         <span class="cargo-wrap" style="margin-left:auto"><label for="plAreaSel">Área:</label>
           <select id="plAreaSel" aria-label="Área de los planes">
             <option value="ventas">Ventas</option>
@@ -1090,85 +948,28 @@
 
     <div class="tip" id="tip" hidden></div>
 
-    <!-- Detalle del caso + plan de acción -->
-    <div class="modal-bg" id="detModal" hidden>
-      <div class="modal modal-ancho" role="dialog" aria-modal="true" aria-labelledby="dtTitulo">
-        <div class="dt-head"><div><h3 id="dtTitulo">Cliente</h3><p class="caso" id="dtOrigen"></p></div>
-          <button class="src-btn ghost" id="dtCerrar" type="button" aria-label="Cerrar">✕</button></div>
-        <div id="dtCuerpo" class="dt-cuerpo"></div>
-        <div class="dt-plan">
-          <h4 id="dtPlanLbl">Plan de acción</h4>
-          <textarea id="dtPlan" placeholder="Qué se va a hacer con este caso…"></textarea>
-          <div class="dt-plan3">
-            <label>Responsable<input id="dtResp" type="text" placeholder="Nombre y apellido"></label>
-            <label>Fecha<input id="dtFecha" type="date"></label>
-            <label>Estado<select id="dtEstado"><option>Abierto</option><option>Cerrado</option></select></label>
-          </div>
-        </div>
+    <div class="modal-bg" id="planModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+        <h3 id="pmTitle">Plan de acción</h3>
+        <p class="caso" id="pmCaso"></p>
+        <div id="pmCampos"></div>
         <div class="modal-btns">
-          <span class="modal-msg" id="dtMsg"></span>
-          <button class="src-btn" id="dtGuardar" type="button">Guardar plan</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cargar el RawData de Nissan (solo Calidad) -->
-    <div class="modal-bg" id="subirModal" hidden>
-      <div class="modal modal-ancho" role="dialog" aria-modal="true" aria-labelledby="sbTitulo">
-        <h3 id="sbTitulo">Cargar RawData de Nissan</h3>
-        <p class="caso">El Excel tal cual se descarga de la página de Nissan (Ventas o Servicios). Queda una copia en tu Drive.</p>
-        <label class="sb-zona" id="subirZona">
-          <input type="file" id="subirArchivo" accept=".xlsx" hidden>
-          <span class="sb-ico">⬆</span><b>Arrastrá el archivo acá</b><span>o hacé clic para elegirlo</span>
-        </label>
-        <div id="subirInfo"></div>
-        <div class="sb-campos" id="subirCampos" hidden>
-          <label>Área<select id="subirArea"><option value="ventas">Ventas</option><option value="posventa">Servicios (Posventa)</option></select></label>
-          <label>Mes<select id="subirMes"></select></label>
-        </div>
-        <div class="modal-btns">
-          <span class="modal-msg" id="subirMsg"></span>
-          <button class="src-btn ghost" id="subirCancel" type="button">Cancelar</button>
-          <button class="src-btn" id="subirOk" type="button" disabled>Guardar en Canvas</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Usuarios (solo Calidad) -->
-    <div class="modal-bg" id="usrModal" hidden>
-      <div class="modal modal-xl" role="dialog" aria-modal="true" aria-labelledby="usrTitulo">
-        <h3 id="usrTitulo">Usuarios</h3>
-        <p class="caso">Quién puede entrar y qué ve. <b>Calidad</b> sube Excel, carga planes y administra; el resto solo consulta.
-          El email tiene que ser la cuenta de Google con la que la persona inicia sesión.</p>
-        <div class="usr-scroll" id="usrTabla"></div>
-        <div class="modal-btns">
-          <button class="src-btn ghost" id="usrAgregar" type="button">+ Agregar usuario</button>
-          <span class="modal-msg" id="usrMsg"></span>
-          <button class="src-btn ghost" id="usrCerrar" type="button">Cerrar</button>
-          <button class="src-btn" id="usrGuardar" type="button">Guardar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Objetivos (solo Calidad) -->
-    <div class="modal-bg" id="objModal" hidden>
-      <div class="modal modal-ancho" role="dialog" aria-modal="true" aria-labelledby="objTitulo">
-        <h3 id="objTitulo">Objetivos · <span id="objMes"></span></h3>
-        <div class="sb-campos"><label>Área<select id="objArea"><option value="ventas">Ventas</option><option value="posventa">Posventa</option></select></label></div>
-        <div class="usr-scroll" id="objTabla"></div>
-        <label class="obj-fut"><input type="checkbox" id="objFuturo" checked> Usar también para los meses que se carguen después</label>
-        <div class="modal-btns">
-          <span class="modal-msg" id="objMsg"></span>
-          <button class="src-btn ghost" id="objCerrar" type="button">Cerrar</button>
-          <button class="src-btn" id="objGuardar" type="button">Guardar</button>
+          <span class="modal-msg" id="pmMsg"></span>
+          <button class="src-btn ghost" id="pmCancel" type="button">Cancelar</button>
+          <button class="src-btn" id="pmSave" type="button">Guardar</button>
         </div>
       </div>
     </div>
 
     <p class="foot">
-      <b>Canvas VOC:</b> los datos salen del RawData de Nissan que carga Calidad (⬆ Cargar Excel); cada archivo queda
-      de respaldo en Google Drive. Indicadores, alertas y verbalizaciones se calculan solos a partir de las encuestas.
-      <b>Training</b> se alimenta del Sheet de Academia. La línea vertical negra en cada barra marca el objetivo Nissan.
+      <b>Conexión en vivo:</b> pegá arriba la URL del Web App de Apps Script y elegí un intervalo — el dashboard se
+      actualiza solo desde tu Google Sheet, sin descargar nada. Lee las hojas <code>Ventas - Mensual</code>,
+      <code>Posventa - Mensual</code>, <code>Verbalizaciones</code> y las hojas <code>Plan de Accion</code> de cada sucursal.
+      La conexión en vivo funciona con el archivo abierto
+      localmente o alojado en GitHub Pages (no desde el link de Claude, que bloquea sitios externos por seguridad).
+      También podés cargar un <code>.xlsx</code> a mano.
+      <b>Training</b> se alimenta de un <b>segundo</b> Google Sheet (el de Academia): pegá su URL en “URL Training”.
+      La línea vertical negra en cada barra marca el objetivo Nissan.
       <button id="resetBtn" type="button">Borrar datos guardados en este navegador y recargar</button>
     </p>
   </div>
@@ -1185,7 +986,7 @@ const SUC_ORDER = ["Grupo Kyoto","Kyoto Resistencia","Kyoto Corrientes","Kyoto P
 // ── Tipos de pregunta por sigla ──
 const TIPOS = {
   ventas:   { VOC03:"llev", P02:"sino", P08:"sino", P09:"sino" },
-  posventa: { VOC03:"llev", VOC05:"sino", VOC07:"sino", P01:"sino3", P02:"sino", SOL:"sino" },
+  posventa: { VOC03:"llev", VOC05:"sino", VOC07:"sino", P01:"sino3", P02:"sino" },
 };
 // Datos Junio 2026 — [sigla, pregunta, obj, base, %1..%5, %DefLlev,%ProbLlev,%ProbNo,%DefNo, %Si,%No,%NoDecidido]
 // Sin datos embebidos: la página los pide al Sheet (y, con el acceso activo, solo después de iniciar sesión).
@@ -1241,7 +1042,7 @@ function buildDefault() {
 //  ESTADO
 // ================================================================
 const LS_KEY = "kyoto-voc-dash-v3";
-const LS_URL = "canvas-servidor-url";
+const LS_URL = "kyoto-voc-url";
 const LS_AUTO = "kyoto-voc-auto";
 const LS_TRAIN = "kyoto-voc-trainurl";
 
@@ -1250,7 +1051,7 @@ const LS_TRAIN = "kyoto-voc-trainurl";
 //  y subí el index.html a GitHub. Así CUALQUIERA que abra el link ve
 //  tus datos en vivo, sin tener que configurar nada.
 // ════════════════════════════════════════════════════════════════
-const DEFAULT_VOC_URL   = "https://script.google.com/macros/s/AKfycbw3ZCmTbpr3P8ZHF3xxQiPD4mY7iDFC9DREzH5e5AVrxnpyvsbbtsowNDSLgY0gw6mW6Q/exec";   // ← URL /exec del servidor Canvas (canvas-servidor.gs)
+const DEFAULT_VOC_URL   = "https://script.google.com/macros/s/AKfycbz2cH6-_GycT7JJ0kkreElbMYvC4GTYjpx6UpO8vUmh8GlNJlVroXHK47rI3XM65lvh/exec";   // Sheet VOC
 const DEFAULT_TRAIN_URL = "https://script.google.com/macros/s/AKfycbw9TNjw73dGvXwympV5gMtkZUNDxuGHm6mMeJU0h2q5OhZg4ZWm_vYc9WfgbRACn-Lwvw/exec";   // Sheet Academia
 let state = buildDefault();
 try {
@@ -1279,7 +1080,7 @@ function shortName(n) {
 
 function sucursales() {
   let set;
-  if (activeTab === "ventas" || activeTab === "posventa" || activeTab === "alertas" || activeTab === "planes") {
+  if (activeTab === "ventas" || activeTab === "posventa" || activeTab === "alertas") {
     // Solo las sucursales que tienen encuestas en esta área.
     // Así Sáenz Peña (que no registra ventas) no aparece en Ventas, pero sí en Posventa.
     // Es dinámico: si algún mes llega a tener encuestas, vuelve a aparecer sola.
@@ -1512,8 +1313,7 @@ function vPanel(tipo, items) {
   const list = (items && items.length)
     ? `<ul class="vlist">${items.map((it, i) => `<li>
         <span class="vnum ${pos ? "pos-n" : "neg-n"}">${i + 1}</span>
-        <span class="vbody">${it.cat ? `<span class="vcat">${esc2(it.cat)}</span>` : ""}<span class="vtxt">${esc2(it.txt)}${it.n ? ` <span class="vn">(${it.n})</span>` : ""}</span></span>
-        ${PUEDE_EDITAR && it.cod ? `<button type="button" class="vflip no-print" data-flip="${esc(it.cod)}" data-lado="${pos ? "fuerte" : "debil"}" title="Pasar a ${pos ? "puntos débiles" : "puntos fuertes"}">⇄</button>` : ""}
+        <span class="vbody">${it.cat ? `<span class="vcat">${it.cat}</span>` : ""}<span class="vtxt">${it.txt}</span></span>
       </li>`).join("")}</ul>`
     : `<div class="vempty">Sin verbalizaciones ${pos ? "positivas" : "negativas"} registradas este período.</div>`;
   return `<div class="vpanel"><div class="vpanel-h ${pos ? "pos" : "neg"}">${head}</div>${list}</div>`;
@@ -1844,377 +1644,12 @@ function planCard(e) {
 }
 
 // ================================================================
-//  CANVAS VOC — MOTOR: del RawData de Nissan a todo lo que muestra la página
-// ================================================================
-// Funciones puras (sin pantalla). Se usan en el navegador al subir el Excel y
-// cada vez que se muestra un mes: indicadores, alertas y verbalizaciones salen
-// TODOS de acá, calculados a partir de las encuestas.
-
-// Indicadores que muestra el tablero, en orden, con su nombre y objetivo inicial.
-// (Calidad puede cambiar los objetivos desde la página; esto es solo el punto de partida.)
-const CANVAS_INDICADORES = {
-  ventas: [
-    { s: "VOC01", nombre: "VOC01_Satisfacción con la experiencia recibida", obj: 91 },
-    { s: "VOC02", nombre: "VOC02_Recomendación", obj: 88 },
-    { s: "VOC03", nombre: "VOC03_Llevar vehículo al próximo servicio", obj: 84 },
-    { s: "VOC04", nombre: "VOC04_Expectativa con la experiencia de compra", obj: 86 },
-    { s: "P02", nombre: "P2 ¿Tuvo una conexión fluida entre búsqueda y atención?", obj: 97 },
-    { s: "P04", nombre: "P04 ¿Cómo califica los canales digitales?", obj: 78 },
-    { s: "P05", nombre: "P05 Instalaciones", obj: 87 },
-    { s: "P06", nombre: "P06 Qué tan satisfecho con el asesor/vendedor", obj: 95 },
-    { s: "P07", nombre: "P07 Qué tan satisfecho con el personal administrativo", obj: 93 },
-    { s: "P08", nombre: "P08 El asesor le ofreció la prueba de manejo", obj: 80 },
-    { s: "P09", nombre: "P09 ¿Realizó la prueba de manejo?", obj: 60 },
-    { s: "P10", nombre: "P10 ¿Cómo califica la experiencia de la prueba de manejo?", obj: 90 },
-    { s: "P11", nombre: "P11 ¿Cómo califica la negociación y financiamiento?", obj: 80 },
-    { s: "P12", nombre: "P12 ¿Cómo califica la entrega del vehículo?", obj: 90 },
-    { s: "SPCL", nombre: "Satisfacción General Close Loop", obj: 91.5 },
-  ],
-  posventa: [
-    { s: "VOC01", nombre: "VOC01_Satisfacción con la experiencia recibida", obj: 90 },
-    { s: "VOC02", nombre: "VOC02_Recomendación", obj: 88 },
-    { s: "VOC03", nombre: "VOC03_¿Qué tan probable es que lleve su vehículo al próximo servicio", obj: 84 },
-    { s: "VOC04", nombre: "VOC04_Expectativa con su experiencia del servicio realizado", obj: 80 },
-    { s: "VOC05", nombre: "VOC05_Servicio bien hecho en la primera?", obj: 96.5 },
-    { s: "VOC07", nombre: "VOC07_Continuar Contestando", obj: 0 },
-    { s: "P01", nombre: "P01_Intención de Recompra", obj: 88 },
-    { s: "P02", nombre: "P02 Realizó una cita para llevar su vehículo a servicio o reparación", obj: 95 },
-    { s: "P03", nombre: "P03 ¿Cómo calificaría su experiencia con el proceso de agendamiento?", obj: 86.5 },
-    { s: "P04", nombre: "P04 ¿Cómo calificaría su experiencia con el proceso de recepción de su vehículo?", obj: 86 },
-    { s: "P05", nombre: "P05 Qué tan satisfecho se encuentra con el asesor que lo atendió", obj: 95 },
-    { s: "P05.1", nombre: "P05.1 Conocimiento del asesor sobre vehículos eléctricos", obj: 0 },
-    { s: "P06", nombre: "P06 Cómo calificaría su experiencia durante el proceso de espera de su vehículo", obj: 82 },
-    { s: "P07", nombre: "P07 Cómo calificaría su experiencia con el proceso de entrega de su vehículo", obj: 86 },
-    { s: "SOL", nombre: "Estuvo satisfecho con la solución brindada", obj: 0 },
-    { s: "SCL", nombre: "Satisfacción Close Loop", obj: 0 },
-    { s: "SPCL", nombre: "Satisfacción General después del Close Loop", obj: 90.5 },
-  ],
-};
-
-const MESES_NOMBRE = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
-                      "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-
-function rdNorm(s) {
-  return String(s == null ? "" : s).replace(/\s+/g, " ").trim().toLowerCase()
-    .normalize("NFD").replace(/[̀-ͯ]/g, "");
-}
-function rdTxt(v) { return String(v == null ? "" : v).replace(/\s+/g, " ").trim(); }
-
-// "KYOTO ROQUE SAENZ PEÑA", "Kyoto Resistencia", "OARG062"… → nombre de sucursal del tablero
-function rdSucursal(t) {
-  const n = rdNorm(t);
-  if (/resist|oarg062/.test(n)) return "Kyoto Resistencia";
-  if (/corrient|oarg047/.test(n)) return "Kyoto Corrientes";
-  if (/posad|oarg079/.test(n)) return "Kyoto Posadas";
-  if (/pena|saenz|oarg093/.test(n)) return "Kyoto Sáenz Peña";
-  return rdTxt(t) || "Sin sucursal";
-}
-
-// "2026-08" → "Agosto 2026"
-function rdEtiquetaMes(periodo) {
-  const m = String(periodo || "").match(/^(\d{4})-(\d{2})$/);
-  return m ? MESES_NOMBRE[+m[2] - 1] + " " + m[1] : String(periodo || "");
-}
-
-// Fechas: el Excel trae "29-07-2026", "2026-07-29" o el número de serie de Excel
-function rdFecha(v) {
-  if (v == null || v === "") return "";
-  if (v instanceof Date) return String(v.getDate()).padStart(2, "0") + "/" + String(v.getMonth() + 1).padStart(2, "0") + "/" + v.getFullYear();
-  const s = rdTxt(v);
-  let m;
-  if ((m = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/))) return m[1].padStart(2, "0") + "/" + m[2].padStart(2, "0") + "/" + m[3];
-  if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return m[3] + "/" + m[2] + "/" + m[1];
-  if (/^\d{5}(\.\d+)?$/.test(s)) {                       // serie de Excel (base 30/12/1899)
-    const d = new Date(Date.UTC(1899, 11, 30) + Math.floor(+s) * 86400000);
-    return String(d.getUTCDate()).padStart(2, "0") + "/" + String(d.getUTCMonth() + 1).padStart(2, "0") + "/" + d.getUTCFullYear();
-  }
-  return s;
-}
-
-// ----------------------------------------------------------------
-//  1. LEER EL RAWDATA
-// ----------------------------------------------------------------
-// rows = matriz de celdas tal como sale del Excel. Devuelve los datos normalizados
-// o lanza un Error con un mensaje claro para mostrarle a Calidad.
-function procesarRawData(rows, archivo) {
-  if (!rows || !rows.length) throw new Error("El archivo está vacío.");
-  // Nissan a veces pone filas de título arriba: se busca la fila con "Periodo" y "Dealer"
-  let hi = -1;
-  for (let i = 0; i < Math.min(rows.length, 40); i++) {
-    const c = (rows[i] || []).map(rdNorm);
-    if (c.includes("periodo") && c.includes("dealer")) { hi = i; break; }
-  }
-  if (hi < 0) throw new Error('No parece un RawData de Nissan: no encuentro la fila con "Periodo" y "Dealer".');
-  const H = rows[hi].map(rdTxt);
-  const N = H.map(rdNorm);
-  const col = re => N.findIndex(h => re.test(h));
-
-  // Área: por el título del archivo; si no, por las columnas propias de cada área
-  const titulo = rows.slice(0, hi).map(r => (r || []).map(rdTxt).join(" ")).join(" ");
-  const tn = rdNorm(titulo + " " + (archivo || ""));
-  let area = /servicio|posventa/.test(tn) ? "posventa" : (/\bventas?\b/.test(tn) ? "ventas" : null);
-  if (!area) area = (col(/^fecha de ingreso/) >= 0 || col(/tecnico/) >= 0) ? "posventa" : "ventas";
-
-  const ix = {
-    per: col(/^periodo$/), id: col(/^id cliente$/), dealer: col(/^dealer$/),
-    cli: col(/^nombre completo del cliente/), fec: col(/^fecha de entrega/), fecIng: col(/^fecha de ingreso/),
-    mod: col(/^modelo$/), vin: col(/^vin$/), aut: col(/^autoriza/), medio: col(/^medio por/),
-    ases: col(/^(apv nombre completo|nombre completo aps)/), tec: col(/^nombre completo del tecnico/),
-    tipo: col(/^tipo de (venta|servicio)/), orden: col(/^numero de orden|^factura$/),
-    com: col(/^voc01\.1_comentario/), cod: col(/^voc01\.1_codificacion/),
-    causa: col(/^causa raiz/), inter: col(/^interaccion con el cliente/),
-    prev: col(/^accion preventiva/), corr: col(/^accion correctiva/),
-  };
-  if (ix.cli < 0) throw new Error('No encuentro la columna "Nombre Completo del Cliente".');
-  if (ix.dealer < 0) throw new Error('No encuentro la columna "Dealer".');
-
-  // Preguntas: VOC01, P05, P05.1, CL1, CL2… (sin los "_1 ¿Por qué?", "_Comentario", etc.)
-  const preguntas = {}, colPreg = {}, colPorque = {};
-  H.forEach((h, i) => {
-    const m = h.match(/^(VOC\d+(?:\.\d+)?|P\d+(?:\.\d+)?|CL\d+(?:\.\d+)?)\s*-?\s+(.*)$/i);
-    if (m && h.indexOf("_") < 0) { const s = m[1].toUpperCase(); preguntas[s] = rdTxt(m[2]); colPreg[s] = i; return; }
-    const p = h.match(/^(VOC\d+|P\d+(?:\.\d+)?)[_.]1\s*[¿?]/i);    // P05_1 ¿Por qué?
-    if (p) colPorque[p[1].toUpperCase()] = i;
-  });
-  if (!colPreg.VOC01) throw new Error("No encuentro la pregunta VOC01 en el archivo.");
-
-  const g = (r, i) => (i == null || i < 0) ? "" : rdTxt(r[i]);
-  const encuestas = [], periodos = {};
-  for (let r = hi + 1; r < rows.length; r++) {
-    const fila = rows[r] || [];
-    const cli = g(fila, ix.cli);
-    if (!cli || /^\d+$/.test(cli)) continue;               // vacía o la fila "Base" (conteos)
-    const resp = {}, porque = {};
-    for (const s in colPreg) { const v = g(fila, colPreg[s]); if (v !== "") resp[s] = v; }
-    for (const s in colPorque) { const v = g(fila, colPorque[s]); if (v !== "") porque[s] = v; }
-    const per = g(fila, ix.per);
-    if (per) periodos[per] = (periodos[per] || 0) + 1;
-    const dealer = g(fila, ix.dealer);
-    encuestas.push({
-      id: g(fila, ix.id), per, dealer, suc: rdSucursal(dealer), cli,
-      fec: rdFecha(ix.fec >= 0 ? fila[ix.fec] : (ix.fecIng >= 0 ? fila[ix.fecIng] : "")),
-      fecIng: ix.fecIng >= 0 ? rdFecha(fila[ix.fecIng]) : "",
-      mod: g(fila, ix.mod), vin: g(fila, ix.vin), aut: g(fila, ix.aut), medio: g(fila, ix.medio),
-      ases: g(fila, ix.ases), tec: g(fila, ix.tec), tipo: g(fila, ix.tipo), orden: g(fila, ix.orden),
-      r: resp, w: porque, com: g(fila, ix.com), cod: g(fila, ix.cod),
-      causa: g(fila, ix.causa), inter: g(fila, ix.inter), prev: g(fila, ix.prev), corr: g(fila, ix.corr),
-    });
-  }
-  if (!encuestas.length) throw new Error("No encontré encuestas debajo de los encabezados.");
-
-  // Mes: el Periodo más repetido ("202608" → "2026-08"); si no, el título ("AGOSTO/2026")
-  let periodo = "";
-  const top = Object.entries(periodos).sort((a, b) => b[1] - a[1])[0];
-  if (top && /^\d{6}$/.test(top[0])) periodo = top[0].slice(0, 4) + "-" + top[0].slice(4);
-  if (!periodo) {
-    const m = rdNorm(titulo).match(/(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)\s*\/?\s*(\d{4})/);
-    if (m) {
-      const idx = MESES_NOMBRE.map(rdNorm).indexOf(m[1] === "setiembre" ? "septiembre" : m[1]);
-      periodo = m[2] + "-" + String(idx + 1).padStart(2, "0");
-    }
-  }
-  return { area, periodo, etiqueta: rdEtiquetaMes(periodo), archivo: archivo || "", titulo: rdTxt(titulo),
-           periodosEncontrados: periodos, preguntas, encuestas };
-}
-
-// ----------------------------------------------------------------
-//  2. INDICADORES
-// ----------------------------------------------------------------
-// Respuesta de una encuesta para un indicador. Los de Close Loop se derivan:
-//   SPCL = la nota VOC01, reemplazada por la nota CL2 si el cliente tuvo Close Loop
-//   SOL  = CL1 (¿satisfecho con la solución? Sí/No)     SCL = la nota CL2
-function rdValor(e, s) {
-  const r = e.r || {};
-  if (s === "SPCL") return (r.CL2 != null && r.CL2 !== "") ? r.CL2 : (r.VOC01 != null ? r.VOC01 : "");
-  if (s === "SOL") return r.CL1 != null ? r.CL1 : "";
-  if (s === "SCL") return r.CL2 != null ? r.CL2 : "";
-  return r[s] != null ? r[s] : "";
-}
-
-// Tipo de respuesta: nota 1-5, escala "lo llevaría", Sí/No o Sí/No/No decidido
-function rdClase(v) {
-  const t = rdNorm(v);
-  if (/^[1-5]([.,]0+)?$/.test(t)) return "n" + Math.round(parseFloat(t.replace(",", ".")));
-  if (t.indexOf("llevar") >= 0 || t.indexOf("regresar") >= 0) {
-    const def = t.indexOf("definitivamente") === 0, no = /\bno\b/.test(t);
-    return def ? (no ? "dn" : "dk") : (no ? "dm" : "dl");
-  }
-  if (t === "si") return "si";
-  if (t === "no") return "no";
-  if (t.indexOf("no lo tengo decidido") >= 0) return "nd";
-  return "";                                               // texto libre / multiselección
-}
-
-const pct1 = (n, base) => base > 0 ? Math.round(n / base * 1000) / 10 : 0;
-
-// Devuelve la fila del indicador en el formato que ya usa la página:
-// [sigla, nombre, objetivo, base, %1..%5, %DefLlev, %ProbLlev, %ProbNo, %DefNo, %Sí, %No, %NoDecidido]
-function rdFilaIndicador(enc, ind) {
-  const c = { n1: 0, n2: 0, n3: 0, n4: 0, n5: 0, dk: 0, dl: 0, dm: 0, dn: 0, si: 0, no: 0, nd: 0 };
-  let base = 0;
-  enc.forEach(e => {
-    const k = rdClase(rdValor(e, ind.s));
-    if (!k) return;
-    c[k]++; base++;
-  });
-  const p = k => pct1(c[k], base);
-  return [ind.s, ind.nombre, ind.obj, base, p("n1"), p("n2"), p("n3"), p("n4"), p("n5"),
-          p("dk"), p("dl"), p("dm"), p("dn"), p("si"), p("no"), p("nd")];
-}
-
-// { "Kyoto Resistencia": [filas…], …, "Grupo Kyoto": [filas…] }
-// El total del Grupo se arma solo si quien mira ve todas las sucursales.
-function calcularIndicadores(encuestas, lista, conGrupo) {
-  const porSuc = {};
-  encuestas.forEach(e => { (porSuc[e.suc] = porSuc[e.suc] || []).push(e); });
-  const out = {};
-  Object.keys(porSuc).forEach(suc => { out[suc] = lista.map(ind => rdFilaIndicador(porSuc[suc], ind)); });
-  if (conGrupo && encuestas.length) out["Grupo Kyoto"] = lista.map(ind => rdFilaIndicador(encuestas, ind));
-  return out;
-}
-
-// ----------------------------------------------------------------
-//  3. ALERTAS
-// ----------------------------------------------------------------
-// ¿Es "mala" esta respuesta? Nota 4 o menos, No, No decidido, o cualquier
-// "lo llevaría" que no sea "Definitivamente lo llevaría".
-function rdEsMala(v) {
-  const k = rdClase(v);
-  return k === "n1" || k === "n2" || k === "n3" || k === "n4" || k === "no" || k === "nd" ||
-         k === "dl" || k === "dm" || k === "dn";
-}
-
-// Preguntas que no se evalúan (control o multiselección)
-const RD_NO_EVALUAR = /desea continuar|estamos interesados|que medios utilizo|cuales de las siguientes|cual fue la razon|cuales son las razones/;
-
-// Lista de clientes con alguna respuesta mala, en el formato que usan los
-// gráficos para el cartelito con nombres (dealer, cli, r:[{s, p, v, w}]…)
-function alertasPorCliente(datos) {
-  const out = [];
-  (datos.encuestas || []).forEach(e => {
-    const malas = [];
-    Object.keys(e.r || {}).forEach(s => {
-      const txt = (datos.preguntas || {})[s] || s;
-      if (RD_NO_EVALUAR.test(rdNorm(txt))) return;
-      if (/^CL/.test(s)) return;                            // el Close Loop se ve en el detalle, no como alerta
-      const v = e.r[s];
-      if (rdEsMala(v)) malas.push({ s, p: txt, v: rdTxt(v), w: (e.w || {})[s] || "" });
-    });
-    // el gauge de SPCL también muestra a quién corresponde cada segmento
-    const sp = rdValor(e, "SPCL");
-    if (sp !== "" && rdEsMala(sp)) malas.push({ s: "SPCL", p: "Satisfacción después del Close Loop", v: rdTxt(sp), w: "" });
-    if (!malas.length) return;
-    out.push({ per: e.per, dealer: e.dealer, suc: e.suc, cli: e.cli, fec: e.fec, com: e.com,
-               inter: e.inter, prev: e.prev, corr: e.corr, r: malas, ref: e });
-  });
-  return out;
-}
-
-function rdClave(area, periodo, cli, sigla) {
-  return [area, periodo, cli, sigla].map(x => rdNorm(x)).join("|");
-}
-
-// Filas de la tabla de Alertas:
-//   VOC       → VOC01 con nota 4 o menos (siempre)
-//   Indicador → el resto de las respuestas malas, solo de indicadores que la
-//               sucursal NO cumplió ese mes
-//   Interna   → las del Sheet de Llamados de acompañamiento
-function filasAlertas(area, periodo, datos, indicadoresPorSuc, internas) {
-  const bajo = {};
-  Object.keys(indicadoresPorSuc || {}).forEach(suc => {
-    indicadoresPorSuc[suc].forEach(m => { if (m.obj > 0 && m.base > 0 && m.fav < m.obj) bajo[suc + "|" + m.s] = true; });
-  });
-  const filas = [];
-  alertasPorCliente(datos).forEach(c => {
-    const verb = c.com ? '"' + c.com + '"' : "";
-    c.r.forEach(x => {
-      if (x.s === "SPCL") return;
-      const esVoc = x.s === "VOC01";
-      if (!esVoc && !bajo[c.suc + "|" + x.s]) return;
-      filas.push({
-        tipo: esVoc ? "VOC" : "Indicador", s: x.s,
-        org: x.s + " · " + x.p + "  →  " + x.v,
-        suc: c.suc, cli: c.cli, fec: c.fec,
-        verb: [verb, x.w].filter(Boolean).join("  |  "),
-        clave: rdClave(area, periodo, c.cli, x.s), enc: c.ref, resp: x,
-      });
-    });
-  });
-  (internas || []).forEach(a => {
-    filas.push({
-      tipo: "Interna", s: "INTERNA", org: "Alerta interna", suc: a.suc, cli: a.cli, fec: a.fec,
-      verb: a.obs || "", clave: rdClave(area, "interna|" + a.suc + "|" + (a.fec || ""), a.cli, "interna"), interna: a,
-    });
-  });
-  return filas;
-}
-
-// ----------------------------------------------------------------
-//  4. VERBALIZACIONES (desde la codificación de Nissan)
-// ----------------------------------------------------------------
-// Nissan codifica cada comentario como "Categoría - Detalle"
-// (ej.: "Atención - Buena atención en general"). Se separa en puntos fuertes y
-// débiles por las palabras del detalle; si no alcanza, por la nota VOC01 del
-// cliente. Calidad puede corregir cualquier código desde la página (clasif).
-// Primero lo claramente negativo, después lo claramente positivo; si no hay
-// indicios, decide la nota VOC01 del cliente. (Se evalúa sin tildes ni mayúsculas.)
-// Ojo: "sin" y "no" solos NO alcanzan: "Buena atención (sin especificar)" o
-// "No hubo problemas" son positivos.
-const RD_NEG = /(insatisf|\bmal[ao]?s?\b|\bfalta|\bfalto|\bno ejecut|\bno solucion|\bno permit|no hubo cobertura|\bsucio|averia|\brobo|\bdanos?\b|\bdemora|\btard|costo alto|precio alto|\bcaro\b|incomplet|poco equipo|\breclamo|honestidad|problemas? (encontrad|con\b|despues de retirar)|\bdeficien|\berror|\bincumpl|desorden|\blent[oa]|dificultad|desprolij|no cumpl|no respet|no contest|no llam)/;
-const RD_POS = /(\bbuen[ao]?s?\b|\bbien\b|satisf|rapidez|\brapid|\bagil|cordial|\bcumpl(en|ieron|imiento)\b|\bconforme|excelente|amabil|\bpasan\b|explicac|explicaron|resuelven|no hubo problemas|\blimpi[oa]\b|sin manchas|costo bajo|precio bajo|disponibilidad|informaciones precisas|realizan contacto|recomienda|buenas condiciones)/;
-
-function polaridadCodigo(cod, nota, clasif) {
-  const k = rdNorm(cod);
-  if (clasif && clasif[k]) return clasif[k];                // corregido a mano por Calidad
-  if (RD_NEG.test(k)) return "debil";
-  if (RD_POS.test(k)) return "fuerte";
-  const n = parseFloat(String(nota).replace(",", "."));
-  return n >= 5 ? "fuerte" : "debil";
-}
-
-// "ATENCIÓN" / "atención" → "Atención" (así no cuentan como categorías distintas)
-function rdOracion(s) {
-  const t = rdTxt(s);
-  if (!t) return t;
-  const base = t === t.toUpperCase() ? t.toLowerCase() : t;   // solo se toca si viene TODO en mayúsculas
-  return base.charAt(0).toUpperCase() + base.slice(1);
-}
-
-// { "Kyoto Resistencia": { fuertes:[{cat, txt, n, cod}], debiles:[…] }, … }
-// Cada ítem lleva cuántos clientes lo mencionaron; se ordenan de más a menos.
-function calcularVerbalizaciones(encuestas, clasif) {
-  const acc = {};
-  (encuestas || []).forEach(e => {
-    const bruto = rdTxt(e.cod);
-    if (!bruto) return;
-    bruto.split(/\s*[;|]\s*|\n/).forEach(cod => {
-      const c = rdTxt(cod);
-      if (!c || /^no verbalizado/i.test(c) || /^otros?$/i.test(c)) return;
-      const partes = c.split(/\s+[-–—]\s+/);                 // "Categoría - Detalle" (con guion corto o largo)
-      const cat = partes.length > 1 ? rdOracion(partes[0]) : "General";
-      const txt = rdOracion(partes.length > 1 ? partes.slice(1).join(" - ") : c);
-      const lado = polaridadCodigo(c, (e.r || {}).VOC01, clasif) === "fuerte" ? "fuertes" : "debiles";
-      const s = acc[e.suc] = acc[e.suc] || { fuertes: {}, debiles: {} };
-      const key = rdNorm(c);
-      const it = s[lado][key] = s[lado][key] || { cat, txt, n: 0, cod: key };
-      it.n++;
-    });
-  });
-  const out = {};
-  Object.keys(acc).forEach(suc => {
-    const orden = o => Object.values(o).sort((a, b) => b.n - a.n || a.txt.localeCompare(b.txt));
-    out[suc] = { fuertes: orden(acc[suc].fuertes), debiles: orden(acc[suc].debiles) };
-  });
-  return out;
-}
-
-// ================================================================
 //  ACCESO POR USUARIO (inicio de sesión con Google)
 // ================================================================
 // El Apps Script decide qué datos le tocan a cada persona: esta página solo
 // muestra lo que recibe. Si el acceso está abierto (sin ID de cliente en el
 // script), todo funciona como antes, sin pantalla de ingreso.
-const LS_SES = "canvas-sesion";
+const LS_SES = "kyoto-voc-sesion";
 let SESION = null;        // pase firmado que entrega el Apps Script (dura 12 h)
 let USUARIO = null;       // { email, nombre, cargo, areas, sucursales, edita, training } — null = acceso abierto
 let AUTH_ACTIVA = false;
@@ -2244,9 +1679,9 @@ function urlVOC(base, extra) {
 
 // deja la pantalla sin ningún dato (para que nada quede visible tras salir o vencer la sesión)
 function vaciarDatos() {
-  state = buildDefault(); current = null;
-  MES_DATOS = null; MES_ACTUAL = ""; PLANES_MES = {}; MESES = [];
+  state = buildDefault(); SOURCES = {}; current = null;
   ALERTAS = { ventas: [], posventa: [] }; ALERTAS_FILAS = { ventas: [], posventa: [] };
+  PLANES_ACC = { ventas: [], posventa: [] }; PLANES_RAW = {}; PLANES = {};
   BASE = { voc: [], interna: [], indicador: [], planes: [] }; VISIBLES = { voc: [], interna: [], indicador: [], planes: [] };
   poblarMeses([]);
   renderPills(); render();
@@ -2286,7 +1721,6 @@ function prepararBotonGoogle() {
 function respuestaAcceso(d) {
   if (!d || d.ok !== false || !d.error) return false;
   if (d.clientId) CLIENT_ID = d.clientId;
-  if (d.error === "config") { AUTH_ACTIVA = true; limpiarSesion(); vaciarDatos(); mostrarLogin(d.msg || "Falta activar el ingreso con Google."); return true; }
   if (d.error === "login" || d.error === "sesion" || d.error === "sin_acceso" || d.error === "credencial") {
     AUTH_ACTIVA = true;
     try { localStorage.setItem("kyoto-voc-acc", "1"); } catch (e) {}
@@ -2310,7 +1744,7 @@ async function alCredencial(resp) {
     if (d && d.ok && d.sesion) {
       guardarSesion(d.sesion, d.exp, d.usuario);
       ocultarLogin();
-      await cargarTodo(true);
+      await fetchLive(true);
       return;
     }
     if (!respuestaAcceso(d)) $("loginMsg").textContent = "✗ No se pudo iniciar sesión.";
@@ -2333,9 +1767,6 @@ function aplicarUsuario() {
   if ((activeTab === "ventas" || activeTab === "posventa") && !tiene(activeTab)) activeTab = primera;
   if (activeTab === "training" && u && !u.training) activeTab = primera;
   if (!tiene(ultimaArea)) ultimaArea = primera;
-  const esCalidad = !!(u && u.calidad);
-  ["subirBtn", "usrBtn", "objBtn"].forEach(id => { $(id).hidden = !esCalidad; });
-  ["xlsBtn", "pdfBtn"].forEach(id => { $(id).hidden = !u; });
   $("userChip").hidden = !u;
   if (u) {
     $("userTxt").textContent = (u.nombre && u.nombre !== u.email ? u.nombre : u.email) + (u.cargo ? " · " + u.cargo : "");
@@ -2405,33 +1836,36 @@ function alertasActuales() {
 // ================================================================
 // Las cuatro vistas usan la misma máquina de tabla: columnas propias,
 // fila de filtros estilo Sheets y, donde corresponde, celdas editables.
-// Columnas posibles. "html" arma la celda; "val" es lo que usan los filtros.
 const COL_DEF = {
-  org:    { t: "Origen",           f: "sel", cls: "org" },
-  suc:    { t: "Sucursal",         f: "sel" },
-  cli:    { t: "Cliente",          f: "txt", cls: "cli",
-            html: f => `${esc2(f.cli)}<span class="al-sub">${esc2(f.suc)}${f.fec ? " · " + esc2(f.fec) : ""}</span>` },
-  verb:   { t: "Verbalización",    f: "txt", cls: "verb" },
-  plan:   { t: "Plan de acción",   f: "est", cls: "plan", html: f => celdaPlan(f) },
-  resp:   { t: "Responsable",      f: "sel" },
-  fecPlan:{ t: "Fecha",            f: "txt", cls: "fec" },
-  estado: { t: "Estado",           f: "sel", val: f => f.estado || "Sin plan", html: f => chipEstado(f.estado) },
+  org:   { t: "Origen",                     f: "sel", cls: "org" },
+  suc:   { t: "Sucursal",                   f: "sel" },
+  cli:   { t: "Cliente",                    f: "txt", cls: "cli" },
+  fec:   { t: "Fecha",                      f: "txt", cls: "fec" },
+  verb:  { t: "Verbalización",              f: "txt", cls: "verb" },
+  inter: { t: "Interacción con el Cliente", f: "est" },
+  prev:  { t: "Acción Preventiva",          f: "est" },
+  corr:  { t: "Acción Correctiva",          f: "est" },
+  plan:  { t: "Plan de acción",             f: "txt" },
+  resp:  { t: "Responsable",                f: "sel" },
+  herr:  { t: "Herramienta SERNISSAN",      f: "sel" },
+  obs:   { t: "Observación",                f: "txt" },
 };
 
-// Alertas: las tres vistas muestran lo mismo (Origen, Cliente, Verbalización,
-// Plan de acción). Planes de acción: el seguimiento de todos los casos.
+// vista → columnas, qué se puede editar y si permite agregar filas
 const VISTAS = {
-  voc:       { cols: ["org", "cli", "verb", "plan"], titulo: "VOC 01",
-               hint: "clientes que calificaron 4 o menos la satisfacción general" },
-  interna:   { cols: ["org", "cli", "verb", "plan"], titulo: "Alertas internas",
-               hint: "las que figuran con Alerta Interna = SI en el Sheet de Llamados de acompañamiento" },
-  indicador: { cols: ["org", "cli", "verb", "plan"], titulo: "Indicadores",
-               hint: "respuestas de 4 o menos / No en indicadores que la sucursal no cumplió" },
-  planes:    { cols: ["org", "cli", "plan", "resp", "fecPlan", "estado"], titulo: "Planes de acción",
-               hint: "seguimiento de todas las alertas del mes" },
+  voc:       { cols: ["org","suc","cli","fec","verb","inter","prev","corr"], edit: null,     alta: false,
+               titulo: "VOC 01",     hint: "clientes que calificaron 4 o menos la satisfacción general" },
+  interna:   { cols: ["org","suc","cli","fec","verb"], edit: "manual", alta: true,
+               titulo: "Alertas internas", hint: "cargadas en el Sheet de Llamados de acompañamiento" },
+  indicador: { cols: ["org","suc","cli","fec","verb"], edit: null,     alta: false,
+               titulo: "Indicadores",  hint: "el resto de las preguntas con respuesta 4 o menos / No" },
+  planes:    { cols: ["org","plan","resp","fec","herr","obs"], edit: "todo", alta: true,
+               titulo: "Planes de acción", hint: "se carga a mano — se guarda en el Sheet" },
 };
+const CAMPOS_EDIT = { interna: ["org","suc","cli","fec","verb"], planes: ["org","plan","resp","fec","herr","obs"] };
 
-let ALERTAS_FILAS = { ventas: [], posventa: [] };   // filas de la solapa Alertas (las arma el motor)
+let ALERTAS_FILAS = { ventas: [], posventa: [] };   // hojas "Alertas - …"
+let PLANES_ACC    = { ventas: [], posventa: [] };   // hojas "Planes de accion …"
 let tipoAlerta = "voc";                             // voc | interna | indicador
 let filtros = { voc: {}, interna: {}, indicador: {}, planes: {} };
 let BASE = { voc: [], interna: [], indicador: [], planes: [] };
@@ -2441,18 +1875,6 @@ let ctxTabla = "";                                  // para reiniciar filtros al
 function esc2(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function esc(s) { return String(s || "").replace(/"/g, "&quot;"); }
 function sigOrg(org) { return String(org || "").split(" ·")[0].trim(); }
-function valCol(f, k) { const c = COL_DEF[k]; return c.val ? c.val(f) : (f[k] || ""); }
-function fechaCorta(iso) { const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}/${m[2]}/${m[1]}` : (iso || ""); }
-
-function chipEstado(e) {
-  if (!e) return `<span class="est est-no">Sin plan</span>`;
-  return `<span class="est ${e === "Cerrado" ? "est-ok" : "est-ab"}">${esc2(e)}</span>`;
-}
-function celdaPlan(f) {
-  if (!f.plan) return `<span class="al-vacio">Sin plan cargado</span>`;
-  const extra = [f.resp && "👤 " + esc2(f.resp), f.fecPlan && "📅 " + esc2(fechaCorta(f.fecPlan))].filter(Boolean).join(" · ");
-  return `<div class="pl-txt">${esc2(f.plan)}</div><div class="pl-meta">${chipEstado(f.estado)}${extra ? " " + extra : ""}</div>`;
-}
 
 // Orden: todas las VOC02 juntas, después las P03, etc.
 function ordOrg(org) {
@@ -2473,25 +1895,26 @@ function cmpFilaPlan(a, b) {
   return String(a.cli || "") < String(b.cli || "") ? -1 : 1;
 }
 
-// ---- Filtros de columna (estilo Sheets) ----
+// ---- Filtros de columna ----
 function filtroCampo(vista, k, filas) {
   const c = COL_DEF[k], v = filtros[vista][k] || "";
   const act = v ? " act" : "";
   if (c.f === "sel") {
     const vistos = new Map();
     filas.forEach(f => {
-      const val = k === "org" ? sigOrg(f.org) : String(valCol(f, k)).trim();
-      if (val && !vistos.has(val)) vistos.set(val, k === "org" ? String(f.org).slice(0, 46) : val);
+      const val = k === "org" ? sigOrg(f.org) : String(f[k] || "").trim();
+      if (!val) return;
+      if (!vistos.has(val)) vistos.set(val, k === "org" ? String(f.org).slice(0, 46) : val);
     });
     const ops = [...vistos.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1)
       .map(([val, lbl]) => `<option value="${esc(val)}"${val === v ? " selected" : ""}>${esc2(lbl)}</option>`).join("");
-    const vacios = filas.some(f => !String(valCol(f, k)).trim())
+    const vacios = filas.some(f => !String(f[k] || "").trim())
       ? `<option value="__vacio__"${v === "__vacio__" ? " selected" : ""}>(vacío)</option>` : "";
     return `<select class="alf${act}" data-k="${k}"><option value="">Todos</option>${ops}${vacios}</select>`;
   }
   if (c.f === "est") {
     const o = (val, lbl) => `<option value="${val}"${val === v ? " selected" : ""}>${lbl}</option>`;
-    return `<select class="alf${act}" data-k="${k}">${o("", "Todos")}${o("__con__", "Con plan")}${o("__sin__", "Sin plan")}</select>`;
+    return `<select class="alf${act}" data-k="${k}">${o("", "Todos")}${o("__con__", "Cargado")}${o("__sin__", "Sin cargar")}</select>`;
   }
   return `<input class="alf${act}" data-k="${k}" type="text" value="${esc(v)}" placeholder="Buscar…">`;
 }
@@ -2500,31 +1923,34 @@ function pasaFiltros(vista, f) {
   return VISTAS[vista].cols.every(k => {
     const q = filtros[vista][k];
     if (!q) return true;
-    const val = String(valCol(f, k)).trim();
+    const val = String(f[k] || "").trim();
     if (q === "__vacio__") return !val;
     if (q === "__con__")   return !!val;
     if (q === "__sin__")   return !val;
     if (COL_DEF[k].f === "sel") return (k === "org" ? sigOrg(f.org) : val) === q;
-    const extra = k === "cli" ? " " + (f.suc || "") : "";
-    return (val + extra).toLowerCase().includes(q.toLowerCase());
+    return val.toLowerCase().includes(q.toLowerCase());
   });
 }
 
 // ---- Armado de la tabla ----
 function tablaHTML(vista, elId) {
   const V = VISTAS[vista], filas = BASE[vista];
-  const info = PUEDE_EDITAR
-    ? "tocá el <b>✎</b> de cada fila para ver el caso completo y cargar el plan de acción"
-    : "tocá el <b>👁</b> de cada fila para ver el caso completo";
+  const editMes = MES_LIVE && PUEDE_EDITAR;
+  const puedeAlta = V.alta && editMes;
+  const info = !MES_LIVE ? `<b>${esc2(mesBonito(state.periodo || ""))}</b> — mes cerrado, solo lectura`
+    : !PUEDE_EDITAR ? "tu usuario es de consulta: podés ver y filtrar, no editar"
+    : (V.edit ? "tocá cualquier celda con <b>+</b> o <b>✎</b> para completarla — se guarda en el Sheet"
+              : "se arma solo desde el Sheet — para cargar planes usá la solapa <b>Planes de acción</b>");
   return `
     <div class="al-bar">
-      <div class="al-info"><b id="alCount_${vista}">${filas.length}</b> ${filas.length === 1 ? "caso" : "casos"} · ${info}</div>
+      <div class="al-info"><b id="alCount_${vista}">${filas.length}</b> ${filas.length === 1 ? "fila" : "filas"} · ${info}</div>
       <button class="al-btn" type="button" data-lim="${vista}" title="Quitar todos los filtros">✕ Filtros</button>
+      ${puedeAlta ? `<button class="al-btn prim" type="button" data-alta="${vista}">+ Agregar fila</button>` : ""}
     </div>
     <div class="al-scroll"><table class="al-tab">
       <thead>
-        <tr>${V.cols.map(k => `<th>${COL_DEF[k].t}</th>`).join("")}<th class="no-print"></th></tr>
-        <tr class="filtros no-print">${V.cols.map(k => `<th>${filtroCampo(vista, k, filas)}</th>`).join("")}<th></th></tr>
+        <tr>${V.cols.map(k => `<th>${COL_DEF[k].t}</th>`).join("")}${V.edit && editMes ? "<th></th>" : ""}</tr>
+        <tr class="filtros">${V.cols.map(k => `<th>${filtroCampo(vista, k, filas)}</th>`).join("")}${V.edit && editMes ? "<th></th>" : ""}</tr>
       </thead>
       <tbody id="${elId}"></tbody>
     </table></div>`;
@@ -2536,23 +1962,33 @@ function pintarFilas(vista) {
   const V = VISTAS[vista];
   const filas = BASE[vista].filter(f => pasaFiltros(vista, f));
   VISIBLES[vista] = filas;
+  const editMes = MES_LIVE && PUEDE_EDITAR;
+  const nCols = V.cols.length + (V.edit && editMes ? 1 : 0);
+
   if (!filas.length) {
-    body.innerHTML = `<tr><td colspan="${V.cols.length + 1}" style="text-align:center;padding:26px;color:var(--ink-muted)">
-      ${BASE[vista].length ? "Ningún caso con esos filtros." : "No hay casos acá este mes."}</td></tr>`;
+    body.innerHTML = `<tr><td colspan="${nCols}" style="text-align:center;padding:26px;color:var(--ink-muted)">
+      ${BASE[vista].length ? "Ningún caso con esos filtros." : "Nada cargado acá todavía."}</td></tr>`;
   } else {
-    body.innerHTML = filas.map((f, i) => `<tr class="${f.tipo === "Interna" ? "interna" : ""}">
-        ${V.cols.map(k => { const c = COL_DEF[k];
-          return `<td class="${c.cls || ""}">${c.html ? c.html(f) : (f[k] ? esc2(f[k]) : "—")}</td>`; }).join("")}
-        <td class="acc no-print"><button class="al-add" type="button" data-ver="${vista}" data-i="${i}"
-          title="${PUEDE_EDITAR ? "Ver el caso y cargar el plan" : "Ver el caso completo"}">${PUEDE_EDITAR ? "✎" : "👁"}</button></td>
-      </tr>`).join("");
+    body.innerHTML = filas.map((f, i) => {
+      const editable = editMes && (V.edit === "todo" || (V.edit === "manual" && f.manual));
+      const celda = k => {
+        const v = f[k] || "";
+        const cls = COL_DEF[k].cls ? COL_DEF[k].cls + " " : "";
+        if (!editable) return `<td class="${cls}">${v ? esc2(v) : (k === "fec" || k === "verb" ? "—" : "")}</td>`;
+        return `<td class="${cls}ed ${v ? "" : "novacio"}" data-v="${vista}" data-i="${i}" data-campo="${k}"
+          title="${v ? "Editar" : "Agregar"}">${v ? esc2(v) : '<span class="mas">+</span>'}</td>`;
+      };
+      const cargado = V.cols.some(k => f[k]);
+      return `<tr class="${/^alerta interna/i.test(f.org || "") ? "interna" : ""}${f.manual ? " manual" : ""}">
+        ${V.cols.map(celda).join("")}
+        ${V.edit && editMes ? `<td class="acc">${editable
+          ? `<button class="al-add" type="button" data-v="${vista}" data-i="${i}"
+               title="${cargado ? "Editar" : "Completar"}">${cargado ? "✎" : "+"}</button>` : ""}</td>` : ""}
+      </tr>`;
+    }).join("");
   }
   const c = $("alCount_" + vista);
   if (c) c.textContent = filas.length === BASE[vista].length ? filas.length : `${filas.length} de ${BASE[vista].length}`;
-}
-
-function ctxFiltros(clave) {
-  if (clave !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = clave; }
 }
 
 // ---- Solapa ALERTAS ----
@@ -2561,107 +1997,212 @@ function renderAlertas() {
   const areaKey = areaActual();
   const area = areaKey === "posventa" ? "Posventa" : "Ventas";
   const V = VISTAS[tipoAlerta];
+
   const fw = $("alFiltro");
-  if (filtroAlerta) { fw.hidden = false; $("alFiltroTxt").textContent = `${filtroAlerta.sig} · ${filtroAlerta.lbl}`; }
-  else fw.hidden = true;
-  $("alertasTitle").textContent = `${V.titulo} · ${area} — ${current || ""}`;
+  if (filtroAlerta) {
+    fw.hidden = false;
+    $("alFiltroTxt").textContent = `${filtroAlerta.sig} · ${filtroAlerta.lbl}`;
+  } else fw.hidden = true;
+
+  $("alertasTitle").textContent = `${V.titulo} · ${area} — ${current}`;
   $("alertasHint").textContent = V.hint;
   $("alAreaSel").value = areaKey;
   $("alTipoSel").value = tipoAlerta;
-  ctxFiltros(areaKey + "|" + current + "|" + MES_ACTUAL);
 
-  const TIPO = { voc: "VOC", interna: "Interna", indicador: "Indicador" };
-  let filas = (ALERTAS_FILAS[areaKey] || []).filter(f => f.tipo === TIPO[tipoAlerta]);
-  if (current && current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
+  const ctx = areaKey + "|" + current + "|" + (MES_LIVE ? "live" : state.periodo);
+  if (ctx !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = ctx; }
+
+  const TIPO_GAS = { voc: "VOC", interna: "Interna", indicador: "Indicador" };
+  let filas = (ALERTAS_FILAS[areaKey] || []).filter(f => (f.tipo || "") === TIPO_GAS[tipoAlerta]);
+  if (current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
   if (filtroAlerta) filas = filas.filter(f => sigOrg(f.org) === filtroAlerta.sig);
-  BASE[tipoAlerta] = filas.sort(cmpFilaPlan);
-  if (!MES_DATOS) { el.innerHTML = `<div class="al-empty">Todavía no hay datos cargados.</div>`; return; }
-  el.innerHTML = tablaHTML(tipoAlerta, "body_" + tipoAlerta);
+  filas.sort(cmpFilaPlan);
+  BASE[tipoAlerta] = filas;
+
+  // Si el Apps Script no pudo leer un RawData (hoja vacía, sin encabezados…), se avisa acá
+  // en lugar de dejar la tabla en cero sin explicación.
+  const avisos = MES_LIVE ? (ALERTAS.avisos || []).filter(a => a.area === areaKey).map(a => a.msg) : [];
+  const avisoHTML = avisos.length ? `<div class="al-aviso">⚠ ${avisos.map(esc2).join("<br>")}</div>` : "";
+
+  if (!filas.length && !ALERTAS_FILAS[areaKey].length) {
+    el.innerHTML = avisoHTML + `<div class="al-empty">${
+      !MES_LIVE ? "Este mes guardado no tiene alertas."
+      : ALERTAS.falta || ALERTAS.error ? "⚠ " + (ALERTAS.falta || ALERTAS.error)
+      : avisos.length ? "No se pudieron armar las alertas de esta área (ver el aviso de arriba)."
+      : "No hay alertas para este mes: ningún cliente respondió 4 o menos, y no hay alertas internas cargadas."}</div>`;
+    return;
+  }
+
+  el.innerHTML = avisoHTML + tablaHTML(tipoAlerta, "body_" + tipoAlerta);
   pintarFilas(tipoAlerta);
 }
 
-// ---- Solapa PLANES DE ACCIÓN: el seguimiento de todas las alertas ----
+// ---- Solapa PLANES DE ACCIÓN ----
+// Espejo exacto de las hojas "Plan de Accion <Sucursal>" del Sheet:
+// mismas columnas, mismas filas y el mismo corte VENTAS / SERVICIO-POSVENTA.
+let PLANES_RAW = {};   // { "Plan de Accion Resistencia": [[fila]], … }
+
+// Parte una hoja en sus dos secciones, quedándose con su propio encabezado
+function seccionesPlan(rows) {
+  const out = { ventas: { hdr: null, filas: [] }, posventa: { hdr: null, filas: [] } };
+  let sec = null;
+  (rows || []).forEach(r => {
+    if (!r) return;
+    const celdas = r.map(c => String(c == null ? "" : c));
+    const c0 = norm(celdas[0]);
+    const resto = celdas.slice(1).some(c => c.trim() !== "");
+
+    if (c0.startsWith("ventas")) { sec = "ventas"; return; }              // "VENTAS — Herramientas SERNISSAN"
+    if (c0.includes("posventa") || c0.startsWith("servicio")) { sec = "posventa"; return; }
+    if (!resto && (c0.includes("sernissan") || c0.includes("kyoto"))) return;   // título de la hoja
+    if (c0 === "n°" || c0 === "no" || c0 === "n" || c0 === "nº") {         // encabezado de la sección
+      if (sec) out[sec].hdr = celdas;
+      return;
+    }
+    if (!sec || !resto) return;      // fila vacía, o solo el número de orden
+    out[sec].filas.push(celdas);
+  });
+  return out;
+}
+
+// 46218 → 15/07/2026 (serie de Google Sheets, base 30/12/1899)
+function fechaSerie(n) {
+  if (!(n > 30000 && n < 60000)) return String(n);
+  const d = new Date(Date.UTC(1899, 11, 30) + n * 86400000);
+  const p = x => String(x).padStart(2, "0");
+  return `${p(d.getUTCDate())}/${p(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
+}
+
+function sucDeHojaPlan(nombre) {
+  const nn = norm(nombre);
+  for (const [k, v] of PLAN_SUC) if (nn.includes(k)) return v;
+  return null;
+}
+
 function renderPlanesAcc() {
+  const el = $("planesAcc");
   const areaKey = areaActual();
-  $("planesAccTitle").textContent = `Planes de acción · ${areaKey === "posventa" ? "Posventa" : "Ventas"} — ${current || ""}`;
+  const area = areaKey === "posventa" ? "Posventa" : "Ventas";
+  $("planesAccTitle").textContent = `Planes de acción · ${area} — ${current}`;
   $("plAreaSel").value = areaKey;
-  ctxFiltros("pl|" + areaKey + "|" + current + "|" + MES_ACTUAL);
-  let filas = (ALERTAS_FILAS[areaKey] || []).slice();
-  if (current && current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
-  BASE.planes = filas.sort((a, b) => (a.estado === "Abierto" ? 0 : a.estado ? 2 : 1) - (b.estado === "Abierto" ? 0 : b.estado ? 2 : 1) || cmpFilaPlan(a, b));
-  if (!MES_DATOS) { $("planesAcc").innerHTML = `<div class="al-empty">Todavía no hay datos cargados.</div>`; return; }
-  const n = s => filas.filter(f => (f.estado || "") === s).length;
-  $("planesAcc").innerHTML = `<div class="pl-resumen">
-      <span class="est est-ab">Abiertos: ${n("Abierto")}</span>
-      <span class="est est-ok">Cerrados: ${n("Cerrado")}</span>
-      <span class="est est-no">Sin plan: ${n("")}</span></div>` + tablaHTML("planes", "body_planes");
-  pintarFilas("planes");
-}
 
-// ---- Ventana de DETALLE del caso (con el plan de acción) ----
-let detCtx = null;
-function detFila(etq, val) { return val ? `<div class="dt-f"><span>${etq}</span><b>${esc2(val)}</b></div>` : ""; }
+  // una entrada por sucursal, con las filas tal cual están en su hoja
+  const porSuc = {};
+  Object.keys(PLANES_RAW || {}).forEach(n => {
+    const suc = sucDeHojaPlan(n);
+    if (suc) porSuc[suc] = { hoja: n, rows: PLANES_RAW[n] };
+  });
 
-function detalleHTML(f) {
-  if (f.tipo === "Interna") {
-    return `<div class="dt-grid">${detFila("Sucursal", f.suc)}${detFila("Fecha del llamado", f.fec)}</div>
-      <h4>Observación del llamado</h4><p class="dt-cita">${esc2(f.verb) || "—"}</p>`;
+  const sucs = current === "Grupo Kyoto"
+    ? Object.keys(porSuc).sort()
+    : (porSuc[current] ? [current] : []);
+
+  if (!sucs.length) {
+    el.innerHTML = `<div class="al-empty">${Object.keys(porSuc).length
+      ? `No encontré la hoja <b>Plan de Accion</b> de ${esc2(current)} en el Sheet.`
+      : "No llegan las hojas <b>Plan de Accion</b> del Sheet. Actualizá la fuente o volvé a implementar el Web App."}</div>`;
+    return;
   }
-  const e = f.enc || {}, pr = (MES_DATOS && MES_DATOS.datos[f.area] && MES_DATOS.datos[f.area].preguntas) || {};
-  const malas = Object.keys(e.r || {}).filter(s => !/^CL/.test(s) && rdEsMala(e.r[s]) && !RD_NO_EVALUAR.test(rdNorm(pr[s] || "")));
-  const resp = malas.map(s => `<li class="${s === f.s ? "esta" : ""}"><b>${esc2(s)}</b> ${esc2(pr[s] || "")}
-      <span class="dt-v">→ ${esc2(e.r[s])}</span>${(e.w || {})[s] ? `<div class="dt-pq">“${esc2(e.w[s])}”</div>` : ""}</li>`).join("");
-  const cl = ["CL1", "CL1.1", "CL2"].filter(s => e.r && e.r[s]);
-  const acomp = [["Causa raíz", e.causa], ["Interacción con el cliente", e.inter], ["Acción preventiva", e.prev], ["Acción correctiva", e.corr]].filter(x => x[1]);
-  return `<div class="dt-grid">
-      ${detFila("Sucursal", f.suc)}${detFila(f.area === "ventas" ? "Fecha de entrega" : "Fecha de entrega", e.fec)}
-      ${detFila("Fecha de ingreso", e.fecIng)}${detFila("Modelo", e.mod)}${detFila("VIN", e.vin)}
-      ${detFila(f.area === "ventas" ? "Asesor de ventas" : "Asesor de servicio", e.ases)}${detFila("Técnico", e.tec)}
-      ${detFila(f.area === "ventas" ? "Tipo de venta" : "Tipo de servicio", e.tipo)}${detFila("Contestó por", e.medio)}
-      ${detFila("Autoriza contacto", e.aut)}</div>
-    <h4>Respuestas con alerta</h4><ul class="dt-resp">${resp || "<li>—</li>"}</ul>
-    ${e.com ? `<h4>Comentario del cliente</h4><p class="dt-cita">“${esc2(e.com)}”</p>` : ""}
-    ${e.cod ? `<p class="dt-cod">Codificación Nissan: ${esc2(e.cod)}</p>` : ""}
-    ${cl.length ? `<h4>Close Loop</h4><ul class="dt-resp">${cl.map(s => `<li><b>${s}</b> ${esc2(pr[s] || "")} <span class="dt-v">→ ${esc2(e.r[s])}</span></li>`).join("")}</ul>` : ""}
-    ${acomp.length ? `<h4>Acompañamiento cargado en Nissan</h4><div class="dt-acomp">${acomp.map(([k, v]) => `<div><span>${k}</span><p>${esc2(v)}</p></div>`).join("")}</div>` : ""}`;
+
+  let total = 0;
+  const bloques = sucs.map(suc => {
+    const sec = seccionesPlan(porSuc[suc].rows)[areaKey];
+    const hdr = (sec.hdr || ["n°", "Origen", "Cliente", "Desvio", "Fecha Atencion",
+                            "Plan de accion", "Responsable", "Fecha", "Herramientas SERNISSAN", "Observaciones"])
+      .map(h => String(h || ""));
+    total += sec.filas.length;
+    const titulo = current === "Grupo Kyoto" ? `<div class="plan-suc-t">${esc2(suc)}</div>` : "";
+    if (!sec.filas.length)
+      return titulo + `<div class="al-empty">Sin planes de ${area} cargados en la hoja <b>${esc2(porSuc[suc].hoja)}</b>.</div>`;
+    const esFecha = hdr.map(h => norm(h).includes("fecha"));
+    const cuerpo = sec.filas.map(f =>
+      `<tr>${hdr.map((_, i) => {
+        let v = f[i] == null ? "" : String(f[i]);
+        // en las columnas de fecha, Google a veces manda el número de serie (46218)
+        if (esFecha[i] && /^\d{5}$/.test(v.trim())) v = fechaSerie(+v);
+        return `<td class="${norm(hdr[i]).includes("plan de acc") ? "plan-txt" : ""}">${v ? esc2(v) : ""}</td>`;
+      }).join("")}</tr>`).join("");
+    return titulo + `<div class="al-scroll"><table class="al-tab"><thead><tr>${
+      hdr.map(h => `<th>${esc2(h)}</th>`).join("")}</tr></thead><tbody>${cuerpo}</tbody></table></div>`;
+  }).join("");
+
+  el.innerHTML = `<div class="al-bar"><div class="al-info">${total} ${total === 1 ? "fila" : "filas"} ·
+    tal cual están en las hojas <b>Plan de Accion</b> del Sheet</div></div>${bloques}`;
 }
 
-function abrirDetalle(vista, i) {
-  const f = VISIBLES[vista][i];
+// ---- Modal: sirve para las dos tablas editables ----
+let modalCtx = null;
+function abrirModal(vista, i, foco) {
+  const nueva = i == null || i < 0;
+  const campos = CAMPOS_EDIT[vista];
+  if (!campos) return;
+  const f = nueva
+    ? (vista === "interna"
+        ? { nueva: true, manual: true, org: "Alerta interna", suc: current !== "Grupo Kyoto" ? current : "",
+            cli: "", fec: "", verb: "", clave: "" }
+        : { nueva: true, org: "", plan: "", resp: "", fec: "", herr: "", obs: "", clave: "" })
+    : VISIBLES[vista][i];
   if (!f) return;
-  detCtx = f;
-  $("dtTitulo").textContent = f.cli;
-  $("dtOrigen").textContent = f.org;
-  $("dtCuerpo").innerHTML = detalleHTML(f);
-  const ed = PUEDE_EDITAR;
-  $("dtPlan").value = f.plan || ""; $("dtResp").value = f.resp || "";
-  $("dtFecha").value = f.fecPlan || ""; $("dtEstado").value = f.estado || "Abierto";
-  ["dtPlan", "dtResp", "dtFecha", "dtEstado"].forEach(id => { $(id).disabled = !ed; });
-  $("dtGuardar").hidden = !ed;
-  $("dtPlanLbl").textContent = ed ? "Plan de acción" : "Plan de acción (solo Calidad lo edita)";
-  $("dtMsg").textContent = ""; $("dtMsg").className = "modal-msg";
-  $("detModal").hidden = false;
-  if (ed) setTimeout(() => $("dtPlan").focus(), 30);
-}
-function cerrarDetalle() { $("detModal").hidden = true; detCtx = null; }
+  modalCtx = { vista, f };
 
-async function guardarDetalle() {
-  if (!detCtx || !PUEDE_EDITAR) return;
-  const f = detCtx, msg = $("dtMsg"), btn = $("dtGuardar");
-  const d = { plan: $("dtPlan").value.trim(), resp: $("dtResp").value.trim(), fec: $("dtFecha").value, estado: $("dtEstado").value };
-  btn.disabled = true; msg.textContent = "Guardando…"; msg.className = "modal-msg";
+  $("pmTitle").textContent = nueva
+    ? (vista === "interna" ? "Alerta interna nueva" : "Plan de acción nuevo")
+    : (vista === "interna" ? "Alerta interna" : "Plan de acción");
+  $("pmSave").textContent = nueva ? "Agregar" : "Guardar";
+  $("pmCaso").innerHTML = nueva
+    ? `Se agrega a <b>${vista === "interna" ? "Alertas" : "Planes de accion"} ${areaActual() === "posventa" ? "Posventa" : "Ventas"}</b>.`
+    : (vista === "interna" ? `<b>${esc2(f.cli)}</b>${f.suc ? " — " + esc2(f.suc) : ""}` : esc2(f.org || "Sin origen"));
+
+  const largo = { verb: 3, plan: 4, obs: 3 };
+  $("pmCampos").innerHTML = campos.map(k =>
+    `<label class="pm-campo">${COL_DEF[k].t}
+      <textarea id="pm_${k}" rows="${largo[k] || 2}"></textarea></label>`).join("");
+  campos.forEach(k => { $("pm_" + k).value = f[k] || ""; });
+
+  $("pmMsg").textContent = ""; $("pmMsg").className = "modal-msg";
+  $("planModal").hidden = false;
+  const id = campos.includes(foco) ? "pm_" + foco : "pm_" + campos[vista === "interna" ? 2 : 1];
+  setTimeout(() => { const e = $(id); if (e) e.focus(); }, 30);
+}
+function cerrarModal() { $("planModal").hidden = true; modalCtx = null; }
+
+async function guardarModal() {
+  if (!modalCtx) return;
+  const { vista, f } = modalCtx;
+  const campos = CAMPOS_EDIT[vista];
+  const url = $("srcUrl").value.trim();
+  const msg = $("pmMsg"), btn = $("pmSave");
+  if (!url) { msg.textContent = "Falta la URL del Web App (⚙ Fuente)."; msg.className = "modal-msg err"; return; }
+
+  const d = {};
+  campos.forEach(k => { d[k] = $("pm_" + k).value.trim(); });
+  if (vista === "interna" && !d.cli) {
+    msg.textContent = "Poné al menos el nombre del cliente."; msg.className = "modal-msg err"; return;
+  }
+  if (vista === "planes" && !d.plan && !d.org) {
+    msg.textContent = "Escribí al menos el origen o el plan."; msg.className = "modal-msg err"; return;
+  }
+
+  const area = areaActual();
+  btn.disabled = true; msg.textContent = f.nueva ? "Agregando…" : "Guardando…"; msg.className = "modal-msg";
   try {
-    const q = new URLSearchParams(Object.assign({ accion: "guardarPlan", clave: f.clave, area: f.area, periodo: MES_ACTUAL,
-      suc: f.suc, cli: f.cli, s: f.s || "" }, d)).toString();
-    const r = await jsonp(urlVOC(servidorUrl(), q), 30000);
-    if (respuestaAcceso(r)) { cerrarDetalle(); return; }
+    const accion = vista === "interna" ? (f.nueva ? "agregarAlerta" : "guardarAlerta") : "guardarPlan";
+    const q = new URLSearchParams(Object.assign({ accion, area, clave: f.clave || "" }, d)).toString();
+    const r = await jsonp(urlVOC(url, q));
+    if (respuestaAcceso(r)) { cerrarModal(); return; }     // la sesión venció: pide ingresar de nuevo
     if (!r || !r.ok) throw new Error((r && (r.msg || r.error)) || "No se pudo guardar");
-    PLANES_MES[f.clave] = r.plan;
-    Object.assign(f, { plan: r.plan.plan, resp: r.plan.resp, fecPlan: r.plan.fec, estado: r.plan.estado });
-    cerrarDetalle();
+    if (f.nueva) {
+      const nf = Object.assign({}, d, { clave: r.clave, manual: true, tipo: "Interna" });
+      const destino = vista === "interna" ? ALERTAS_FILAS : PLANES_ACC;
+      (destino[area] = destino[area] || []).push(nf);
+    } else {
+      Object.assign(f, d);
+    }
+    cerrarModal();
     render();
-  } catch (e) { msg.textContent = "✗ " + e.message; msg.className = "modal-msg err"; }
-  finally { btn.disabled = false; }
+  } catch (e) {
+    msg.textContent = "✗ " + e.message; msg.className = "modal-msg err";
+  } finally { btn.disabled = false; }
 }
 
 // ---- Tooltip con los nombres de los clientes ----
@@ -2696,7 +2237,6 @@ function ocultarTip() { $("tip").hidden = true; }
 
 // Click en un segmento/cantidad → abre la solapa Alertas filtrada
 function irAAlertas(sig, key, lbl) {
-  if (sig === "SPCL") sig = "VOC01";   // el Close Loop sale de la VOC01
   filtroAlerta = { sig, key, lbl };
   // VOC01 vive en la vista VOC; el resto, en Indicadores
   tipoAlerta = sig === "VOC01" ? "voc" : "indicador";
@@ -2924,427 +2464,127 @@ function setSrc(cls, text) {
 }
 function horaStr(d) { return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }); }
 
-// ================================================================
-//  DATOS: servidor Canvas (Drive) → motor → tablero
-// ================================================================
-let MESES = [];            // [{ periodo:"2026-08", areas:{ ventas:{encuestas,subido,por}, posventa:{…} } }]
-let CONFIG = {};           // { objetivos:{ventas:{VOC01:91…}}, clasif:{codigo:"fuerte"|"debil"} }
-let MES_DATOS = null;      // lo que devolvió el servidor para el mes elegido
-let MES_ACTUAL = "";       // "2026-08"
-let PLANES_MES = {};       // { clave: { plan, resp, fec, estado, … } }
+// Fuentes disponibles: "__live__" (mes en vivo) + cada mes del histórico.
+let SOURCES = {};
+let conectado = false;
 const MESES_ORD = { enero:1, febrero:2, marzo:3, abril:4, mayo:5, junio:6, julio:7, agosto:8, septiembre:9, octubre:10, noviembre:11, diciembre:12 };
+const MESES_ABR = { jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
 const MESES_NOM = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-function mesBonito(p) { return /^\d{4}-\d{2}$/.test(String(p)) ? rdEtiquetaMes(p) : String(p || ""); }
 
-function servidorUrl() { return ($("srcUrl").value || "").trim() || DEFAULT_VOC_URL; }
+// Muestra el período lindo aunque venga como fecha ("Mon Jun 01 2026…") o ISO.
+function mesBonito(p) {
+  const s = String(p || "").trim();
+  // ya viene "Junio 2026"
+  let m = s.toLowerCase().match(/([a-záéíóú]{4,})\s+(\d{4})/);
+  if (m && MESES_ORD[m[1].normalize("NFD").replace(/[̀-ͯ]/g, "")]) return s;
+  // formato Date de JS: "Mon Jun 01 2026 ..." (Día Mes DD Año)
+  m = s.match(/^[A-Za-z]{3}\s+([A-Za-z]{3})\s+\d{1,2}\s+(\d{4})/);
+  if (m && MESES_ABR[m[1].toLowerCase()]) return MESES_NOM[MESES_ABR[m[1].toLowerCase()] - 1] + " " + m[2];
+  // ISO "2026-06-01"
+  m = s.match(/(\d{4})-(\d{1,2})/);
+  if (m) return MESES_NOM[(+m[2]) - 1] + " " + m[1];
+  return s;
+}
+function mesClave(p) {
+  const b = mesBonito(p).toLowerCase().match(/([a-záéíóú]+)\s+(\d{4})/);
+  if (!b) return 0;
+  return (+b[2]) * 100 + (MESES_ORD[b[1].normalize("NFD").replace(/[̀-ͯ]/g, "")] || 0);
+}
 
-function poblarMeses(meses) {
-  const sel = $("mesSel"), prev = sel.value;
-  sel.innerHTML = meses.length
-    ? meses.map(m => { const a = Object.keys(m.areas || {});
-        const nota = a.length === 1 ? (a[0] === "ventas" ? " (solo Ventas)" : " (solo Posventa)") : "";
-        return `<option value="${m.periodo}">${rdEtiquetaMes(m.periodo)}${nota}</option>`; }).join("")
-    : `<option value="">Sin meses cargados</option>`;
+function poblarMeses(historico) {
+  const sel = $("mesSel");
+  const prev = sel.value;
+  const periodos = historico.map(h => h.periodo).filter(Boolean)
+    .sort((a, b) => mesClave(b) - mesClave(a));   // más nuevo primero
+  sel.innerHTML = '<option value="__live__">● En vivo (actual)</option>'
+    + periodos.map(p => `<option value="${p}">${mesBonito(p)}</option>`).join("");
   if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
 }
 
-// Indicadores del área con sus objetivos: los del mes, si no los de la configuración, si no los de fábrica
-function listaIndicadores(area, objMes) {
-  const cfg = (CONFIG.objetivos || {})[area] || {};
-  return CANVAS_INDICADORES[area].map(ind => {
-    const o = objMes && objMes[ind.s] != null ? objMes[ind.s] : (cfg[ind.s] != null ? cfg[ind.s] : ind.obj);
-    return Object.assign({}, ind, { obj: Number(o) || 0 });
-  });
+function aplicarMes(key) {
+  const s = SOURCES[key];
+  if (!s) return { nV: 0, nP: 0, verbas: false };
+  const label = key === "__live__" ? "En vivo" : mesBonito(key);
+  PLANES = parsePlanes(s.planes || {});   // planes del mes elegido (antes de renderizar)
+
+  // Mes en vivo → tabla de alertas editable. Mes guardado → foto de ese mes:
+  // si todavía no existían las hojas de Planes VOC (junio), la solapa no se muestra.
+  MES_LIVE = key === "__live__";
+  MES_TIENE_ALERTAS = MES_LIVE || !!s.alertasFilas;
+  PLANES_RAW = s.planes || {};                       // hojas "Plan de Accion <Sucursal>"
+  MES_TIENE_PLANES  = Object.keys(PLANES_RAW).length > 0;
+  const af = s.alertasFilas || { ventas: [], posventa: [] };
+  const pa = s.planesAccion || { ventas: [], posventa: [] };
+  ALERTAS_FILAS = { ventas: af.ventas || [], posventa: af.posventa || [] };
+  PLANES_ACC    = { ventas: pa.ventas || [], posventa: pa.posventa || [] };
+  ctxTabla = "";                           // filtros en cero al cambiar de mes
+  filtroAlerta = null;
+  const r = applyData(s.ventas, s.posventa, s.verbas, label);
+  if (key !== "__live__") { state.periodo = mesBonito(key); $("periodoInp").value = mesBonito(key); }
+  return r;
 }
 
-// Arma todo lo que muestra la página a partir de las encuestas del mes
-function aplicarDatosMes() {
-  const tabs = { ventas: {}, posventa: {} }, verbas = { ventas: {}, posventa: {} };
-  ALERTAS = { ventas: [], posventa: [] }; ALERTAS_FILAS = { ventas: [], posventa: [] };
-  const D = MES_DATOS || { datos: {}, internas: {}, planes: {} };
-  ["ventas", "posventa"].forEach(area => {
-    const d = D.datos[area] || { preguntas: {}, encuestas: [] };
-    const internas = (D.internas || {})[area] || [];
-    if (!d.encuestas.length && !internas.length) return;
-    const filasInd = calcularIndicadores(d.encuestas, listaIndicadores(area, d.objetivos), !!D.verGrupo);
-    for (const suc in filasInd) tabs[area][suc] = filasInd[suc].map(a => enrich(a, area));
-    verbas[area] = calcularVerbalizaciones(d.encuestas, CONFIG.clasif || {});
-    ALERTAS[area] = alertasPorCliente(d);
-    const filas = filasAlertas(area, MES_ACTUAL, d, tabs[area], internas);
-    filas.forEach(f => {
-      f.area = area;
-      const p = PLANES_MES[f.clave];
-      f.plan = p ? p.plan : ""; f.resp = p ? p.resp : ""; f.fecPlan = p ? p.fec : ""; f.estado = p ? p.estado : "";
-    });
-    ALERTAS_FILAS[area] = filas;
-  });
-  MES_LIVE = true; MES_TIENE_ALERTAS = true; MES_TIENE_PLANES = true;
-  state = { periodo: rdEtiquetaMes(MES_ACTUAL), fileName: null, tabs, verbas };
-  $("periodoInp").value = state.periodo;
-  aplicarUsuario();          // primero el rol: define en qué área arranca (ej.: un supervisor de Posventa)
-  renderPills(); render();
-}
-
-async function cargarTodo(manual) {
-  const url = servidorUrl();
-  if (!url) { setSrc("err", "Falta la dirección del servidor Canvas (⚙ Fuente)."); return; }
-  if (AUTH_ACTIVA && !SESION) { mostrarLogin(""); return; }
+async function fetchLive(manual) {
+  const url = $("srcUrl").value.trim();
+  if (!url) { setSrc("err", "Pegá la URL del Web App primero."); return; }
+  if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)) {
+    setSrc("err", "La URL debería empezar con https://script.google.com/… y terminar en /exec"); return;
+  }
+  if (AUTH_ACTIVA && !SESION) { mostrarLogin(""); return; }     // sin sesión no se pide nada
+  const isFile = location.protocol === "file:";
   const btn = $("connectBtn"); btn.disabled = true;
-  setSrc("", '<span class="src-spin"></span> Conectando…');
+  setSrc("", '<span class="src-spin"></span> Conectando con el Google Sheet…');
   try {
-    const d = await jsonp(urlVOC(url), 40000);
+    // el Sheet tarda ~15 s en armar todo: 20 s quedaba muy justo y, si se pasaba,
+    // la actualización fallaba sin que se note y quedaban los datos viejos
+    const d = await jsonp(urlVOC(url), 60000);
     if (respuestaAcceso(d)) { setSrc("", ""); return; }
-    if (!d || !d.ok) throw new Error((d && (d.msg || d.error)) || "Respuesta inesperada del servidor.");
-    USUARIO = d.usuario; AUTH_ACTIVA = true;
-    try { const g = JSON.parse(localStorage.getItem(LS_SES) || "null"); if (g) { g.usuario = d.usuario; localStorage.setItem(LS_SES, JSON.stringify(g)); } } catch (e) {}
-    ocultarLogin();
-    CONFIG = d.config || {}; MESES = d.meses || [];
-    poblarMeses(MESES);
-    const elegido = $("mesSel").value;
-    const per = MESES.some(m => m.periodo === elegido) ? elegido : (MESES[0] && MESES[0].periodo);
-    if (!per) {
-      MES_DATOS = null; MES_ACTUAL = ""; PLANES_MES = {}; aplicarDatosMes();
-      setSrc("ok", "Conectado · todavía no hay meses cargados" + (USUARIO && USUARIO.calidad ? " — usá «⬆ Cargar Excel»" : ""));
-      return;
+    if (d && d.ok) {                                    // acceso abierto o sesión válida
+      if (d.usuario) { USUARIO = d.usuario; AUTH_ACTIVA = true; try { localStorage.setItem("kyoto-voc-acc", "1"); } catch (e) {} }
+      else { USUARIO = null; AUTH_ACTIVA = false; try { localStorage.removeItem("kyoto-voc-acc"); localStorage.removeItem(LS_SES); } catch (e) {} }
+      ocultarLogin();
     }
-    $("mesSel").value = per;
-    await cargarMes(per);
-    if (!USUARIO || USUARIO.training) fetchTraining(true);
+    if (!d || !d.ok || (!d.ventas && !d.posventa)) throw new Error("La respuesta no tiene el formato esperado.");
+    // Construir el mapa de fuentes: mes en vivo + cada mes guardado en el histórico.
+    SOURCES = { "__live__": { ventas: d.ventas, posventa: d.posventa, verbas: d.verbas,
+                              planes: d.planes || {},
+                              alertasFilas: d.alertasFilas || { ventas: [], posventa: [] },
+                              planesAccion: d.planesAccion || { ventas: [], posventa: [] } } };
+    // los meses guardados antes de que existieran estas hojas vienen en null:
+    // ahí la solapa no se muestra
+    (d.historico || []).forEach(h => { if (h.periodo) SOURCES[h.periodo] = { ventas: h.ventas, posventa: h.posventa,
+      verbas: h.verbas, planes: h.planes || {},
+      alertasFilas: h.alertasFilas || null, planesAccion: h.planesAccion || null }; });
+    conectado = true;
+    if (d.alertas) ALERTAS = { ventas: d.alertas.ventas || [], posventa: d.alertas.posventa || [],
+                               falta: d.alertas.falta || null, error: d.alertas.error || null, avisos: d.alertas.avisos || [] };
+    PLANES_RAW = d.planes || {};
+    if (d.alertasFilas) ALERTAS_FILAS = { ventas: d.alertasFilas.ventas || [], posventa: d.alertasFilas.posventa || [] };
+    if (d.planesAccion) PLANES_ACC    = { ventas: d.planesAccion.ventas || [], posventa: d.planesAccion.posventa || [] };
+    poblarMeses(d.historico || []);
+    const r = aplicarMes($("mesSel").value in SOURCES ? $("mesSel").value : "__live__");
+    localStorage.setItem(LS_URL, url);
+    const now = new Date();
+    const nMeses = (d.historico || []).length;
+    setSrc("ok", `✓ Actualizado ${horaStr(now)} — Ventas: ${r.nV} · Posventa: ${r.nP}${r.verbas ? " · Verbalizaciones ✓" : ""}${nMeses ? " · " + nMeses + " mes(es) en histórico" : ""}`);
+    $("status").textContent = "";
+    if (!USUARIO || USUARIO.training) fetchTraining(true);   // trae Training en paralelo (si hay URL cargada y el rol lo permite)
   } catch (err) {
-    setSrc("err", "✗ " + err.message + (/claude\.ai|claudeusercontent/.test(location.hostname) ? " — desde el link de Claude no se puede conectar; usá la página de GitHub." : ""));
+    let msg = "✗ " + err.message;
+    if (window.location && /claude\.ai|claudeusercontent/.test(location.hostname)) {
+      msg += " — La conexión en vivo no funciona desde el link de Claude; abrí el archivo local o subilo a GitHub Pages.";
+    }
+    setSrc("err", msg);
   } finally { btn.disabled = false; }
-}
-
-async function cargarMes(per) {
-  setSrc("", `<span class="src-spin"></span> Cargando ${esc2(rdEtiquetaMes(per))}…`);
-  const r = await jsonp(urlVOC(servidorUrl(), "accion=mes&periodo=" + encodeURIComponent(per)), 40000);
-  if (respuestaAcceso(r)) return;
-  if (!r || !r.ok) throw new Error((r && (r.msg || r.error)) || "No se pudo cargar el mes.");
-  MES_DATOS = r; MES_ACTUAL = per; PLANES_MES = r.planes || {};
-  ctxTabla = ""; filtroAlerta = null;
-  aplicarDatosMes();
-  setSrc("ok", `✓ ${esc2(rdEtiquetaMes(per))} · actualizado ${horaStr(new Date())}`);
 }
 
 function setAuto(sec) {
   if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
   try { localStorage.setItem(LS_AUTO, String(sec)); } catch (e) {}
   if (sec > 0) {
-    autoTimer = setInterval(() => cargarTodo(false), sec * 1000);
-    cargarTodo(false);
+    autoTimer = setInterval(() => fetchLive(false), sec * 1000);
+    if ($("srcUrl").value.trim()) fetchLive(false);
   }
-}
-
-// Escrituras grandes (archivos, listas): POST al servidor
-async function postServidor(body) {
-  const r = await fetch(servidorUrl(), { method: "POST", body: JSON.stringify(Object.assign({ sesion: SESION }, body)) });
-  if (!r.ok) throw new Error("El servidor respondió " + r.status);
-  const d = await r.json();
-  if (respuestaAcceso(d)) throw new Error("Tu sesión venció: volvé a ingresar.");
-  return d;
-}
-
-// ================================================================
-//  CARGAR EXCEL (solo Calidad)
-// ================================================================
-let SUBIDA = null;   // { file, d }
-
-function opcionesMes(sel, elegido) {
-  const hoy = new Date(), ops = [];
-  for (let k = 2; k >= -24; k--) {
-    const f = new Date(hoy.getFullYear(), hoy.getMonth() + k, 1);
-    ops.push(f.getFullYear() + "-" + String(f.getMonth() + 1).padStart(2, "0"));
-  }
-  if (elegido && !ops.includes(elegido)) ops.push(elegido);
-  sel.innerHTML = ops.sort().reverse().map(p => `<option value="${p}"${p === elegido ? " selected" : ""}>${rdEtiquetaMes(p)}</option>`).join("");
-}
-
-function abrirSubir() {
-  SUBIDA = null;
-  $("subirArchivo").value = "";
-  $("subirInfo").innerHTML = "";
-  $("subirCampos").hidden = true;
-  $("subirOk").disabled = true;
-  $("subirMsg").textContent = ""; $("subirMsg").className = "modal-msg";
-  $("subirModal").hidden = false;
-}
-function cerrarSubir() { $("subirModal").hidden = true; SUBIDA = null; }
-
-async function leerSubida(file) {
-  const info = $("subirInfo");
-  info.innerHTML = `<p class="sb-leyendo"><span class="src-spin"></span> Leyendo ${esc2(file.name)}…</p>`;
-  $("subirCampos").hidden = true; $("subirOk").disabled = true;
-  try {
-    if (typeof DecompressionStream === "undefined") throw new Error("Tu navegador no puede leer .xlsx (usá Chrome o Edge actualizados).");
-    const wb = await readXlsx(file);
-    const rows = await wb.rows(wb.sheetNames[0]);
-    const d = procesarRawData(rows, file.name);
-    SUBIDA = { file, d };
-    $("subirArea").value = d.area;
-    opcionesMes($("subirMes"), d.periodo);
-    $("subirCampos").hidden = false; $("subirOk").disabled = false;
-    resumenSubida();
-  } catch (e) {
-    SUBIDA = null;
-    info.innerHTML = `<p class="sb-error">✗ ${esc2(e.message)}</p>`;
-  }
-}
-
-function resumenSubida() {
-  if (!SUBIDA) return;
-  const d = SUBIDA.d, area = $("subirArea").value, per = $("subirMes").value;
-  const lista = listaIndicadores(area, null);
-  const ind = calcularIndicadores(d.encuestas, lista.filter(x => x.s === "VOC01"), false);
-  const porSuc = {}; d.encuestas.forEach(e => { porSuc[e.suc] = (porSuc[e.suc] || 0) + 1; });
-  const sucs = Object.keys(porSuc).sort();
-  const voc = s => { const a = (ind[s] || [])[0]; return a ? enrich(a, area).fav.toFixed(1) + " %" : "—"; };
-  const avisos = [];
-  const pers = Object.keys(d.periodosEncontrados || {});
-  if (pers.length > 1) avisos.push(`El archivo trae encuestas de varios meses (${pers.join(", ")}). Se guardan todas en el mes elegido.`);
-  if (!d.periodo) avisos.push("No pude detectar el mes: elegilo a mano.");
-  if (d.area !== area) avisos.push(`El archivo parece de ${d.area === "ventas" ? "Ventas" : "Servicios"} y elegiste ${area === "ventas" ? "Ventas" : "Servicios"}. Revisalo.`);
-  const ya = MESES.find(m => m.periodo === per && m.areas && m.areas[area]);
-  if (ya) avisos.push(`Ya hay datos de ${area === "ventas" ? "Ventas" : "Servicios"} · ${rdEtiquetaMes(per)}: se reemplazan <b>solo</b> las sucursales que trae este archivo (${sucs.join(", ")}). Las demás quedan como estaban.`);
-  const alertas = alertasPorCliente(d).length;
-  $("subirInfo").innerHTML = `
-    <p class="sb-det">Detecté: <b>${d.area === "ventas" ? "Ventas" : "Servicios"}</b> · <b>${esc2(d.etiqueta || "mes sin detectar")}</b> ·
-      ${d.encuestas.length} encuestas · ${alertas} clientes con alguna respuesta de 4 o menos</p>
-    <table class="sb-tab"><thead><tr><th>Sucursal</th><th>Encuestas</th><th>VOC01 favorable</th></tr></thead>
-      <tbody>${sucs.map(s => `<tr><td>${esc2(s)}</td><td>${porSuc[s]}</td><td>${voc(s)}</td></tr>`).join("")}</tbody></table>
-    ${avisos.map(a => `<p class="sb-aviso">⚠ ${a}</p>`).join("")}`;
-}
-
-async function guardarSubida() {
-  if (!SUBIDA) return;
-  const msg = $("subirMsg"), btn = $("subirOk");
-  const area = $("subirArea").value, per = $("subirMes").value;
-  btn.disabled = true; msg.className = "modal-msg"; msg.textContent = "Guardando en Drive…";
-  try {
-    const base64 = await new Promise((res, rej) => {
-      const fr = new FileReader();
-      fr.onload = () => res(String(fr.result).split(",")[1] || "");
-      fr.onerror = () => rej(new Error("No se pudo leer el archivo."));
-      fr.readAsDataURL(SUBIDA.file);
-    });
-    const objetivos = {}; listaIndicadores(area, null).forEach(x => { objetivos[x.s] = x.obj; });
-    const r = await postServidor({ accion: "subir", periodo: per, area, objetivos,
-      datos: { preguntas: SUBIDA.d.preguntas, encuestas: SUBIDA.d.encuestas },
-      archivo: { nombre: SUBIDA.file.name, base64 } });
-    if (!r.ok) throw new Error(r.msg || r.error || "No se pudo guardar.");
-    msg.className = "modal-msg ok";
-    msg.textContent = `✓ Guardado: ${r.encuestas} encuestas de ${r.sucursales.join(", ")}. El Excel original quedó de backup en Drive.`;
-    $("mesSel").value = per;
-    setTimeout(() => { cerrarSubir(); cargarTodo(true).then(() => { if (MES_ACTUAL !== per && MESES.some(m => m.periodo === per)) { $("mesSel").value = per; cargarMes(per); } }); }, 1400);
-  } catch (e) {
-    msg.className = "modal-msg err"; msg.textContent = "✗ " + e.message; btn.disabled = false;
-  }
-}
-
-// ================================================================
-//  USUARIOS (solo Calidad)
-// ================================================================
-let USR_LISTA = [];
-const SUC_CORTAS = [["Kyoto Resistencia", "Resistencia"], ["Kyoto Corrientes", "Corrientes"], ["Kyoto Posadas", "Posadas"], ["Kyoto Sáenz Peña", "Sáenz Peña"]];
-
-async function abrirUsuarios() {
-  $("usrModal").hidden = false;
-  $("usrMsg").textContent = "Cargando…"; $("usrMsg").className = "modal-msg";
-  $("usrTabla").innerHTML = "";
-  try {
-    const r = await jsonp(urlVOC(servidorUrl(), "accion=usuarios"), 30000);
-    if (respuestaAcceso(r)) return;
-    if (!r.ok) throw new Error(r.msg || r.error);
-    USR_LISTA = r.usuarios || [];
-    dibujarUsuarios();
-    $("usrMsg").textContent = "";
-  } catch (e) { $("usrMsg").className = "modal-msg err"; $("usrMsg").textContent = "✗ " + e.message; }
-}
-
-function dibujarUsuarios() {
-  const fila = (u, i) => {
-    const area = u.calidad ? "ambas" : (u.areas || []).length === 2 ? "ambas" : ((u.areas || [])[0] || "posventa");
-    const todas = u.calidad || u.sucursales === "todas";
-    return `<tr data-i="${i}">
-      <td><input data-k="email" type="email" value="${esc(u.email)}" placeholder="nombre@empresa.com"></td>
-      <td><input data-k="nombre" value="${esc(u.nombre)}" placeholder="Nombre"><input data-k="cargo" value="${esc(u.cargo)}" placeholder="Cargo" class="usr-cargo"></td>
-      <td class="c"><input data-k="calidad" type="checkbox"${u.calidad ? " checked" : ""} title="Calidad: sube Excel, carga planes y administra"></td>
-      <td><select data-k="area"${u.calidad ? " disabled" : ""}>
-        <option value="ventas"${area === "ventas" ? " selected" : ""}>Ventas</option>
-        <option value="posventa"${area === "posventa" ? " selected" : ""}>Posventa</option>
-        <option value="ambas"${area === "ambas" ? " selected" : ""}>Ambas</option></select></td>
-      <td class="usr-sucs"><label><input data-k="todas" type="checkbox"${todas ? " checked" : ""}${u.calidad ? " disabled" : ""}> Todas</label>
-        ${SUC_CORTAS.map(([full, corto]) => `<label><input data-suc="${full}" type="checkbox"${!todas && (u.sucursales || []).includes(full) ? " checked" : ""}${todas ? " disabled" : ""}> ${corto}</label>`).join("")}</td>
-      <td class="c"><input data-k="training" type="checkbox"${u.training ? " checked" : ""}></td>
-      <td class="c"><input data-k="activo" type="checkbox"${u.activo !== false ? " checked" : ""}></td>
-      <td class="c"><button type="button" class="usr-x" data-borrar="${i}" title="Quitar">✕</button></td></tr>`;
-  };
-  $("usrTabla").innerHTML = `<table class="usr-tab"><thead><tr><th>Email (cuenta de Google)</th><th>Nombre y cargo</th><th>Calidad</th>
-    <th>Área</th><th>Sucursales</th><th>Training</th><th>Activo</th><th></th></tr></thead>
-    <tbody>${USR_LISTA.map(fila).join("")}</tbody></table>`;
-}
-
-function leerUsuariosDeTabla() {
-  return [...document.querySelectorAll("#usrTabla tbody tr")].map(tr => {
-    const v = k => tr.querySelector(`[data-k="${k}"]`);
-    const calidad = v("calidad").checked, area = v("area").value;
-    const sucs = v("todas").checked ? "todas" : [...tr.querySelectorAll("[data-suc]")].filter(x => x.checked).map(x => x.dataset.suc);
-    return { email: v("email").value.trim(), nombre: v("nombre").value.trim(), cargo: v("cargo").value.trim(), calidad,
-             areas: area === "ambas" ? ["ventas", "posventa"] : [area], sucursales: sucs,
-             training: v("training").checked, activo: v("activo").checked };
-  });
-}
-
-async function guardarUsuarios() {
-  const msg = $("usrMsg"), lista = leerUsuariosDeTabla();
-  const malos = lista.filter(u => !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(u.email));
-  if (malos.length) { msg.className = "modal-msg err"; msg.textContent = "✗ Hay filas con el email vacío o mal escrito."; return; }
-  const sinSuc = lista.filter(u => !u.calidad && u.sucursales !== "todas" && !u.sucursales.length);
-  if (sinSuc.length) { msg.className = "modal-msg err"; msg.textContent = `✗ ${sinSuc[0].email}: elegí al menos una sucursal (o "Todas").`; return; }
-  msg.className = "modal-msg"; msg.textContent = "Guardando…";
-  try {
-    const r = await postServidor({ accion: "guardarUsuarios", usuarios: lista });
-    if (!r.ok) throw new Error(r.msg || r.error);
-    USR_LISTA = r.usuarios; dibujarUsuarios();
-    msg.className = "modal-msg ok"; msg.textContent = `✓ Guardado (${r.usuarios.length} usuarios). Los cambios rigen en unos 2 minutos.`;
-  } catch (e) { msg.className = "modal-msg err"; msg.textContent = "✗ " + e.message; }
-}
-
-// ================================================================
-//  OBJETIVOS (solo Calidad)
-// ================================================================
-function abrirObjetivos() {
-  const area = areaActual();
-  $("objArea").value = area;
-  dibujarObjetivos();
-  $("objMsg").textContent = ""; $("objMsg").className = "modal-msg";
-  $("objModal").hidden = false;
-}
-function dibujarObjetivos() {
-  const area = $("objArea").value;
-  const d = MES_DATOS && MES_DATOS.datos[area];
-  const lista = listaIndicadores(area, d && d.objetivos);
-  $("objMes").textContent = MES_ACTUAL ? rdEtiquetaMes(MES_ACTUAL) : "—";
-  $("objTabla").innerHTML = `<table class="usr-tab"><thead><tr><th>Sigla</th><th>Indicador</th><th>Objetivo %</th></tr></thead><tbody>
-    ${lista.map(x => `<tr><td><b>${x.s}</b></td><td>${esc2(shortName(x.nombre))}</td>
-      <td><input type="number" step="0.1" min="0" max="100" data-s="${x.s}" value="${x.obj}"></td></tr>`).join("")}</tbody></table>
-    <p class="obj-nota">Con objetivo 0 el indicador se muestra como informativo.</p>`;
-}
-async function guardarObjetivos() {
-  const area = $("objArea").value, msg = $("objMsg");
-  const objetivos = {};
-  document.querySelectorAll("#objTabla input[data-s]").forEach(i => { objetivos[i.dataset.s] = Number(i.value) || 0; });
-  msg.className = "modal-msg"; msg.textContent = "Guardando…";
-  try {
-    const r = await postServidor({ accion: "guardarConfig", area, periodo: MES_ACTUAL, objetivos, futuro: $("objFuturo").checked });
-    if (!r.ok) throw new Error(r.msg || r.error);
-    CONFIG = r.config || CONFIG;
-    if (MES_DATOS && MES_DATOS.datos[area]) MES_DATOS.datos[area].objetivos = objetivos;
-    aplicarDatosMes();
-    msg.className = "modal-msg ok"; msg.textContent = "✓ Objetivos guardados.";
-  } catch (e) { msg.className = "modal-msg err"; msg.textContent = "✗ " + e.message; }
-}
-
-// ================================================================
-//  VERBALIZACIONES: Calidad puede pasar un código de fuerte a débil (o al revés)
-// ================================================================
-async function voltearVerba(cod, ladoActual) {
-  const nuevo = ladoActual === "fuerte" ? "debil" : "fuerte";
-  try {
-    const r = await postServidor({ accion: "guardarConfig", clasif: { [cod]: nuevo } });
-    if (!r.ok) throw new Error(r.msg || r.error);
-    CONFIG = r.config || CONFIG;
-    aplicarDatosMes();
-  } catch (e) { setSrc("err", "✗ No se pudo cambiar la clasificación: " + e.message); }
-}
-
-// ================================================================
-//  EXPORTAR (todos: cada uno exporta lo que ve)
-// ================================================================
-function cargarScript(src) {
-  return new Promise((res, rej) => {
-    if (document.querySelector(`script[src="${src}"]`)) { if (window.XLSX) return res(); }
-    const s = document.createElement("script");
-    s.src = src; s.onload = res; s.onerror = () => rej(new Error("No se pudo cargar el generador de Excel (¿sin internet?)."));
-    document.head.appendChild(s);
-  });
-}
-
-function sucsVisibles(area) {
-  const todas = Object.keys((state.tabs || {})[area] || {});
-  return current === "Grupo Kyoto" || !current ? SUC_ORDER.filter(s => todas.includes(s)).concat(todas.filter(s => !SUC_ORDER.includes(s))) : [current];
-}
-
-function filasIndicadoresXls(area) {
-  const out = [];
-  sucsVisibles(area).forEach(suc => (state.tabs[area][suc] || []).forEach(m => {
-    const suma = col => m.dist.filter(d => d.col === col).reduce((a, d) => a + d.cnt, 0);
-    out.push({ "Sucursal": suc, "Sigla": m.s, "Indicador": shortName(m.name), "Objetivo %": m.obj || "",
-      "Respondieron": m.base, "% favorable": m.base > 0 ? Math.round(m.fav * 10) / 10 : "",
-      "Estado": m.base <= 0 ? "Sin datos" : m.obj <= 0 ? "Informativo" : m.fav >= m.obj ? "Cumple" : "Bajo objetivo",
-      "Favorables (5 · Sí · Definit.)": suma("g"), "Intermedios (4 · Prob.)": suma("y"), "No favorables (1-3 · No)": suma("r") });
-  }));
-  return out;
-}
-function filasVerbasXls(area) {
-  const out = [];
-  sucsVisibles(area).forEach(suc => {
-    const v = ((state.verbas || {})[area] || {})[suc]; if (!v) return;
-    v.fuertes.forEach(x => out.push({ "Sucursal": suc, "Tipo": "Punto fuerte", "Categoría": x.cat, "Detalle": x.txt, "Menciones": x.n }));
-    v.debiles.forEach(x => out.push({ "Sucursal": suc, "Tipo": "Punto débil", "Categoría": x.cat, "Detalle": x.txt, "Menciones": x.n }));
-  });
-  return out;
-}
-function filasAlertasXls(filas) {
-  return filas.map(f => ({ "Tipo": f.tipo === "Interna" ? "Alerta interna" : f.tipo, "Sucursal": f.suc, "Origen": f.org, "Cliente": f.cli,
-    "Fecha": f.fec, "Verbalización": f.verb, "Plan de acción": f.plan, "Responsable": f.resp,
-    "Fecha del plan": fechaCorta(f.fecPlan), "Estado": f.estado || "Sin plan" }));
-}
-function filasTrainingXls() {
-  if (!TRAINING || !TRAINING.personas) return [];
-  const cargo = $("cargoSel").value;
-  return TRAINING.personas.filter(p => (!cargo || cargo === "Todos" || p.cargo === cargo) && (current === "Grupo Kyoto" || !current || p.sucursal === current))
-    .map(p => ({ "Nombre": p.nombre, "Cargo": p.cargo, "Sucursal": p.sucursal, "% avance": p.pct, "Cursos pendientes": (p.pend || []).join(", ") }));
-}
-
-function nombreSeccion() {
-  return { ventas: "Ventas", posventa: "Posventa", training: "Training", planes: "Planes de acción",
-           alertas: "Alertas " + VISTAS[tipoAlerta].titulo }[activeTab] || activeTab;
-}
-
-async function exportarExcel() {
-  try {
-    await cargarScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
-    const wb = XLSX.utils.book_new();
-    const agregar = (nombre, filas) => {
-      if (!filas.length) return;
-      const ws = XLSX.utils.json_to_sheet(filas);
-      ws["!cols"] = Object.keys(filas[0]).map(k => ({ wch: Math.min(60, Math.max(10, k.length + 2, ...filas.map(f => String(f[k] == null ? "" : f[k]).length + 1).slice(0, 200))) }));
-      XLSX.utils.book_append_sheet(wb, ws, nombre.slice(0, 31));
-    };
-    if (activeTab === "ventas" || activeTab === "posventa") {
-      agregar("Indicadores", filasIndicadoresXls(activeTab));
-      agregar("Verbalizaciones", filasVerbasXls(activeTab));
-      agregar("Alertas", filasAlertasXls((ALERTAS_FILAS[activeTab] || []).filter(f => current === "Grupo Kyoto" || f.suc === current)));
-    } else if (activeTab === "alertas") agregar("Alertas", filasAlertasXls(VISIBLES[tipoAlerta]));
-    else if (activeTab === "planes") agregar("Planes de acción", filasAlertasXls(VISIBLES.planes));
-    else if (activeTab === "training") agregar("Training", filasTrainingXls());
-    if (!wb.SheetNames.length) { setSrc("err", "No hay datos para exportar en esta vista."); return; }
-    const partes = ["Canvas VOC", nombreSeccion(), activeTab === "training" ? "" : rdEtiquetaMes(MES_ACTUAL), current].filter(Boolean);
-    XLSX.writeFile(wb, partes.join(" - ").replace(/[\\/:*?"<>|]/g, "-") + ".xlsx");
-  } catch (e) { setSrc("err", "✗ " + e.message); }
-}
-
-// PDF: la misma pantalla, con el logo de Nissan Kyoto arriba (el navegador
-// abre la ventana de impresión: elegir "Guardar como PDF").
-function exportarPDF() {
-  const area = areaActual() === "posventa" ? "Posventa" : "Ventas";
-  $("prTitulo").textContent = "Voz del Cliente · " + nombreSeccion();
-  $("prSub").textContent = [(activeTab === "alertas" || activeTab === "planes") ? area : "", current,
-                            activeTab === "training" ? "" : rdEtiquetaMes(MES_ACTUAL)].filter(Boolean).join(" · ");
-  const hoy = new Date();
-  $("prGen").textContent = "Generado el " + hoy.toLocaleDateString("es-AR") + " " + hoy.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) +
-    (USUARIO ? " por " + (USUARIO.nombre || USUARIO.email) : "");
-  window.print();
 }
 
 // ================================================================
@@ -3376,16 +2616,21 @@ document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
 
 $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
 
-// ---- Tablas: ver el caso completo y filtros (Alertas y Planes) ----
+// ---- Tablas: botones, celdas editables y filtros (Alertas y Planes) ----
 ["alertas", "planesAcc"].forEach(id => {
   const cont = $(id);
   cont.addEventListener("click", e => {
     const t = e.target;
+    const alta = t.closest && t.closest("[data-alta]");
+    if (alta) { abrirModal(alta.dataset.alta, null); return; }
     const lim = t.closest && t.closest("[data-lim]");
     if (lim) { filtros[lim.dataset.lim] = {}; render(); return; }
-    const b = t.closest && t.closest("[data-ver]");
-    if (b) abrirDetalle(b.dataset.ver, +b.dataset.i);
+    const btn = t.closest && t.closest(".al-add");
+    if (btn) { abrirModal(btn.dataset.v, +btn.dataset.i); return; }
+    const celda = t.closest && t.closest("td.ed");
+    if (celda) abrirModal(celda.dataset.v, +celda.dataset.i, celda.dataset.campo);
   });
+  // filtros estilo Sheets: repinta solo las filas, sin perder el foco
   cont.addEventListener("input", e => {
     const f = e.target.closest && e.target.closest("input.alf");
     if (!f) return;
@@ -3403,61 +2648,32 @@ $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
     pintarFilas(vista);
   });
 });
-$("dtCerrar").onclick = cerrarDetalle;
-$("dtGuardar").onclick = guardarDetalle;
-["detModal", "subirModal", "usrModal", "objModal"].forEach(id =>
-  $(id).addEventListener("click", e => { if (e.target.id === id) $(id).hidden = true; }));
+$("pmCancel").onclick = cerrarModal;
+$("pmSave").onclick = guardarModal;
+$("planModal").addEventListener("click", e => { if (e.target.id === "planModal") cerrarModal(); });
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") ["detModal", "subirModal", "usrModal", "objModal"].forEach(id => { $(id).hidden = true; });
-  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("detModal").hidden) guardarDetalle();
+  if (e.key === "Escape" && !$("planModal").hidden) cerrarModal();
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("planModal").hidden) guardarModal();
 });
 $("alTipoSel").onchange = e => { tipoAlerta = e.target.value; filtroAlerta = null; render(); };
 ["alAreaSel", "plAreaSel"].forEach(id => {
-  $(id).onchange = e => { ultimaArea = e.target.value; filtroAlerta = null; renderPills(); render(); };
-});
-// ---- Acciones del encabezado ----
-$("xlsBtn").onclick = exportarExcel;
-$("pdfBtn").onclick = exportarPDF;
-$("subirBtn").onclick = abrirSubir;
-$("usrBtn").onclick = abrirUsuarios;
-$("objBtn").onclick = abrirObjetivos;
-$("subirArchivo").onchange = e => { const f = e.target.files[0]; if (f) leerSubida(f); };
-const zona = $("subirZona");
-["dragenter", "dragover"].forEach(ev => zona.addEventListener(ev, e => { e.preventDefault(); zona.classList.add("sobre"); }));
-["dragleave", "drop"].forEach(ev => zona.addEventListener(ev, e => { e.preventDefault(); zona.classList.remove("sobre"); }));
-zona.addEventListener("drop", e => { const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) leerSubida(f); });
-$("subirArea").onchange = resumenSubida;
-$("subirMes").onchange = resumenSubida;
-$("subirOk").onclick = guardarSubida;
-$("subirCancel").onclick = cerrarSubir;
-$("usrAgregar").onclick = () => { USR_LISTA = leerUsuariosDeTabla(); USR_LISTA.push({ email: "", nombre: "", cargo: "", areas: ["posventa"], sucursales: [], training: false, activo: true }); dibujarUsuarios(); };
-$("usrTabla").addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-borrar]");
-  if (b) { USR_LISTA = leerUsuariosDeTabla(); USR_LISTA.splice(+b.dataset.borrar, 1); dibujarUsuarios(); }
-});
-$("usrTabla").addEventListener("change", e => {
-  const t = e.target, tr = t.closest && t.closest("tr");
-  if (!tr) return;
-  if (t.dataset.k === "todas") tr.querySelectorAll("[data-suc]").forEach(x => { x.disabled = t.checked; if (t.checked) x.checked = false; });
-  if (t.dataset.k === "calidad") { USR_LISTA = leerUsuariosDeTabla(); dibujarUsuarios(); }
-});
-$("usrGuardar").onclick = guardarUsuarios;
-$("usrCerrar").onclick = () => { $("usrModal").hidden = true; };
-$("objArea").onchange = dibujarObjetivos;
-$("objGuardar").onclick = guardarObjetivos;
-$("objCerrar").onclick = () => { $("objModal").hidden = true; };
-$("verbas").addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-flip]");
-  if (b) voltearVerba(b.dataset.flip, b.dataset.lado);
+  $(id).onchange = e => {
+    ultimaArea = e.target.value;   // cambia el área sin salir de la solapa
+    filtroAlerta = null;
+    renderPills();
+    render();
+  };
 });
 $("cmpSel").onchange = renderBars;
+$("uploadBtn").onclick = () => $("fileInp").click();
+$("fileInp").onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ""; };
 $("periodoInp").onchange = e => { state.periodo = e.target.value.trim(); try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (x) {} };
 $("resetBtn").onclick = () => {
   try { localStorage.removeItem(LS_KEY); } catch (e) {}
   state = buildDefault(); current = null;
   renderPills(); render();
   const st = $("status"); st.className = "status ok"; st.textContent = "✓ Datos locales borrados. Volviendo a cargar desde el Sheet…";
-  cargarTodo(true);
+  fetchLive(true);
 };
 $("themeBtn").onclick = () => {
   const root = document.documentElement;
@@ -3480,12 +2696,12 @@ $("fuenteToggle").onclick = () => {
 };
 
 // ---- Conexión en vivo ----
-$("connectBtn").onclick = () => cargarTodo(true);
+$("connectBtn").onclick = () => fetchLive(true);
 $("logoutBtn").onclick = () => { limpiarSesion(); vaciarDatos(); mostrarLogin("Cerraste la sesión."); };
-$("srcUrl").onkeydown = e => { if (e.key === "Enter") cargarTodo(true); };
+$("srcUrl").onkeydown = e => { if (e.key === "Enter") fetchLive(true); };
 $("srcUrl").onchange = e => { try { localStorage.setItem(LS_URL, e.target.value.trim()); } catch (x) {} };
 $("autoSel").onchange = e => setAuto(parseInt(e.target.value, 10) || 0);
-$("mesSel").onchange = e => { if (e.target.value) cargarMes(e.target.value).catch(err => setSrc("err", "✗ " + err.message)); };
+$("mesSel").onchange = e => aplicarMes(e.target.value);
 $("cargoSel").onchange = () => renderTraining();
 $("trainUrl").onchange = e => { try { localStorage.setItem(LS_TRAIN, e.target.value.trim()); } catch (x) {} };
 $("trainUrl").onkeydown = e => { if (e.key === "Enter") fetchTraining(false); };
@@ -3505,7 +2721,7 @@ try {
   if (vocUrl) {
     // conexión automática: cualquiera que abra el link ve los datos en vivo
     if (savedAuto && +savedAuto > 0) setAuto(+savedAuto);   // setAuto ya trae los datos
-    else cargarTodo(false);
+    else fetchLive(false);
   } else if (trainUrl) {
     fetchTraining(true);
   }

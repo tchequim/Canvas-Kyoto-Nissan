@@ -99,7 +99,7 @@
 
 
   /* ---- Canvas: tablas de alertas y planes ---- */
-  table.al-tab { min-width: 900px; }          /* ahora son 4-6 columnas: el lápiz queda a la vista */
+  .voc table.al-tab { min-width: 900px; }          /* ahora son 4-6 columnas: el lápiz queda a la vista */
   .al-tab td.org { min-width: 200px; max-width: 280px; }
   .al-tab td.acc { position: sticky; right: 0; background: var(--surface); box-shadow: -6px 0 8px -6px rgba(0,0,0,.12); }
   .al-sub { display: block; font-size: 11px; font-weight: 500; color: var(--ink-faint); margin-top: 2px; }
@@ -113,6 +113,35 @@
   .est-no { background: var(--surface-2); color: var(--ink-faint); }
   .pl-resumen { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 2px 10px; }
   .pl-resumen .est { font-size: 12px; padding: 4px 12px; }
+  .pl-resumen { align-items: center; }
+  .pl-quitados { margin-left: auto; }
+  .pl-txt { white-space: pre-line; }
+  /* Planes de acción por cliente: siglas de todas sus alertas */
+  .al-tab td.sigs { min-width: 150px; max-width: 240px; }
+  .sigs { display: flex; flex-wrap: wrap; gap: 4px; }
+  .sig { display: inline-block; padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: .02em;
+    background: color-mix(in srgb, var(--bad) 11%, transparent); color: var(--bad); white-space: nowrap; cursor: default; }
+  .sig.sig-int { background: color-mix(in srgb, var(--warn) 18%, transparent); color: color-mix(in srgb, var(--warn) 60%, var(--ink)); }
+  .al-tab td.acc { white-space: nowrap; }
+  .al-tab td.acc .al-add { display: inline-grid; vertical-align: middle; }
+  .pl-tab td.fec { width: 92px; }
+  .pl-tab td.cli { white-space: normal; min-width: 170px; }
+  .al-tab td.acc .al-add + .al-add { margin-left: 4px; }
+  .al-quitar:hover { color: var(--bad) !important; border-color: var(--bad) !important; }
+  .al-tab tr.oculto td { opacity: .6; }
+  /* aplicar el plan a otros clientes */
+  .dt-copiar { margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; padding: 0 12px; }
+  .dt-copiar summary { cursor: pointer; padding: 10px 0; font-size: 12.5px; font-weight: 800; color: var(--ink); }
+  .dt-copiar summary span { color: var(--brand); }
+  .dt-copiar[open] { padding-bottom: 12px; }
+  .dt-copiar input[type=search] { width: 100%; font-family: var(--font); font-size: 13px; color: var(--ink); background: var(--surface-2);
+    border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 9px; margin-bottom: 8px; }
+  .dt-copiar-lista { max-height: 220px; overflow-y: auto; display: grid; gap: 2px; }
+  .cp-it { display: flex; gap: 9px; align-items: flex-start; padding: 6px 4px; border-radius: 7px; cursor: pointer; font-size: 12.5px; color: var(--ink); }
+  .cp-it:hover { background: var(--surface-2); }
+  .cp-it input { margin-top: 2px; accent-color: var(--brand); }
+  .cp-it small { display: block; color: var(--ink-muted); font-size: 11px; margin-top: 1px; }
+  .cp-it em { color: var(--warn); font-style: normal; font-weight: 700; }
   .vn { color: var(--ink-faint); font-weight: 700; font-size: 11px; }
   .vflip { margin-left: auto; flex: 0 0 auto; border: 1px solid var(--border); background: var(--surface); color: var(--ink-faint);
     border-radius: 6px; width: 24px; height: 22px; cursor: pointer; font-size: 12px; line-height: 1; }
@@ -1077,7 +1106,7 @@
     <div id="planesAccView" hidden>
       <div class="section-t">
         <h2 id="planesAccTitle">Planes de acción</h2>
-        <span class="hint">el seguimiento de todas las alertas del mes: plan, responsable, fecha y estado</span>
+        <span class="hint">un cliente por fila con todas sus alertas del mes y un solo plan: responsable, fecha y estado</span>
         <span class="cargo-wrap" style="margin-left:auto"><label for="plAreaSel">Área:</label>
           <select id="plAreaSel" aria-label="Área de los planes">
             <option value="ventas">Ventas</option>
@@ -1104,6 +1133,11 @@
             <label>Fecha<input id="dtFecha" type="date"></label>
             <label>Estado<select id="dtEstado"><option>Abierto</option><option>Cerrado</option></select></label>
           </div>
+          <details class="dt-copiar" id="dtCopiarBox">
+            <summary>Aplicar este plan también a otros clientes <span id="dtCopiarN"></span></summary>
+            <input id="dtCopiarBuscar" type="search" placeholder="Buscar cliente, sucursal o indicador…" aria-label="Buscar cliente">
+            <div id="dtCopiarLista" class="dt-copiar-lista"></div>
+          </details>
         </div>
         <div class="modal-btns">
           <span class="modal-msg" id="dtMsg"></span>
@@ -2255,8 +2289,8 @@ function urlVOC(base, extra) {
 function vaciarDatos() {
   state = buildDefault(); current = null;
   MES_DATOS = null; MES_ACTUAL = ""; PLANES_MES = {}; MESES = [];
-  ALERTAS = { ventas: [], posventa: [] }; ALERTAS_FILAS = { ventas: [], posventa: [] };
-  BASE = { voc: [], interna: [], indicador: [], planes: [] }; VISIBLES = { voc: [], interna: [], indicador: [], planes: [] };
+  ALERTAS = { ventas: [], posventa: [] }; ALERTAS_FILAS = { ventas: [], posventa: [] }; PLANES_GRUPOS = { ventas: [], posventa: [] };
+  BASE ={ voc: [], interna: [], indicador: [], planes: [] }; VISIBLES = { voc: [], interna: [], indicador: [], planes: [] };
   poblarMeses([]);
   renderPills(); render();
 }
@@ -2417,30 +2451,33 @@ function alertasActuales() {
 // Columnas posibles. "html" arma la celda; "val" es lo que usan los filtros.
 const COL_DEF = {
   org:    { t: "Origen",           f: "sel", cls: "org" },
+  sigs:   { t: "Origen",           f: "sigs", cls: "sigs", val: f => (f.sigs || []).join(", ") || f.orgTxt || "", html: f => celdaSigs(f) },
   suc:    { t: "Sucursal",         f: "sel" },
   cli:    { t: "Cliente",          f: "txt", cls: "cli",
             html: f => `${esc2(f.cli)}<span class="al-sub">${esc2(f.suc)}${f.fec ? " · " + esc2(f.fec) : ""}</span>` },
   verb:   { t: "Verbalización",    f: "txt", cls: "verb" },
   plan:   { t: "Plan de acción",   f: "est", cls: "plan", html: f => celdaPlan(f) },
   resp:   { t: "Responsable",      f: "sel" },
-  fecPlan:{ t: "Fecha",            f: "txt", cls: "fec" },
+  fecPlan:{ t: "Fecha",            f: "txt", cls: "fec", val: f => fechaCorta(f.fecPlan), html: f => f.fecPlan ? esc2(fechaCorta(f.fecPlan)) : "—" },
   estado: { t: "Estado",           f: "sel", val: f => f.estado || "Sin plan", html: f => chipEstado(f.estado) },
 };
 
-// Alertas: las tres vistas muestran lo mismo (Origen, Cliente, Verbalización,
-// Plan de acción). Planes de acción: el seguimiento de todos los casos.
+// Alertas: una fila por alerta (Origen, Cliente, Verbalización).
+// Planes de acción: una fila por CLIENTE con todas sus alertas del mes y un solo plan.
 const VISTAS = {
-  voc:       { cols: ["org", "cli", "verb", "plan"], titulo: "VOC 01",
+  voc:       { cols: ["org", "cli", "verb"], titulo: "VOC 01",
                hint: "clientes que calificaron 4 o menos la satisfacción general" },
-  interna:   { cols: ["org", "cli", "verb", "plan"], titulo: "Alertas internas",
+  interna:   { cols: ["org", "cli", "verb"], titulo: "Alertas internas",
                hint: "las que figuran con Alerta Interna = SI en el Sheet de Llamados de acompañamiento" },
-  indicador: { cols: ["org", "cli", "verb", "plan"], titulo: "Indicadores",
+  indicador: { cols: ["org", "cli", "verb"], titulo: "Indicadores",
                hint: "respuestas de 4 o menos / No en indicadores que la sucursal no cumplió" },
-  planes:    { cols: ["org", "cli", "plan", "resp", "fecPlan", "estado"], titulo: "Planes de acción",
-               hint: "seguimiento de todas las alertas del mes" },
+  planes:    { cols: ["cli", "sigs", "plan", "resp", "fecPlan", "estado"], titulo: "Planes de acción",
+               hint: "un plan por cliente para todas sus alertas del mes" },
 };
 
 let ALERTAS_FILAS = { ventas: [], posventa: [] };   // filas de la solapa Alertas (las arma el motor)
+let PLANES_GRUPOS = { ventas: [], posventa: [] };   // un cliente por fila, con todas sus alertas (armarPlanes)
+let VER_QUITADOS = false;                           // Planes de acción: ver los clientes quitados de la lista
 let tipoAlerta = "voc";                             // voc | interna | indicador
 let filtros = { voc: {}, interna: {}, indicador: {}, planes: {} };
 let BASE = { voc: [], interna: [], indicador: [], planes: [] };
@@ -2462,15 +2499,24 @@ function celdaPlan(f) {
   const extra = [f.resp && "👤 " + esc2(f.resp), f.fecPlan && "📅 " + esc2(fechaCorta(f.fecPlan))].filter(Boolean).join(" · ");
   return `<div class="pl-txt">${esc2(f.plan)}</div><div class="pl-meta">${chipEstado(f.estado)}${extra ? " " + extra : ""}</div>`;
 }
+// Origen de un cliente: las siglas de todas sus alertas (VOC01 · VOC02 · P04…)
+function celdaSigs(f) {
+  if (!f.sigs || !f.sigs.length) return `<span class="al-vacio">${esc2(f.orgTxt || "—")}</span>`;
+  return `<span class="sigs">${f.sigs.map(s => `<span class="sig${s === "Interna" ? " sig-int" : ""}" title="${esc((f.sigTit || {})[s] || s)}">${esc2(s)}</span>`).join("")}</span>`;
+}
 
 // Orden: todas las VOC02 juntas, después las P03, etc.
 function ordOrg(org) {
   const s = String(org || "").trim();
-  if (/^alerta interna/i.test(s)) return [9, 999, "zzz"];
+  if (/^(alerta )?interna/i.test(s)) return [9, 999, "zzz"];
   const sig = sigOrg(s).toUpperCase();
   const m = sig.match(/^([A-Z]+)0*(\d+)/);
   if (!m) return [8, 999, sig];
   return [m[1] === "VOC" ? 0 : (m[1] === "P" ? 1 : 2), parseInt(m[2], 10), sig];
+}
+function cmpSig(a, b) {
+  const A = ordOrg(a), B = ordOrg(b);
+  return A[0] - B[0] || A[1] - B[1] || (A[2] < B[2] ? -1 : A[2] > B[2] ? 1 : 0);
 }
 function cmpFilaPlan(a, b) {
   const A = ordOrg(a.org), B = ordOrg(b.org);
@@ -2482,10 +2528,97 @@ function cmpFilaPlan(a, b) {
   return String(a.cli || "") < String(b.cli || "") ? -1 : 1;
 }
 
+// ---- Planes por CLIENTE ----
+// Junta todas las alertas de un mismo cliente (VOC, indicadores e internas) en una fila,
+// con un solo plan. El plan se guarda con la clave area|mes|cliente|cliente. Si el cliente
+// tenía planes cargados por indicador (antes de este cambio, o traídos del Sheet anterior),
+// se muestran juntos hasta que se guarde el plan del cliente.
+function claveCliente(area, cli) { return rdClave(area, MES_ACTUAL, cli, "cliente"); }
+
+function armarPlanes() {
+  PLANES_GRUPOS = { ventas: [], posventa: [] };
+  ["ventas", "posventa"].forEach(area => {
+    const d = (MES_DATOS && MES_DATOS.datos && MES_DATOS.datos[area]) || { encuestas: [], preguntas: {} };
+    const pr = d.preguntas || {};
+    const mapa = new Map();
+    const nuevo = (cli, suc) => {
+      const g = { tipo: "Cliente", area, cli, suc: suc || "", fec: "", filas: [], sigs: [], sigTit: {}, enc: null,
+                  orgTxt: "", desvio: "", clave: claveCliente(area, cli) };
+      mapa.set(rdNorm(cli), g);
+      return g;
+    };
+    const ponerSig = (g, sig, tit) => { if (sig && !g.sigs.includes(sig)) { g.sigs.push(sig); g.sigTit[sig] = tit || sig; } };
+
+    (ALERTAS_FILAS[area] || []).forEach(f => {
+      const k = rdNorm(f.cli);
+      if (!k) return;
+      const g = mapa.get(k) || nuevo(f.cli, f.suc);
+      g.filas.push(f);
+      if (f.tipo === "Interna") ponerSig(g, "Interna", "Alerta interna (Llamados de acompañamiento)");
+      else ponerSig(g, f.s, pr[f.s]);
+      if (f.enc && !g.enc) { g.enc = f.enc; g.cli = f.cli; g.suc = f.suc; g.fec = f.fec; }
+      if (!g.suc) g.suc = f.suc;
+      if (!g.fec) g.fec = f.fec;
+    });
+
+    // planes por cliente normalizado (los del cliente y los viejos, por indicador)
+    const porCli = new Map();
+    Object.keys(PLANES_MES).forEach(key => {
+      const p = PLANES_MES[key];
+      if (!p || p.area !== area || !p.cli) return;
+      const k = rdNorm(p.cli);
+      if (!porCli.has(k)) porCli.set(k, []);
+      porCli.get(k).push(key);
+    });
+
+    // clientes con plan pero sin alertas este mes (ej.: traídos del Sheet anterior)
+    porCli.forEach((keys, k) => {
+      if (mapa.has(k)) return;
+      const p = keys.map(key => PLANES_MES[key]).find(x => x.plan);
+      if (!p) return;
+      const g = nuevo(p.cli, p.suc);
+      g.enc = d.encuestas.find(e => rdNorm(e.cli) === k) || null;
+      if (g.enc) { g.fec = g.enc.fec; g.cli = g.enc.cli; if (!g.suc) g.suc = g.enc.suc; }
+      keys.forEach(key => { const s = PLANES_MES[key].s; if (s && !/^(cliente|sheet)$/i.test(s)) ponerSig(g, s, pr[s]); });
+      g.orgTxt = p.org || "Plan del Sheet anterior";
+    });
+
+    mapa.forEach((g, k) => {
+      const keys = porCli.get(k) || [];
+      const directo = PLANES_MES[g.clave];
+      const viejos = keys.filter(key => key !== g.clave && PLANES_MES[key].plan).map(key => PLANES_MES[key]);
+      let plan = "", resp = "", fec = "", estado = "";
+      if (directo && directo.estado) {                         // el plan del cliente (guardado desde la página)
+        plan = directo.plan || ""; resp = directo.resp || ""; fec = directo.fec || ""; estado = directo.estado;
+      } else if (viejos.length) {                              // planes viejos por indicador: se muestran juntos
+        plan = [...new Set(viejos.map(p => p.plan).filter(Boolean))].join("\n— ");
+        resp = [...new Set(viejos.map(p => p.resp).filter(Boolean))].join(", ");
+        fec = viejos.map(p => p.fec).filter(Boolean).sort().pop() || "";
+        estado = viejos.some(p => p.estado !== "Cerrado") ? "Abierto" : "Cerrado";
+      }
+      g.plan = plan; g.resp = resp; g.fecPlan = fec; g.estado = plan ? estado : "";
+      g.desvio = (directo && directo.desvio) || (viejos.find(p => p.desvio) || {}).desvio || "";
+      g.oculto = !!(directo && directo.oculto);
+      g.sigs.sort(cmpSig);
+      PLANES_GRUPOS[area].push(g);
+    });
+  });
+}
+
+function grupoDe(area, cli) {
+  const k = rdNorm(cli);
+  return (PLANES_GRUPOS[area] || []).find(g => rdNorm(g.cli) === k) || null;
+}
+
 // ---- Filtros de columna (estilo Sheets) ----
 function filtroCampo(vista, k, filas) {
   const c = COL_DEF[k], v = filtros[vista][k] || "";
   const act = v ? " act" : "";
+  if (c.f === "sigs") {
+    const todas = [...new Set(filas.flatMap(f => f.sigs || []))].sort(cmpSig);
+    const ops = todas.map(s => `<option value="${esc(s)}"${s === v ? " selected" : ""}>${esc2(s)}</option>`).join("");
+    return `<select class="alf${act}" data-k="${k}"><option value="">Todos</option>${ops}</select>`;
+  }
   if (c.f === "sel") {
     const vistos = new Map();
     filas.forEach(f => {
@@ -2509,6 +2642,7 @@ function pasaFiltros(vista, f) {
   return VISTAS[vista].cols.every(k => {
     const q = filtros[vista][k];
     if (!q) return true;
+    if (COL_DEF[k].f === "sigs") return (f.sigs || []).includes(q);
     const val = String(valCol(f, k)).trim();
     if (q === "__vacio__") return !val;
     if (q === "__con__")   return !!val;
@@ -2522,21 +2656,35 @@ function pasaFiltros(vista, f) {
 // ---- Armado de la tabla ----
 function tablaHTML(vista, elId) {
   const V = VISTAS[vista], filas = BASE[vista];
-  const info = PUEDE_EDITAR
-    ? "tocá el <b>✎</b> de cada fila para ver el caso completo y cargar el plan de acción"
-    : "tocá el <b>👁</b> de cada fila para ver el caso completo";
+  const esPlanes = vista === "planes";
+  const info = esPlanes
+    ? (PUEDE_EDITAR
+        ? (VER_QUITADOS ? "clientes quitados de esta lista · tocá <b>↺</b> para volver a mostrarlo"
+                        : "un plan por cliente para todas sus alertas · <b>✎</b> cargar el plan · <b>🗑</b> quitar de esta lista (sigue en Alertas)")
+        : "un plan por cliente para todas sus alertas · tocá el <b>👁</b> para ver el caso y el plan")
+    : (PUEDE_EDITAR ? "tocá el <b>✎</b> de cada fila para ver el caso completo y cargar el plan del cliente"
+                    : "tocá el <b>👁</b> de cada fila para ver el caso completo");
+  const unidad = n => esPlanes ? (n === 1 ? "cliente" : "clientes") : (n === 1 ? "caso" : "casos");
   return `
     <div class="al-bar">
-      <div class="al-info"><b id="alCount_${vista}">${filas.length}</b> ${filas.length === 1 ? "caso" : "casos"} · ${info}</div>
+      <div class="al-info"><b id="alCount_${vista}">${filas.length}</b> ${unidad(filas.length)} · ${info}</div>
       <button class="al-btn" type="button" data-lim="${vista}" title="Quitar todos los filtros">✕ Filtros</button>
     </div>
-    <div class="al-scroll"><table class="al-tab">
+    <div class="al-scroll"><table class="al-tab${esPlanes ? " pl-tab" : ""}">
       <thead>
         <tr>${V.cols.map(k => `<th>${COL_DEF[k].t}</th>`).join("")}<th class="no-print"></th></tr>
         <tr class="filtros no-print">${V.cols.map(k => `<th>${filtroCampo(vista, k, filas)}</th>`).join("")}<th></th></tr>
       </thead>
       <tbody id="${elId}"></tbody>
     </table></div>`;
+}
+
+function botonesFila(vista, f, i) {
+  const ver = `<button class="al-add" type="button" data-ver="${vista}" data-i="${i}"
+          title="${PUEDE_EDITAR ? (vista === "planes" ? "Ver el caso y cargar el plan del cliente" : "Ver el caso y cargar el plan") : "Ver el caso completo"}">${PUEDE_EDITAR ? "✎" : "👁"}</button>`;
+  if (vista !== "planes" || !PUEDE_EDITAR) return ver;
+  if (f.oculto) return `<button class="al-add" type="button" data-restaurar="${i}" title="Volver a mostrar en Planes de acción">↺</button>`;
+  return ver + `<button class="al-add al-quitar" type="button" data-quitar="${i}" title="Quitar de Planes de acción (sigue en Alertas)">🗑</button>`;
 }
 
 function pintarFilas(vista) {
@@ -2547,13 +2695,12 @@ function pintarFilas(vista) {
   VISIBLES[vista] = filas;
   if (!filas.length) {
     body.innerHTML = `<tr><td colspan="${V.cols.length + 1}" style="text-align:center;padding:26px;color:var(--ink-muted)">
-      ${BASE[vista].length ? "Ningún caso con esos filtros." : "No hay casos acá este mes."}</td></tr>`;
+      ${BASE[vista].length ? "Ningún caso con esos filtros." : (vista === "planes" && VER_QUITADOS ? "No hay clientes quitados." : "No hay casos acá este mes.")}</td></tr>`;
   } else {
-    body.innerHTML = filas.map((f, i) => `<tr class="${f.tipo === "Interna" ? "interna" : ""}">
+    body.innerHTML = filas.map((f, i) => `<tr class="${f.tipo === "Interna" ? "interna" : ""}${f.oculto ? " oculto" : ""}">
         ${V.cols.map(k => { const c = COL_DEF[k];
           return `<td class="${c.cls || ""}">${c.html ? c.html(f) : (f[k] ? esc2(f[k]) : "—")}</td>`; }).join("")}
-        <td class="acc no-print"><button class="al-add" type="button" data-ver="${vista}" data-i="${i}"
-          title="${PUEDE_EDITAR ? "Ver el caso y cargar el plan" : "Ver el caso completo"}">${PUEDE_EDITAR ? "✎" : "👁"}</button></td>
+        <td class="acc no-print">${botonesFila(vista, f, i)}</td>
       </tr>`).join("");
   }
   const c = $("alCount_" + vista);
@@ -2561,7 +2708,7 @@ function pintarFilas(vista) {
 }
 
 function ctxFiltros(clave) {
-  if (clave !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = clave; }
+  if (clave !== ctxTabla) { filtros = { voc: {}, interna: {}, indicador: {}, planes: {} }; ctxTabla = clave; VER_QUITADOS = false; }
 }
 
 // ---- Solapa ALERTAS ----
@@ -2589,26 +2736,47 @@ function renderAlertas() {
   pintarFilas(tipoAlerta);
 }
 
-// ---- Solapa PLANES DE ACCIÓN: el seguimiento de todas las alertas ----
+// ---- Solapa PLANES DE ACCIÓN: un cliente por fila ----
 function renderPlanesAcc() {
   const areaKey = areaActual();
   $("planesAccTitle").textContent = `Planes de acción · ${areaKey === "posventa" ? "Posventa" : "Ventas"} — ${current || ""}`;
   $("plAreaSel").value = areaKey;
   ctxFiltros("pl|" + areaKey + "|" + current + "|" + MES_ACTUAL);
-  let filas = (ALERTAS_FILAS[areaKey] || []).slice();
-  if (current && current !== "Grupo Kyoto") filas = filas.filter(f => f.suc === current);
-  BASE.planes = filas.sort((a, b) => (a.estado === "Abierto" ? 0 : a.estado ? 2 : 1) - (b.estado === "Abierto" ? 0 : b.estado ? 2 : 1) || cmpFilaPlan(a, b));
+  let grupos = (PLANES_GRUPOS[areaKey] || []).slice();
+  if (current && current !== "Grupo Kyoto") grupos = grupos.filter(g => g.suc === current);
+  const activos = grupos.filter(g => !g.oculto), quitados = grupos.filter(g => g.oculto);
+  if (!PUEDE_EDITAR || !quitados.length) VER_QUITADOS = false;
+  const ordEst = g => g.estado === "Abierto" ? 0 : g.estado ? 2 : 1;
+  BASE.planes = (VER_QUITADOS ? quitados : activos)
+    .sort((a, b) => ordEst(a) - ordEst(b) || String(a.cli).localeCompare(String(b.cli), "es"));
   if (!MES_DATOS) { $("planesAcc").innerHTML = `<div class="al-empty">Todavía no hay datos cargados.</div>`; return; }
-  const n = s => filas.filter(f => (f.estado || "") === s).length;
+  const n = s => activos.filter(g => (g.estado || "") === s).length;
+  const botonQuitados = PUEDE_EDITAR && (quitados.length || VER_QUITADOS)
+    ? `<button class="al-btn pl-quitados no-print" type="button" data-quitados="1">${VER_QUITADOS ? "← Volver a la lista" : "🗑 Quitados: " + quitados.length}</button>` : "";
   $("planesAcc").innerHTML = `<div class="pl-resumen">
       <span class="est est-ab">Abiertos: ${n("Abierto")}</span>
       <span class="est est-ok">Cerrados: ${n("Cerrado")}</span>
-      <span class="est est-no">Sin plan: ${n("")}</span></div>` + tablaHTML("planes", "body_planes");
+      <span class="est est-no">Sin plan: ${n("")}</span>${botonQuitados}</div>` + tablaHTML("planes", "body_planes");
   pintarFilas("planes");
 }
 
-// ---- Ventana de DETALLE del caso (con el plan de acción) ----
-let detCtx = null;
+// Quitar un cliente de Planes de acción (o volver a mostrarlo). En Alertas sigue igual.
+async function quitarDePlanes(i, oculto) {
+  const g = VISIBLES.planes[i];
+  if (!g || !PUEDE_EDITAR) return;
+  if (oculto && !confirm(`¿Quitar a ${g.cli} de Planes de acción?\n\nSigue apareciendo en Alertas. Lo podés volver a mostrar desde "🗑 Quitados".`)) return;
+  try {
+    const r = await postServidor({ accion: "ocultarPlan", clave: g.clave, area: g.area, periodo: MES_ACTUAL, suc: g.suc, cli: g.cli, oculto });
+    if (!r || !r.ok) throw new Error((r && (r.msg || r.error)) || "No se pudo guardar.");
+    PLANES_MES[g.clave] = r.plan;
+    armarPlanes();
+    render();
+  } catch (e) { setSrc("err", "✗ " + e.message); }
+}
+
+// ---- Ventana de DETALLE del caso (con el plan de acción del cliente) ----
+let detCtx = null;          // { f: fila elegida, g: cliente }
+let COPIAR_OTROS = [];      // clientes a los que se puede aplicar el mismo plan
 function detFila(etq, val) { return val ? `<div class="dt-f"><span>${etq}</span><b>${esc2(val)}</b></div>` : ""; }
 
 function detalleHTML(f) {
@@ -2616,19 +2784,15 @@ function detalleHTML(f) {
     return `<div class="dt-grid">${detFila("Sucursal", f.suc)}${detFila("Fecha del llamado", f.fec)}</div>
       <h4>Observación del llamado</h4><p class="dt-cita">${esc2(f.verb) || "—"}</p>`;
   }
-  if (f.tipo === "Plan" && !f.enc) {           // plan del Sheet viejo sin encuesta en Canvas
-    return `<div class="dt-grid">${detFila("Sucursal", f.suc)}${detFila("Origen", f.org)}</div>
-      ${f.verb ? `<h4>Desvío</h4><p class="dt-cita">${esc2(f.verb)}</p>` : ""}
-      <p class="dt-cod">Plan traído del Sheet anterior: este cliente no figura en las encuestas cargadas de este mes.</p>`;
-  }
   const e = f.enc || {}, pr = (MES_DATOS && MES_DATOS.datos[f.area] && MES_DATOS.datos[f.area].preguntas) || {};
+  const resaltar = f.resaltar || [f.s];
   const malas = Object.keys(e.r || {}).filter(s => !/^CL/.test(s) && rdEsMala(e.r[s]) && !RD_NO_EVALUAR.test(rdNorm(pr[s] || "")));
-  const resp = malas.map(s => `<li class="${s === f.s ? "esta" : ""}"><b>${esc2(s)}</b> ${esc2(pr[s] || "")}
+  const resp = malas.map(s => `<li class="${resaltar.includes(s) ? "esta" : ""}"><b>${esc2(s)}</b> ${esc2(pr[s] || "")}
       <span class="dt-v">→ ${esc2(e.r[s])}</span>${(e.w || {})[s] ? `<div class="dt-pq">“${esc2(e.w[s])}”</div>` : ""}</li>`).join("");
   const cl = ["CL1", "CL1.1", "CL2"].filter(s => e.r && e.r[s]);
   const acomp = [["Causa raíz", e.causa], ["Interacción con el cliente", e.inter], ["Acción preventiva", e.prev], ["Acción correctiva", e.corr]].filter(x => x[1]);
   return `<div class="dt-grid">
-      ${detFila("Sucursal", f.suc)}${detFila(f.area === "ventas" ? "Fecha de entrega" : "Fecha de entrega", e.fec)}
+      ${detFila("Sucursal", f.suc)}${detFila("Fecha de entrega", e.fec)}
       ${detFila("Fecha de ingreso", e.fecIng)}${detFila("Modelo", e.mod)}${detFila("VIN", e.vin)}
       ${detFila(f.area === "ventas" ? "Asesor de ventas" : "Asesor de servicio", e.ases)}${detFila("Técnico", e.tec)}
       ${detFila(f.area === "ventas" ? "Tipo de venta" : "Tipo de servicio", e.tipo)}${detFila("Contestó por", e.medio)}
@@ -2640,38 +2804,78 @@ function detalleHTML(f) {
     ${acomp.length ? `<h4>Acompañamiento cargado en Nissan</h4><div class="dt-acomp">${acomp.map(([k, v]) => `<div><span>${k}</span><p>${esc2(v)}</p></div>`).join("")}</div>` : ""}`;
 }
 
+// El caso completo de un cliente: su encuesta (con todas sus alertas marcadas) y sus alertas internas
+function cuerpoCliente(g) {
+  const partes = [];
+  if (g.enc) partes.push(detalleHTML({ area: g.area, suc: g.suc, enc: g.enc, resaltar: g.sigs }));
+  const ints = g.filas.filter(f => f.tipo === "Interna");
+  if (ints.length) partes.push(`${g.enc ? "" : `<div class="dt-grid">${detFila("Sucursal", g.suc)}</div>`}<h4>Alertas internas</h4>` +
+    ints.map(f => `<p class="dt-cita">${f.fec ? `<b>${esc2(f.fec)}</b> · ` : ""}${esc2(f.verb) || "—"}</p>`).join(""));
+  if (g.desvio) partes.push(`<h4>Desvío (Sheet anterior)</h4><p class="dt-cita">${esc2(g.desvio)}</p>`);
+  if (!g.enc && !ints.length) partes.unshift(`<div class="dt-grid">${detFila("Sucursal", g.suc)}${detFila("Origen", g.orgTxt)}</div>
+      <p class="dt-cod">Plan traído del Sheet anterior: este cliente no figura en las encuestas cargadas de este mes.</p>`);
+  return partes.join("");
+}
+
 function abrirDetalle(vista, i) {
   const f = VISIBLES[vista][i];
   if (!f) return;
-  detCtx = f;
-  $("dtTitulo").textContent = f.cli;
-  $("dtOrigen").textContent = f.org;
-  $("dtCuerpo").innerHTML = detalleHTML(f);
+  const g = vista === "planes" ? f : (grupoDe(f.area, f.cli) || f);
+  detCtx = { f, g };
+  $("dtTitulo").textContent = g.cli;
+  $("dtOrigen").textContent = vista === "planes"
+    ? [(g.sigs || []).join(" · ") || g.orgTxt, g.suc].filter(Boolean).join("  —  ")
+    : f.org;
+  $("dtCuerpo").innerHTML = vista === "planes" ? cuerpoCliente(g) : detalleHTML(f);
   const ed = PUEDE_EDITAR;
-  $("dtPlan").value = f.plan || ""; $("dtResp").value = f.resp || "";
-  $("dtFecha").value = f.fecPlan || ""; $("dtEstado").value = f.estado || "Abierto";
+  $("dtPlan").value = g.plan || ""; $("dtResp").value = g.resp || "";
+  $("dtFecha").value = /^\d{4}-\d{2}-\d{2}$/.test(g.fecPlan || "") ? g.fecPlan : ""; $("dtEstado").value = g.estado || "Abierto";
   ["dtPlan", "dtResp", "dtFecha", "dtEstado"].forEach(id => { $(id).disabled = !ed; });
   $("dtGuardar").hidden = !ed;
-  $("dtPlanLbl").textContent = ed ? "Plan de acción" : "Plan de acción (solo Calidad lo edita)";
+  const n = (g.sigs || []).length;
+  $("dtPlanLbl").textContent = (n > 1 ? `Plan de acción del cliente (para sus ${n} alertas: ${g.sigs.join(", ")})` : "Plan de acción del cliente") +
+    (ed ? "" : " — solo Calidad lo edita");
+  dibujarCopiar(g);
   $("dtMsg").textContent = ""; $("dtMsg").className = "modal-msg";
   $("detModal").hidden = false;
   if (ed) setTimeout(() => $("dtPlan").focus(), 30);
 }
 function cerrarDetalle() { $("detModal").hidden = true; detCtx = null; }
 
+// Aplicar el mismo plan a otros clientes del mes (misma área)
+function dibujarCopiar(g) {
+  const box = $("dtCopiarBox");
+  box.hidden = !PUEDE_EDITAR || !g.clave; box.open = false;
+  COPIAR_OTROS = (PLANES_GRUPOS[g.area] || []).filter(x => x !== g && x.clave !== g.clave && !x.oculto)
+    .sort((a, b) => (a.suc === g.suc ? 0 : 1) - (b.suc === g.suc ? 0 : 1) || String(a.suc).localeCompare(String(b.suc)) || String(a.cli).localeCompare(String(b.cli), "es"));
+  $("dtCopiarLista").innerHTML = COPIAR_OTROS.map((x, j) => `<label class="cp-it" data-txt="${esc(rdNorm(x.cli + " " + x.suc + " " + x.sigs.join(" ")))}">
+      <input type="checkbox" data-cp="${j}"><span><b>${esc2(x.cli)}</b><small>${esc2(x.suc)}${x.sigs.length ? " · " + esc2(x.sigs.join(", ")) : ""}${x.plan ? ` · <em>ya tiene plan: se reemplaza</em>` : ""}</small></span></label>`).join("")
+    || `<p class="al-vacio">No hay otros clientes este mes.</p>`;
+  $("dtCopiarBuscar").value = "";
+  contarCopiar();
+}
+function contarCopiar() {
+  const n = document.querySelectorAll("#dtCopiarLista input:checked").length;
+  $("dtCopiarN").textContent = n ? `· ${n} elegido${n > 1 ? "s" : ""}` : "";
+}
+function filtrarCopiar() {
+  const q = rdNorm($("dtCopiarBuscar").value);
+  document.querySelectorAll("#dtCopiarLista .cp-it").forEach(l => { l.hidden = !!q && !l.dataset.txt.includes(q); });
+}
+
 async function guardarDetalle() {
   if (!detCtx || !PUEDE_EDITAR) return;
-  const f = detCtx, msg = $("dtMsg"), btn = $("dtGuardar");
+  const g = detCtx.g, msg = $("dtMsg"), btn = $("dtGuardar");
   const d = { plan: $("dtPlan").value.trim(), resp: $("dtResp").value.trim(), fec: $("dtFecha").value, estado: $("dtEstado").value };
-  btn.disabled = true; msg.textContent = "Guardando…"; msg.className = "modal-msg";
+  const otros = [...document.querySelectorAll("#dtCopiarLista input:checked")].map(c => COPIAR_OTROS[+c.dataset.cp]).filter(Boolean);
+  if (otros.length && !d.plan) { msg.textContent = "✗ Escribí el plan antes de aplicarlo a otros clientes."; msg.className = "modal-msg err"; return; }
+  const items = [g, ...otros].map(x => ({ clave: x.clave, area: x.area, periodo: MES_ACTUAL, suc: x.suc, cli: x.cli }));
+  btn.disabled = true; msg.textContent = otros.length ? `Guardando el plan para ${items.length} clientes…` : "Guardando…"; msg.className = "modal-msg";
   try {
-    const q = new URLSearchParams(Object.assign({ accion: "guardarPlan", clave: f.clave, area: f.area, periodo: MES_ACTUAL,
-      suc: f.suc, cli: f.cli, s: f.s || "" }, d)).toString();
-    const r = await jsonp(urlVOC(servidorUrl(), q), 30000);
-    if (respuestaAcceso(r)) { cerrarDetalle(); return; }
+    const r = await postServidor(Object.assign({ accion: "guardarPlanes", items }, d));
     if (!r || !r.ok) throw new Error((r && (r.msg || r.error)) || "No se pudo guardar");
-    PLANES_MES[f.clave] = r.plan;
-    Object.assign(f, { plan: r.plan.plan, resp: r.plan.resp, fecPlan: r.plan.fec, estado: r.plan.estado });
+    Object.assign(PLANES_MES, r.planes || {});
+    armarPlanes();
     cerrarDetalle();
     render();
   } catch (e) { msg.textContent = "✗ " + e.message; msg.className = "modal-msg err"; }
@@ -2985,26 +3189,10 @@ function aplicarDatosMes() {
     verbas[area] = calcularVerbalizaciones(d.encuestas, CONFIG.clasif || {});
     ALERTAS[area] = alertasPorCliente(d);
     const filas = filasAlertas(area, MES_ACTUAL, d, tabs[area], internas);
-    filas.forEach(f => {
-      f.area = area;
-      const p = PLANES_MES[f.clave];
-      f.plan = p ? p.plan : ""; f.resp = p ? p.resp : ""; f.fecPlan = p ? p.fec : ""; f.estado = p ? p.estado : "";
-    });
-    // Planes sin alerta en la tabla (ej.: traídos del Sheet viejo, de un indicador que se cumplió o
-    // de un cliente que no está en el RawData): igual se ven en "Planes de acción".
-    const ya = new Set(filas.map(f => f.clave));
-    Object.keys(PLANES_MES).forEach(k => {
-      const p = PLANES_MES[k];
-      if (ya.has(k) || p.area !== area) return;
-      const enc = d.encuestas.find(e => e.cli === p.cli && (!p.suc || e.suc === p.suc)) || null;
-      const r = enc && p.s && enc.r ? enc.r[p.s] : "";
-      filas.push({ tipo: "Plan", s: p.s || "", area, clave: k, suc: p.suc || "", cli: p.cli || "", fec: enc ? enc.fec : "",
-        org: p.s && r ? `${p.s} · ${(d.preguntas || {})[p.s] || p.s}  →  ${r}` : (p.org || "Plan del Sheet anterior"),
-        verb: p.desvio || (enc && enc.com ? '"' + enc.com + '"' : ""), enc,
-        plan: p.plan, resp: p.resp, fecPlan: p.fec, estado: p.estado });
-    });
+    filas.forEach(f => { f.area = area; });
     ALERTAS_FILAS[area] = filas;
   });
+  armarPlanes();             // Planes de acción: un cliente por fila con todas sus alertas
   MES_LIVE = true; MES_TIENE_ALERTAS = true; MES_TIENE_PLANES = true;
   state = { periodo: rdEtiquetaMes(MES_ACTUAL), fileName: null, tabs, verbas };
   $("periodoInp").value = state.periodo;
@@ -3323,8 +3511,12 @@ function filasVerbasXls(area) {
 }
 function filasAlertasXls(filas) {
   return filas.map(f => ({ "Tipo": f.tipo === "Interna" ? "Alerta interna" : f.tipo, "Sucursal": f.suc, "Origen": f.org, "Cliente": f.cli,
-    "Fecha": f.fec, "Verbalización": f.verb, "Plan de acción": f.plan, "Responsable": f.resp,
-    "Fecha del plan": fechaCorta(f.fecPlan), "Estado": f.estado || "Sin plan" }));
+    "Fecha": f.fec, "Verbalización": f.verb }));
+}
+function filasPlanesXls(grupos) {
+  return grupos.map(g => ({ "Cliente": g.cli, "Sucursal": g.suc, "Origen": (g.sigs || []).join(", ") || g.orgTxt,
+    "Alertas": (g.sigs || []).length, "Plan de acción": g.plan, "Responsable": g.resp,
+    "Fecha del plan": fechaCorta(g.fecPlan), "Estado": g.estado || "Sin plan" }));
 }
 function filasTrainingXls() {
   if (!TRAINING || !TRAINING.personas) return [];
@@ -3353,7 +3545,7 @@ async function exportarExcel() {
       agregar("Verbalizaciones", filasVerbasXls(activeTab));
       agregar("Alertas", filasAlertasXls((ALERTAS_FILAS[activeTab] || []).filter(f => current === "Grupo Kyoto" || f.suc === current)));
     } else if (activeTab === "alertas") agregar("Alertas", filasAlertasXls(VISIBLES[tipoAlerta]));
-    else if (activeTab === "planes") agregar("Planes de acción", filasAlertasXls(VISIBLES.planes));
+    else if (activeTab === "planes") agregar("Planes de acción", filasPlanesXls(VISIBLES.planes));
     else if (activeTab === "training") agregar("Training", filasTrainingXls());
     if (!wb.SheetNames.length) { setSrc("err", "No hay datos para exportar en esta vista."); return; }
     const partes = ["Canvas VOC", nombreSeccion(), activeTab === "training" ? "" : rdEtiquetaMes(MES_ACTUAL), current].filter(Boolean);
@@ -3411,7 +3603,12 @@ $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
     const lim = t.closest && t.closest("[data-lim]");
     if (lim) { filtros[lim.dataset.lim] = {}; render(); return; }
     const b = t.closest && t.closest("[data-ver]");
-    if (b) abrirDetalle(b.dataset.ver, +b.dataset.i);
+    if (b) { abrirDetalle(b.dataset.ver, +b.dataset.i); return; }
+    const q = t.closest && t.closest("[data-quitar]");
+    if (q) { quitarDePlanes(+q.dataset.quitar, true); return; }
+    const rs = t.closest && t.closest("[data-restaurar]");
+    if (rs) { quitarDePlanes(+rs.dataset.restaurar, false); return; }
+    if (t.closest && t.closest("[data-quitados]")) { VER_QUITADOS = !VER_QUITADOS; filtros.planes = {}; render(); }
   });
   cont.addEventListener("input", e => {
     const f = e.target.closest && e.target.closest("input.alf");
@@ -3432,6 +3629,8 @@ $("alFiltroX").onclick = () => { filtroAlerta = null; render(); };
 });
 $("dtCerrar").onclick = cerrarDetalle;
 $("dtGuardar").onclick = guardarDetalle;
+$("dtCopiarBuscar").addEventListener("input", filtrarCopiar);
+$("dtCopiarLista").addEventListener("change", contarCopiar);
 ["detModal", "subirModal", "usrModal", "objModal"].forEach(id =>
   $(id).addEventListener("click", e => { if (e.target.id === id) $(id).hidden = true; }));
 document.addEventListener("keydown", e => {
